@@ -8,6 +8,8 @@
 #include "sled/network/physical_socket_server.h"
 
 namespace sled {
+constexpr TimeDelta SocketServer::kForever;
+
 std::unique_ptr<sled::SocketServer>
 CreateDefaultSocketServer()
 {
