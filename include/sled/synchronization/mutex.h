@@ -17,13 +17,15 @@ namespace sled {
 namespace internal {
 template<typename T>
 struct HasLockAndUnlock {
-    template<typename TClass,
-             decltype(std::declval<TClass>().Lock()) * = nullptr,
-             decltype(std::declval<TClass>().Unlock()) * = nullptr>
-    static int Test(T);
+    template<typename U,
+             decltype(std::declval<U>().Lock()) * = nullptr,
+             decltype(std::declval<U>().Unlock()) * = nullptr>
+    static int Test(int);
+
+    template<typename>
     static char Test(...);
 
-    static constexpr bool value =
+     static constexpr bool value =
         std::is_same<decltype(Test<T>(0)), int>::value;
 };
 }// namespace internal
@@ -69,6 +71,7 @@ template<typename TLock,
          typename std::enable_if<internal::HasLockAndUnlock<TLock>::value,
                                  TLock>::type * = nullptr>
 class LockGuard final {
+public:
     LockGuard(const LockGuard &) = delete;
     LockGuard &operator=(const LockGuard &) = delete;
 
