@@ -37,6 +37,12 @@ public:
         return queue_.get(head_);
     }
 
+    T &Back()
+    {
+        ASSERT(!empty());
+        return queue_.get((tail_ + LEN) % (LEN + 1));
+    }
+
     void Pop()
     {
         ASSERT(!empty());
