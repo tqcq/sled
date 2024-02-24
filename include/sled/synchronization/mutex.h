@@ -25,7 +25,7 @@ struct HasLockAndUnlock {
     template<typename>
     static char Test(...);
 
-     static constexpr bool value =
+    static constexpr bool value =
         std::is_same<decltype(Test<T>(0)), int>::value;
 };
 }// namespace internal
@@ -75,42 +75,46 @@ public:
     LockGuard(const LockGuard &) = delete;
     LockGuard &operator=(const LockGuard &) = delete;
 
-    explicit LockGuard(TLock *lock) : lock_(lock) { lock_->Lock(); };
+    explicit LockGuard(TLock *lock) : mutex_(lock) { mutex_->Lock(); };
 
-    ~LockGuard() { lock_->Unlock(); };
-
-private:
-    TLock *lock_;
-};
-
-class MutexLock final {
-public:
-    MutexLock(const MutexLock &) = delete;
-    MutexLock &operator=(const MutexLock &) = delete;
-
-    explicit MutexLock(Mutex *mutex) : mutex_(mutex) { mutex->Lock(); }
-
-    ~MutexLock() { mutex_->Unlock(); }
+    ~LockGuard() { mutex_->Unlock(); };
 
 private:
-    Mutex *mutex_;
+    TLock *mutex_;
+    friend class ConditionVariable;
 };
 
-class RecursiveMutexLock final {
-public:
-    RecursiveMutexLock(const RecursiveMutexLock &) = delete;
-    RecursiveMutexLock &operator=(const RecursiveMutexLock &) = delete;
+using MutexLock = LockGuard<Mutex>;
+using RecursiveMutexLock = LockGuard<RecursiveMutex>;
 
-    explicit RecursiveMutexLock(RecursiveMutex *mutex) : mutex_(mutex)
-    {
-        mutex->Lock();
-    }
-
-    ~RecursiveMutexLock() { mutex_->Unlock(); }
-
-private:
-    RecursiveMutex *mutex_;
-};
+// class MutexLock final {
+// public:
+//     MutexLock(const MutexLock &) = delete;
+//     MutexLock &operator=(const MutexLock &) = delete;
+//
+//     explicit MutexLock(Mutex *mutex) : mutex_(mutex) { mutex->Lock(); }
+//
+//     ~MutexLock() { mutex_->Unlock(); }
+//
+// private:
+//     Mutex *mutex_;
+// };
+//
+// class RecursiveMutexLock final {
+// public:
+//     RecursiveMutexLock(const RecursiveMutexLock &) = delete;
+//     RecursiveMutexLock &operator=(const RecursiveMutexLock &) = delete;
+//
+//     explicit RecursiveMutexLock(RecursiveMutex *mutex) : mutex_(mutex)
+//     {
+//         mutex->Lock();
+//     }
+//
+//     ~RecursiveMutexLock() { mutex_->Unlock(); }
+//
+// private:
+//     RecursiveMutex *mutex_;
+// };
 
 class ConditionVariable final {
 public:
@@ -120,17 +124,18 @@ public:
     ConditionVariable &operator=(const ConditionVariable &) = delete;
 
     template<typename Predicate>
-    inline bool Wait(Mutex *mutex, Predicate pred)
+    inline bool Wait(LockGuard<Mutex> &guard, Predicate pred)
     {
-        std::unique_lock<std::mutex> lock(mutex->impl_, std::adopt_lock);
+        std::unique_lock<std::mutex> lock(guard.mutex_->impl_, std::adopt_lock);
         cv_.wait(lock, pred);
         return true;
     }
 
     template<typename Predicate>
-    inline bool WaitFor(Mutex *mutex, TimeDelta timeout, Predicate pred)
+    inline bool
+    WaitFor(LockGuard<Mutex> &guard, TimeDelta timeout, Predicate pred)
     {
-        std::unique_lock<std::mutex> lock(mutex->impl_, std::adopt_lock);
+        std::unique_lock<std::mutex> lock(guard.mutex_->impl_, std::adopt_lock);
         if (timeout == kForever) {
             cv_.wait(lock, pred);
             return true;
