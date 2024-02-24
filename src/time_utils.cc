@@ -22,13 +22,13 @@ TimeMillis()
 int64_t
 TimeMicros()
 {
-    if (g_clock) { return g_clock->TimeNanos(); }
     return TimeNanos() / kNumNanosecsPerMicrosec;
 }
 
 int64_t
 TimeNanos()
 {
+    if (g_clock) { return g_clock->TimeNanos(); }
     return SystemTimeNanos();
 }
 
