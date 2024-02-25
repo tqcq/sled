@@ -56,8 +56,8 @@ void Log(LogLevel level,
 
 #define SLOG_ASSERT(cond, tag, fmt, ...)                                       \
     do {                                                                       \
-        if (!(cond)) {                                                         \
-            SLOG(sled::LogLevel::kFatal, __VA_ARGS__);                         \
+        if (!!(cond)) {                                                        \
+            SLOG(sled::LogLevel::kFatal, tag, fmt, ##__VA_ARGS__);             \
             assert(cond);                                                      \
         }                                                                      \
     } while (0)
@@ -87,6 +87,6 @@ void Log(LogLevel level,
 #define LOGF(tag, fmt, ...)                                                    \
     SLOG(sled::LogLevel::kFatal, tag, fmt, ##__VA_ARGS__)
 
-#define ASSERT(cond, fmt, ...) SLOG_ASSERT(cond, "ASSERT", fmt, ##__VA_ARGS__);
+#define ASSERT(cond, fmt, ...) SLOG_ASSERT(cond, "ASSERT", fmt, ##__VA_ARGS__)
 
 #endif// LOG_H

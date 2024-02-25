@@ -30,9 +30,9 @@ Event::Reset()
 bool
 Event::Wait(TimeDelta give_up_after, TimeDelta warn_after)
 {
-    MutexLock lock(&mutex_);
+    MutexLock guard(&mutex_);
     bool wait_success =
-        cv_.WaitFor(lock, give_up_after, [&] { return event_status_; });
+        cv_.WaitFor(guard, give_up_after, [&] { return event_status_; });
     if (!wait_success) { return false; }
 
     if (!is_manual_reset_) { event_status_ = false; }

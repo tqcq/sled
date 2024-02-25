@@ -14,38 +14,38 @@ namespace sled {
 
 template<typename T, size_t LEN>
 class CircleQueue {
-    static_assert(LEN > 0, "LEN should be greater than 0");
+    static_assert(LEN > 0, "LEN should be greater than 0.");
 
 public:
     void Push(T &&val)
     {
-        ASSERT(size() < LEN, "queue is full");
+        ASSERT(size() < LEN, "queue is full.");
         queue_.get(tail_) = std::move(val);
         ++tail_;
     }
 
     void Push(const T &val)
     {
-        ASSERT(size() < LEN, "queue is full");
+        ASSERT(size() < LEN, "queue is full.");
         queue_.get(tail_) = val;
         ++tail_;
     }
 
     T &Front()
     {
-        ASSERT(!empty());
+        ASSERT(!empty(), "queue is empty.");
         return queue_.get(head_);
     }
 
     T &Back()
     {
-        ASSERT(!empty());
+        ASSERT(!empty(), "queue is empty.");
         return queue_.get((tail_ + LEN) % (LEN + 1));
     }
 
     void Pop()
     {
-        ASSERT(!empty());
+        ASSERT(!empty(), "queue is empty.");
         head_ = (head_ + 1) % (LEN + 1);
     }
 
