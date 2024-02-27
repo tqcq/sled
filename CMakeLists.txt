@@ -29,6 +29,7 @@ target_sources(
           src/synchronization/mutex.cc
           src/synchronization/sequence_checker_internal.cc
           src/synchronization/thread_local.cc
+          src/system/location.cc
           src/system/thread.cc
           src/task_queue/pending_task_safety_flag.cc
           src/task_queue/task_queue_base.cc

@@ -6,6 +6,7 @@
 
 #ifndef LOG_H
 #define LOG_H
+#include "sled/system/location.h"
 #include <fmt/format.h>
 
 namespace sled {
@@ -32,8 +33,16 @@ void Log(LogLevel level,
 //     sled::Log(level, tag, fmt, __FILE__, __FUNCTION__, __VA_ARGS__)
 
 #define _SLOG(level, tag, fmt_str, ...)                                        \
-    sled::Log(level, tag, fmt::format(fmt_str, ##__VA_ARGS__).c_str(),         \
-              __FILE__, __LINE__, __FUNCTION__)
+    do {                                                                       \
+        std::string __fmt_str;                                                 \
+        try {                                                                  \
+            __fmt_str = fmt::format(fmt_str, ##__VA_ARGS__);                   \
+        } catch (const std::exception &e) {                                    \
+            __fmt_str = " fmt error: " + std::string(e.what());                \
+        }                                                                      \
+        sled::Log(level, tag, __fmt_str.c_str(), __FILE__, __LINE__,           \
+                  __FUNCTION__);                                               \
+    } while (0)
 
 #define SLOG(level, tag, fmt, ...) _SLOG(level, tag, fmt, ##__VA_ARGS__)
 #define SLOG_TRACE(tag, fmt, ...)                                              \
