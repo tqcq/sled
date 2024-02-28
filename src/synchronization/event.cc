@@ -1,7 +1,7 @@
 #include "sled/synchronization/event.h"
 
 namespace sled {
-constexpr TimeDelta Event::kForever;
+// constexpr TimeDelta Event::kForever;
 
 Event::Event() : Event(false, false) {}
 

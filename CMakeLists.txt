@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD_EXTENSIONS OFF)
 
+option(SLED_BUILD_BENCHMARK "Build benchmark" OFF)
+
 set(BUILD_STATIC ON)
 set(BUILD_RTTR_DYNAMIC OFF)
 set(BUILD_UNIT_TESTS OFF)
@@ -52,9 +54,10 @@ target_include_directories(
 
 target_link_libraries(sled PUBLIC rpc_core fmt)
 
-find_package(benchmark REQUIRED)
+if(SLED_BUILD_BENCHMARK)
+    find_package(benchmark REQUIRED)
 
-add_executable(sled_benchmark
-benchmark/strings/base64_benchmark.cc
-)
-target_link_libraries(sled_benchmark PRIVATE sled benchmark::benchmark benchmark::benchmark_main)
+    add_executable(sled_benchmark benchmark/strings/base64_benchmark.cc)
+    target_link_libraries(sled_benchmark PRIVATE sled benchmark::benchmark
+                                               benchmark::benchmark_main)
+endif(SLED_BUILD_BENCHMARK)

@@ -1,5 +1,6 @@
 #include "sled/log/log.h"
 #include "sled/time_utils.h"
+#include <atomic>
 #include <ctime>
 #include <fmt/format.h>
 #include <iostream>
