@@ -65,7 +65,7 @@ void Log(LogLevel level,
 
 #define SLOG_ASSERT(cond, tag, fmt, ...)                                       \
     do {                                                                       \
-        if (!!(cond)) {                                                        \
+        if (!(cond)) {                                                         \
             SLOG(sled::LogLevel::kFatal, tag, fmt, ##__VA_ARGS__);             \
             assert(cond);                                                      \
         }                                                                      \
