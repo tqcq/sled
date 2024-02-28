@@ -29,6 +29,7 @@ target_sources(
           src/synchronization/mutex.cc
           src/synchronization/sequence_checker_internal.cc
           src/synchronization/thread_local.cc
+          src/system/location.cc
           src/system/thread.cc
           src/task_queue/pending_task_safety_flag.cc
           src/task_queue/task_queue_base.cc
@@ -50,3 +51,10 @@ target_include_directories(
   PRIVATE src)
 
 target_link_libraries(sled PUBLIC rpc_core fmt)
+
+find_package(benchmark REQUIRED)
+
+add_executable(sled_benchmark
+benchmark/strings/base64_benchmark.cc
+)
+target_link_libraries(sled_benchmark PRIVATE sled benchmark::benchmark benchmark::benchmark_main)

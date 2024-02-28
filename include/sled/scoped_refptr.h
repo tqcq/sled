@@ -84,6 +84,7 @@ public:
     scoped_refptr<T> &operator=(const scoped_refptr<T> &&r) noexcept
     {
         scoped_refptr<T>(std::move(r)).swap(*this);
+        return *this;
     }
 
     template<typename U>

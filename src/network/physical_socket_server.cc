@@ -1,4 +1,5 @@
 #include "sled/network/physical_socket_server.h"
+#include "sled/log/log.h"
 #include "sled/network/async_resolver.h"
 #include "sled/network/socket.h"
 #include "sled/synchronization/event.h"
@@ -155,11 +156,11 @@ PhysicalSocketServer::Update(Dispatcher *pdispatcher)
 }
 
 int
-PhysicalSocketServer::ToCmsWait(TimeDelta max_wait_duration)
+PhysicalSocketServer::ToCusWait(TimeDelta max_wait_duration)
 {
     return max_wait_duration == Event::kForever
         ? kForeverMs
-        : max_wait_duration.RoundUpTo(TimeDelta::Millis(1)).ms();
+        : max_wait_duration.RoundUpTo(TimeDelta::Micros(1)).us();
 }
 
 bool
@@ -167,9 +168,9 @@ PhysicalSocketServer::Wait(TimeDelta max_wait_duration, bool process_io)
 
 {
     ScopedSetTrue s(&waiting_);
-    const int cmsWait = ToCmsWait(max_wait_duration);
+    const int64_t cusWait = ToCusWait(max_wait_duration);
 
-    return WaitSelect(cmsWait, process_io);
+    return WaitSelect(cusWait, process_io);
 }
 
 static void
@@ -216,16 +217,16 @@ ProcessEvents(Dispatcher *pdispatcher,
 }
 
 bool
-PhysicalSocketServer::WaitSelect(int cmsWait, bool process_io)
+PhysicalSocketServer::WaitSelect(int64_t cusWait, bool process_io)
 {
     struct timeval *ptvWait = nullptr;
     struct timeval tvWait;
     int64_t stop_us;
-    if (cmsWait != kForeverMs) {
-        tvWait.tv_sec = cmsWait / 1000;
-        tvWait.tv_usec = (cmsWait % 1000) * 1000;
+    if (cusWait != kForeverMs) {
+        tvWait.tv_sec = cusWait / sled::kNumMicrosecsPerSec;
+        tvWait.tv_usec = (cusWait % sled::kNumMicrosecsPerSec);
         ptvWait = &tvWait;
-        stop_us = TimeMicros() + cmsWait * 1000;
+        stop_us = TimeMicros() + cusWait;
     }
 
     fd_set fdsRead;

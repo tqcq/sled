@@ -13,13 +13,13 @@ enum class RefCountReleaseStatus { kDroppedLastRef, kOtherRefsRemained };
 
 class RefCountInterface {
 public:
-  virtual void AddRef() const = 0;
-  virtual RefCountReleaseStatus Release() const = 0;
+    virtual void AddRef() const = 0;
+    virtual RefCountReleaseStatus Release() const = 0;
 
 protected:
-  virtual ~RefCountInterface() = default;
+    virtual ~RefCountInterface() = default;
 };
 
-} // namespace sled
+}// namespace sled
 
-#endif // REF_COUNT_H
+#endif// REF_COUNT_H

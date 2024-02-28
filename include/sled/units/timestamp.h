@@ -77,7 +77,10 @@ public:
         return ToFractionOr<1000>(fallback_value);
     }
 
-    constexpr int64_t us_or(int64_t fallback_value) const { return ToValueOr(fallback_value); }
+    constexpr int64_t us_or(int64_t fallback_value) const
+    {
+        return ToValueOr(fallback_value);
+    }
 
     Timestamp operator+(const TimeDelta delta) const
     {

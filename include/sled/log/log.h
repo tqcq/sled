@@ -6,6 +6,7 @@
 
 #ifndef LOG_H
 #define LOG_H
+#include "sled/system/location.h"
 #include <fmt/format.h>
 
 namespace sled {
@@ -32,10 +33,18 @@ void Log(LogLevel level,
 //     sled::Log(level, tag, fmt, __FILE__, __FUNCTION__, __VA_ARGS__)
 
 #define _SLOG(level, tag, fmt_str, ...)                                        \
-    sled::Log(level, tag, fmt::format(fmt_str, #__VA_ARGS__).c_str(),          \
-              __FILE__, __LINE__, __FUNCTION__)
+    do {                                                                       \
+        std::string __fmt_str;                                                 \
+        try {                                                                  \
+            __fmt_str = fmt::format(fmt_str, ##__VA_ARGS__);                   \
+        } catch (const std::exception &e) {                                    \
+            __fmt_str = " fmt error: " + std::string(e.what());                \
+        }                                                                      \
+        sled::Log(level, tag, __fmt_str.c_str(), __FILE__, __LINE__,           \
+                  __FUNCTION__);                                               \
+    } while (0)
 
-#define SLOG(level, tag, fmt, ...) _SLOG(level, tag, fmt, #__VA_ARGS__)
+#define SLOG(level, tag, fmt, ...) _SLOG(level, tag, fmt, ##__VA_ARGS__)
 #define SLOG_TRACE(tag, fmt, ...)                                              \
     SLOG(sled::LogLevel::kTrace, tag, fmt, __VA_ARGS__)
 #define SLOG_INFO(tag, fmt, ...)                                               \
@@ -56,8 +65,8 @@ void Log(LogLevel level,
 
 #define SLOG_ASSERT(cond, tag, fmt, ...)                                       \
     do {                                                                       \
-        if (!(cond)) {                                                         \
-            SLOG(sled::LogLevel::kFatal, __VA_ARGS__);                         \
+        if (!!(cond)) {                                                        \
+            SLOG(sled::LogLevel::kFatal, tag, fmt, ##__VA_ARGS__);             \
             assert(cond);                                                      \
         }                                                                      \
     } while (0)
@@ -75,12 +84,18 @@ void Log(LogLevel level,
 #define LOGF_IF(cond, tag, fmt, ...)                                           \
     SLOG_IF(cond, sled::LogLevel::kFatal, tag, fmt, __VA_ARGS__)
 
-#define LOGV(tag, fmt, ...) SLOG(sled::LogLevel::kTrace, tag, fmt, #__VA_ARGS__)
-#define LOGD(tag, fmt, ...) SLOG(sled::LogLevel::kDebug, tag, fmt, #__VA_ARGS__)
-#define LOGI(tag, fmt, ...) SLOG(sled::LogLevel::kInfo, tag, fmt, #__VA_ARGS__)
+#define LOGV(tag, fmt, ...)                                                    \
+    SLOG(sled::LogLevel::kTrace, tag, fmt, ##__VA_ARGS__)
+#define LOGD(tag, fmt, ...)                                                    \
+    SLOG(sled::LogLevel::kDebug, tag, fmt, ##__VA_ARGS__)
+#define LOGI(tag, fmt, ...) SLOG(sled::LogLevel::kInfo, tag, fmt, ##__VA_ARGS__)
 #define LOGW(tag, fmt, ...)                                                    \
-    SLOG(sled::LogLevel::kWarning, tag, fmt, #__VA_ARGS__)
-#define LOGE(tag, fmt, ...) SLOG(sled::LogLevel::kError, tag, fmt, #__VA_ARGS__)
-#define LOGF(tag, fmt, ...) SLOG(sled::LogLevel::kFatal, tag, fmt, #__VA_ARGS__)
+    SLOG(sled::LogLevel::kWarning, tag, fmt, ##__VA_ARGS__)
+#define LOGE(tag, fmt, ...)                                                    \
+    SLOG(sled::LogLevel::kError, tag, fmt, ##__VA_ARGS__)
+#define LOGF(tag, fmt, ...)                                                    \
+    SLOG(sled::LogLevel::kFatal, tag, fmt, ##__VA_ARGS__)
+
+#define ASSERT(cond, fmt, ...) SLOG_ASSERT(cond, "ASSERT", fmt, ##__VA_ARGS__)
 
 #endif// LOG_H

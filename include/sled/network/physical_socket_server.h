@@ -53,9 +53,9 @@ public:
 
 private:
     static const int kForeverMs = -1;
-    static int ToCmsWait(TimeDelta max_wait_duration);
+    static int ToCusWait(TimeDelta max_wait_duration);
 
-    bool WaitSelect(int cmsWait, bool process_io);
+    bool WaitSelect(int64_t cusWait, bool process_io);
 
     uint64_t next_dispatcher_key_ = 0;
     std::unordered_map<uint64_t, Dispatcher *> dispatcher_by_key_;

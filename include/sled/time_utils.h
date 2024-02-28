@@ -13,9 +13,12 @@ namespace sled {
 static const int64_t kNumMillisecsPerSec = 1000;
 static const int64_t kNumMicrosecsPerSec = 1000000;
 static const int64_t kNumNanosecsPerSec = 1000000000;
-static const int64_t kNumMicrosecsPerMillisec = kNumMicrosecsPerSec / kNumMillisecsPerSec;
-static const int64_t kNumNanosecsPerMillisec = kNumNanosecsPerSec / kNumMillisecsPerSec;
-static const int64_t kNumNanosecsPerMicrosec = kNumNanosecsPerSec / kNumMicrosecsPerSec;
+static const int64_t kNumMicrosecsPerMillisec =
+    kNumMicrosecsPerSec / kNumMillisecsPerSec;
+static const int64_t kNumNanosecsPerMillisec =
+    kNumNanosecsPerSec / kNumMillisecsPerSec;
+static const int64_t kNumNanosecsPerMicrosec =
+    kNumNanosecsPerSec / kNumMicrosecsPerSec;
 constexpr int64_t kNtpJan1970Millisecs = 2208988800 * kNumMillisecsPerSec;
 
 class ClockInterface {
