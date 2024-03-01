@@ -4,8 +4,10 @@
  * @license  : MIT
  **/
 
-#ifndef IP_ADDRESS_H
-#define IP_ADDRESS_H
+#pragma once
+
+#ifndef SLED_NETWORK_IP_ADDRESS_H
+#define SLED_NETWORK_IP_ADDRESS_H
 
 #include "sled/byte_order.h"
 #include <arpa/inet.h>
@@ -95,4 +97,4 @@ bool IPIsUnspec(const IPAddress &ip);
 
 }// namespace sled
 
-#endif// IP_ADDRESS_H
+#endif// SLED_NETWORK_IP_ADDRESS_H

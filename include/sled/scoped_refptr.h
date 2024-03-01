@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef SCOPED_REFPTR_H
-#define SCOPED_REFPTR_H
+#pragma once
+#ifndef SLED_SCOPED_REFPTR_H
+#define SLED_SCOPED_REFPTR_H
 
 #include <memory>
 
@@ -187,4 +188,4 @@ operator<(const scoped_refptr<T> &lhs, const scoped_refptr<U> &rhs)
 
 }// namespace sled
 
-#endif// SCOPED_REFPTR_H
+#endif// SLED_SCOPED_REFPTR_H

@@ -4,8 +4,10 @@
  * @license  : MIT
  **/
 
-#ifndef SOCKET_FACTORY_H
-#define SOCKET_FACTORY_H
+#pragma once 
+
+#ifndef SLED_NETWORK_SOCKET_FACTORY_H
+#define SLED_NETWORK_SOCKET_FACTORY_H
 
 #include "sled/network/socket.h"
 
@@ -19,4 +21,4 @@ public:
 
 }// namespace sled
 
-#endif// SOCKET_FACTORY_H
+#endif// SLED_NETWORK_SOCKET_FACTORY_H

@@ -21,8 +21,9 @@
  * (See accompanying file LICENSE.md or copy at http://www.boost.org/LICENSE_1_0.txt)
  */
 
-#ifndef ANY_H
-#define ANY_H
+#pragma once
+#ifndef SLED_ANY_H
+#define SLED_ANY_H
 
 #include <algorithm>
 #include <memory>
@@ -333,4 +334,4 @@ any_cast(any &&operand)
 
 }// namespace sled
 
-#endif /* ANY_H */
+#endif /* SLED_ANY_H */

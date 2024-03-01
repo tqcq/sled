@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef BUFFER_H
-#define BUFFER_H
+#pragma once
+#ifndef SLED_BUFFER_H
+#define SLED_BUFFER_H
 #include <cstring>
 #include <memory>
 #include <stdint.h>
@@ -275,4 +276,4 @@ using ZeroOnFreeBuffer = BufferT<T, true>;
 
 }// namespace sled
 
-#endif// BUFFER_H
+#endif// SLED_BUFFER_H

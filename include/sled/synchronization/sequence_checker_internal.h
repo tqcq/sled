@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef SEQUENCE_CHECKER_INTERNAL_H
-#define SEQUENCE_CHECKER_INTERNAL_H
+#pragma once
+#ifndef SLED_SYNCHRONIZATION_SEQUENCE_CHECKER_INTERNAL_H
+#define SLED_SYNCHRONIZATION_SEQUENCE_CHECKER_INTERNAL_H
 
 #include "sled/synchronization/mutex.h"
 #include <string>
@@ -53,4 +54,4 @@ ExpectationToString(const ThreadLikeObject *checker)
 
 }// namespace sled
 
-#endif// SEQUENCE_CHECKER_INTERNAL_H
+#endif// SLED_SYNCHRONIZATION_SEQUENCE_CHECKER_INTERNAL_H

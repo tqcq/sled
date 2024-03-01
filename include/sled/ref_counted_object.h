@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef REF_COUNTED_OBJECT_H
-#define REF_COUNTED_OBJECT_H
+#pragma once
+#ifndef SLED_REF_COUNTED_OBJECT_H
+#define SLED_REF_COUNTED_OBJECT_H
 
 #include "sled/ref_count.h"
 #include "sled/ref_counter.h"

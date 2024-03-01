@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef CLEANUP_H
-#define CLEANUP_H
+#pragma once
+#ifndef SLED_CLEANUP_H
+#define SLED_CLEANUP_H
 
 #include "sled/optional.h"
 
@@ -64,4 +65,4 @@ MakeCleanup(Callback callback)
 
 }// namespace sled
 
-#endif// CLEANUP_H
+#endif// SLED_CLEANUP_H

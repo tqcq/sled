@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef LOCATION_H
-#define LOCATION_H
+#pragma once
+#ifndef SLED_SYSTEM_LOCATION_H
+#define SLED_SYSTEM_LOCATION_H
 
 #include <string>
 
@@ -33,4 +34,4 @@ private:
 
 #define SLED_FROM_HERE sled::Location::Current();
 
-#endif// LOCATION_H
+#endif// SLED_SYSTEM_LOCATION_H

@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef THREAD_LOCAL_H
-#define THREAD_LOCAL_H
+#pragma once
+#ifndef SLED_SYNCHRONIZATION_THREAD_LOCAL_H
+#define SLED_SYNCHRONIZATION_THREAD_LOCAL_H
 #include <cstddef>
 #include <thread>
 #include <type_traits>
@@ -92,4 +93,4 @@ private:
 
 }// namespace sled
 
-#endif// THREAD_LOCAL_H
+#endif// SLED_SYNCHRONIZATION_THREAD_LOCAL_H

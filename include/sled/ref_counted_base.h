@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef REF_COUNTED_BASE_H
-#define REF_COUNTED_BASE_H
+#pragma once
+#ifndef SLED_REF_COUNTED_BASE_H
+#define SLED_REF_COUNTED_BASE_H
 
 #include "sled/ref_count.h"
 #include "sled/ref_counter.h"
@@ -68,4 +69,4 @@ private:
 
 }// namespace sled
 
-#endif// REF_COUNTED_BASE_H
+#endif// SLED_REF_COUNTED_BASE_H

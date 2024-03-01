@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef EVENT_H
-#define EVENT_H
+#pragma once
+#ifndef SLED_SYNCHRONIZATION_EVENT_H
+#define SLED_SYNCHRONIZATION_EVENT_H
 
 #include "sled/synchronization/mutex.h"
 #include "sled/units/time_delta.h"
@@ -40,4 +41,4 @@ public:
 
 }// namespace sled
 
-#endif// EVENT_H
+#endif// SLED_SYNCHRONIZATION_EVENT_H

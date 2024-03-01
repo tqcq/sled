@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef SEQUENCE_CHECKER_H
-#define SEQUENCE_CHECKER_H
+#pragma once
+#ifndef SLED_SEQUENCE_CHECKER_H
+#define SLED_SEQUENCE_CHECKER_H
 
 namespace sled {
 
@@ -21,4 +22,4 @@ public:
 
 }// namespace sled
 
-#endif// SEQUENCE_CHECKER_H
+#endif// SLED_SEQUENCE_CHECKER_H

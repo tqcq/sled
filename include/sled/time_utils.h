@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef TIME_UNITS_H
-#define TIME_UNITS_H
+#pragma once
+#ifndef SLED_TIME_UNITS_H
+#define SLED_TIME_UNITS_H
 #include <stdint.h>
 #include <time.h>
 
@@ -80,4 +81,4 @@ int64_t TimeUTCNanos();
 
 }// namespace sled
 
-#endif// TIME_UNITS_H
+#endif// SLED_TIME_UNITS_H

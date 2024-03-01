@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef PHYSICAL_SOCKET_SERVER_H
-#define PHYSICAL_SOCKET_SERVER_H
+#pragma once
+#ifndef SLED_NETWORK_PHYSICAL_SOCKET_SERVER_H
+#define SLED_NETWORK_PHYSICAL_SOCKET_SERVER_H
 
 #include "sled/network/async_resolver.h"
 #include "sled/sigslot.h"
@@ -163,4 +164,4 @@ public:
 
 }// namespace sled
 
-#endif// PHYSICAL_SOCKET_SERVER_H
+#endif// SLED_NETWORK_PHYSICAL_SOCKET_SERVER_H

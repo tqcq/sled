@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef REF_COUNT_H
-#define REF_COUNT_H
+#pragma once
+#ifndef SLED_REF_COUNT_H
+#define SLED_REF_COUNT_H
 
 namespace sled {
 
@@ -22,4 +23,4 @@ protected:
 
 }// namespace sled
 
-#endif// REF_COUNT_H
+#endif// SLED_REF_COUNT_H

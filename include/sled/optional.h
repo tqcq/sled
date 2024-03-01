@@ -14,8 +14,9 @@
 // <http://creativecommons.org/publicdomain/zero/1.0/>.
 ///
 
-#ifndef TL_OPTIONAL_HPP
-#define TL_OPTIONAL_HPP
+#pragma once
+#ifndef SLED_TL_OPTIONAL_HPP
+#define SLED_TL_OPTIONAL_HPP
 
 #define TL_OPTIONAL_VERSION_MAJOR 1
 #define TL_OPTIONAL_VERSION_MINOR 1
@@ -2496,4 +2497,4 @@ struct hash<tl::optional<T>> {
 };
 }// namespace std
 
-#endif
+#endif // SLED_TL_OPTIONAL_HPP

@@ -3,9 +3,10 @@
  * @created  : Saturday Feb 03, 2024 10:31:29 CST
  * @license  : MIT
  **/
+#pragma once
 
-#ifndef TIME_DELTA_H
-#define TIME_DELTA_H
+#ifndef SLED_UNITS_TIME_DELTA_H
+#define SLED_UNITS_TIME_DELTA_H
 
 #include "sled/units/unit_base.h"
 #include <string>
@@ -104,4 +105,4 @@ operator<<(std::ostream &stream, TimeDelta value)
 
 }// namespace sled
 
-#endif// TIME_DELTA_H
+#endif// SLED_UNITS_TIME_DELTA_H

@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef ONE_TIME_EVENT_H
-#define ONE_TIME_EVENT_H
+#pragma once
+#ifndef SLED_SYNCHRONIZATION_ONE_TIME_EVENT_H
+#define SLED_SYNCHRONIZATION_ONE_TIME_EVENT_H
 
 #include "sled/synchronization/mutex.h"
 
@@ -44,4 +45,4 @@ private:
 };
 }// namespace sled
 
-#endif// ONE_TIME_EVENT_H
+#endif// SLED_SYNCHRONIZATION_ONE_TIME_EVENT_H

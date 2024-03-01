@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef TIMESTAMP_H
-#define TIMESTAMP_H
+#progma once
+#ifndef SLED_UNITS_TIMESTAMP_H
+#define SLED_UNITS_TIMESTAMP_H
 #include "sled/units/time_delta.h"
 #include "sled/units/unit_base.h"
 
@@ -147,4 +148,4 @@ operator<<(std::ostream &stream, Timestamp value)
 
 }// namespace sled
 
-#endif// TIMESTAMP_H
+#endif// SLED_UNITS_TIMESTAMP_H

@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef MUTEX_H
-#define MUTEX_H
+#pragma once
+#ifndef SLED_SYNCHRONIZATION_MUTEX_H
+#define SLED_SYNCHRONIZATION_MUTEX_H
 
 #include "sled/units/time_delta.h"
 #include <chrono>
@@ -159,4 +160,4 @@ private:
 
 }// namespace sled
 
-#endif// MUTEX_H
+#endif// SLED_SYNCHRONIZATION_MUTEX_H

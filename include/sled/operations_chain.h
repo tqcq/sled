@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef OPERATIONS_CHAIN_H
-#define OPERATIONS_CHAIN_H
+#pragma once
+#ifndef SLED_OPERATIONS_CHAIN_H
+#define SLED_OPERATIONS_CHAIN_H
 
 #include "sled/optional.h"
 #include "sled/ref_counted_base.h"
@@ -94,4 +95,4 @@ private:
 
 }// namespace sled
 
-#endif// OPERATIONS_CHAIN_H
+#endif// SLED_OPERATIONS_CHAIN_H

@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef SOCKET_SERVER_H
-#define SOCKET_SERVER_H
+#pragma 
+#ifndef SLED_NETWORK_SOCKET_SERVER_H
+#define SLED_NETWORK_SOCKET_SERVER_H
 
 #include "sled/network/socket_factory.h"
 #include "sled/units/time_delta.h"
@@ -30,4 +31,4 @@ std::unique_ptr<sled::SocketServer> CreateDefaultSocketServer();
 
 }// namespace sled
 
-#endif// SOCKET_SERVER_H
+#endif// SLED_NETWORK_SOCKET_SERVER_H

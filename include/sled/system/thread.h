@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef THREAD_H
-#define THREAD_H
+#pragma once
+#ifndef SLED_SYSTEM_THREAD_H
+#define SLED_SYSTEM_THREAD_H
 #include "sled/synchronization/mutex.h"
 #include "sled/synchronization/thread_local.h"
 #include "sled/task_queue/task_queue_base.h"
@@ -188,4 +189,4 @@ private:
 
 }// namespace sled
 
-#endif// THREAD_H
+#endif// SLED_SYSTEM_THREAD_H

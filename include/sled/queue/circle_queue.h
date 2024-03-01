@@ -4,8 +4,8 @@
  * @license  : MIT
  **/
 
-#ifndef CIRCLE_QUEUE_H
-#define CIRCLE_QUEUE_H
+#ifndef SLED_QUEUE_CIRCLE_QUEUE_H
+#define SLED_QUEUE_CIRCLE_QUEUE_H
 
 #include "sled/log/log.h"
 #include <array>
@@ -66,4 +66,4 @@ private:
 
 }// namespace sled
 
-#endif// CIRCLE_QUEUE_H
+#endif// SLED_QUEUE_CIRCLE_QUEUE_H

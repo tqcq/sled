@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef SOCKET_H
-#define SOCKET_H
+#pragma once
+#ifndef SLED_NETWORK_SOCKET_H
+#define SLED_NETWORK_SOCKET_H
 
 #include "sled/network/socket_address.h"
 #include "sled/sigslot.h"
@@ -75,4 +76,4 @@ protected:
 
 }// namespace sled
 
-#endif// SOCKET_H
+#endif// SLED_NETWORK_SOCKET_H

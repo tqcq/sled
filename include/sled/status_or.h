@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef STATUS_OR_H
-#define STATUS_OR_H
+#pragma once
+#ifndef SLED_STATUS_OR_H
+#define SLED_STATUS_OR_H
 #include "sled/optional.h"
 #include "sled/status.h"
 #include <stdexcept>
@@ -161,4 +162,4 @@ make_status_or(StatusCode code, std::string message = "", ErrorInfo info = {})
 
 }// namespace sled
 
-#endif// STATUS_OR_H
+#endif// SLED_STATUS_OR_H

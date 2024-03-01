@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef BASE64_H
-#define BASE64_H
+#pragma once
+#ifndef SLED_STRINGS_BASE64_H
+#define SLED_STRINGS_BASE64_H
 
 #include "sled/status_or.h"
 #include <string>
@@ -20,4 +21,4 @@ public:
 
 }// namespace sled
 
-#endif// BASE64_H
+#endif// SLED_STRINGS_BASE64_H

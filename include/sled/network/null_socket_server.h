@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef NULL_SOCKET_SERVER_H
-#define NULL_SOCKET_SERVER_H
+#pragma once
+#ifndef SLED_NETWORK_NULL_SOCKET_SERVER_H
+#define SLED_NETWORK_NULL_SOCKET_SERVER_H
 
 #include "sled/network/socket_server.h"
 #include "sled/synchronization/event.h"
@@ -26,4 +27,4 @@ private:
 
 }// namespace sled
 
-#endif// NULL_SOCKET_SERVER_H
+#endif// SLED_NETWORK_NULL_SOCKET_SERVER_H

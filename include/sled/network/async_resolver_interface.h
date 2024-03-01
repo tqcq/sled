@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef ASYNC_RESOLVER_INTERFACE_H
-#define ASYNC_RESOLVER_INTERFACE_H
+#pragma once
+#ifndef SLED_NETWORK_ASYNC_RESOLVER_INTERFACE_H
+#define SLED_NETWORK_ASYNC_RESOLVER_INTERFACE_H
 
 #include "sled/network/socket_address.h"
 #include "sled/sigslot.h"
@@ -35,4 +36,4 @@ public:
 
 }// namespace sled
 
-#endif// ASYNC_RESOLVER_INTERFACE_H
+#endif// SLED_NETWORK_ASYNC_RESOLVER_INTERFACE_H

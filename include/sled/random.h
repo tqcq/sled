@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef RANDOM_H
-#define RANDOM_H
+#pragma once
+#ifndef SLED_RANDOM_H
+#define SLED_RANDOM_H
 
 #include <limits>
 #include <stdint.h>
@@ -56,4 +57,4 @@ bool Random::Rand<bool>() const;
 
 }// namespace sled
 
-#endif// RANDOM_H
+#endif// SLED_RANDOM_H

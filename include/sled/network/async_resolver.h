@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef ASYNC_RESOLVER_H
-#define ASYNC_RESOLVER_H
+#pragma once
+#ifndef SLED_NETWORK_ASYNC_RESOLVER_H
+#define SLED_NETWORK_ASYNC_RESOLVER_H
 
 #include "sled/network/async_resolver_interface.h"
 #include "sled/scoped_refptr.h"
@@ -41,4 +42,4 @@ private:
 
 }// namespace sled
 
-#endif// ASYNC_RESOLVER_H
+#endif// SLED_NETWORK_ASYNC_RESOLVER_H

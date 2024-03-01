@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef DIVIDE_ROUND_H
-#define DIVIDE_ROUND_H
+#pragma once
+#ifndef SLED_NUMERICS_DIVIDE_ROUND_H
+#define SLED_NUMERICS_DIVIDE_ROUND_H
 
 #include <type_traits>
 
@@ -43,4 +44,4 @@ DivideRoundToNearst(Dividend dividend, Divisor divisor) -> decltype(Dividend() /
 
 }// namespace sled
 
-#endif// DIVIDE_ROUND_H
+#endif// SLED_NUMERICS_DIVIDE_ROUND_H

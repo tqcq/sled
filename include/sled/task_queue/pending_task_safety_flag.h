@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef PENDING_TASK_SAFETY_FLAG_H
-#define PENDING_TASK_SAFETY_FLAG_H
+#pragma once
+#ifndef SLED_TASK_QUEUE_PENDING_TASK_SAFETY_FLAG_H
+#define SLED_TASK_QUEUE_PENDING_TASK_SAFETY_FLAG_H
 
 #include "sled/ref_counted_base.h"
 #include "sled/scoped_refptr.h"
@@ -35,4 +36,4 @@ private:
 
 }// namespace sled
 
-#endif// PENDING_TASK_SAFETY_FLAG_H
+#endif// SLED_TASK_QUEUE_PENDING_TASK_SAFETY_FLAG_H

@@ -5,8 +5,9 @@
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE.md or copy at http://boost.org/LICENSE_1_0.txt)
 
-#ifndef MPARK_VARIANT_HPP
-#define MPARK_VARIANT_HPP
+#pragma once
+#ifndef SLED_MPARK_VARIANT_HPP
+#define SLED_MPARK_VARIANT_HPP
 
 /*
    variant synopsis
@@ -3038,4 +3039,4 @@ using namespace mpark;
 
 }// namespace sled
 
-#endif// MPARK_VARIANT_HPP
+#endif// SLED_MPARK_VARIANT_HPP

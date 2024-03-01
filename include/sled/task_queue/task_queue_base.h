@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef TASK_QUEUE_BASE_H
-#define TASK_QUEUE_BASE_H
+#pragma once
+#ifndef SLED_TASK_QUEUE_TASK_QUEUE_BASE_H
+#define SLED_TASK_QUEUE_TASK_QUEUE_BASE_H
 
 #include "sled/system/location.h"
 #include "sled/units/time_delta.h"
@@ -91,4 +92,4 @@ protected:
 
 }// namespace sled
 
-#endif// TASK_QUEUE_BASE_H
+#endif// SLED_TASK_QUEUE_TASK_QUEUE_BASE_H

@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef REF_COUNTER_H
-#define REF_COUNTER_H
+#pragma once
+#ifndef SLED_REF_COUNTER_H
+#define SLED_REF_COUNTER_H
 
 #include "sled/ref_count.h"
 #include <atomic>
@@ -42,4 +43,4 @@ private:
 }// namespace sled_impl
 }// namespace sled
 
-#endif// REF_COUNTER_H
+#endif// SLED_REF_COUNTER_H

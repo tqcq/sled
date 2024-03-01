@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef UNIT_BASE_H
-#define UNIT_BASE_H
+#pragma once
+#ifndef SLED_UNITS_UNIT_BASE_H
+#define SLED_UNITS_UNIT_BASE_H
 
 #include "sled/numerics/divide_round.h"
 #include <algorithm>
@@ -311,4 +312,4 @@ operator-(RelativeUnit<Unit_T> other)
 
 }// namespace sled
 
-#endif// UNIT_BASE_H
+#endif// SLED_UNITS_UNIT_BASE_H

@@ -4,6 +4,7 @@
  * @license  : MIT
  **/
 
+#pragma
 #ifndef SLED_REFLECT_REFLECT_H
 #define SLED_REFLECT_REFLECT_H
 
@@ -12,7 +13,7 @@
 #endif
 
 #if defined(__META_PARSER__)
-#define REFLECT_CLASS __attribute__((annotate("reflect-class")))
+#define CLASS(...) class __attribute__((annotate("reflect-class"))) #__VA_ARGS__
 #define PROPERTY() __attribute__((annotate("reflect-property")))
 #define METHOD() __attribute__((annotate("reflect-method")))
 #else

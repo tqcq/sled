@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef LOG_H
-#define LOG_H
+#pragma once
+#ifndef SLED_LOG_LOG_H
+#define SLED_LOG_LOG_H
 #include "sled/system/location.h"
 #include <fmt/format.h>
 
@@ -98,4 +99,4 @@ void Log(LogLevel level,
 
 #define ASSERT(cond, fmt, ...) SLOG_ASSERT(cond, "ASSERT", fmt, ##__VA_ARGS__)
 
-#endif// LOG_H
+#endif// SLED_LOG_LOG_H

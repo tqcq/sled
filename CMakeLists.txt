@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD_EXTENSIONS OFF)
 
 option(SLED_BUILD_BENCHMARK "Build benchmark" OFF)
+option(SLED_BUILD_TESTS "Build tests" OFF)
 
 set(BUILD_STATIC ON)
 set(BUILD_RTTR_DYNAMIC OFF)
@@ -61,3 +62,8 @@ if(SLED_BUILD_BENCHMARK)
     target_link_libraries(sled_benchmark PRIVATE sled benchmark::benchmark
                                                benchmark::benchmark_main)
 endif(SLED_BUILD_BENCHMARK)
+
+if(SLED_BUILD_TESTS)
+    find_package(gtest REQUIRED)
+    add_executable(sled_tests "")
+endif(SLED_BUILD_TESTS)

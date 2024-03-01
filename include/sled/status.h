@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef STATUS_H
-#define STATUS_H
+#pragma once
+#ifndef SLED_STATUS_H
+#define SLED_STATUS_H
 
 #include <memory>
 #include <string>
@@ -108,4 +109,4 @@ std::ostream &operator<<(std::ostream &os, Status const &status);
 
 }// namespace sled
 
-#endif// STATUS_H
+#endif// SLED_STATUS_H

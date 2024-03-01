@@ -1,3 +1,6 @@
+#progam once
+#ifndef SLED_BYTE_ORDER_H
+#define SLED_BYTE_ORDER_H
 #include <arpa/inet.h>
 
 #if defined(__APPLE__)
@@ -48,3 +51,5 @@ NetworkToHost32(uint32_t n)
 {
     return be32toh(n);
 }
+
+#endif // SLED_BYTE_ORDER_H

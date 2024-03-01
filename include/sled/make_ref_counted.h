@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef MAKE_REF_COUNTED_H
-#define MAKE_REF_COUNTED_H
+#pragma once
+#ifndef SLED_MAKE_REF_COUNTED_H
+#define SLED_MAKE_REF_COUNTED_H
 
 #include "sled/ref_count.h"
 #include "sled/ref_counted_object.h"
@@ -73,4 +74,4 @@ make_ref_counted(Args &&...args)
 
 }// namespace sled
 
-#endif// MAKE_REF_COUNTED_H
+#endif// SLED_MAKE_REF_COUNTED_H

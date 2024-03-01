@@ -4,8 +4,9 @@
  * @license  : MIT
  **/
 
-#ifndef SOCKET_ADDRESS_H
-#define SOCKET_ADDRESS_H
+#pragma once
+#ifndef SLED_NETWORK_SOCKET_ADDRESS_H
+#define SLED_NETWORK_SOCKET_ADDRESS_H
 
 #include "sled/network/ip_address.h"
 
@@ -68,4 +69,4 @@ bool SocketAddressFromSockAddrStorage(const sockaddr_storage &saddr,
                                       SocketAddress *out);
 }// namespace sled
 
-#endif// SOCKET_ADDRESS_H
+#endif// SLED_NETWORK_SOCKET_ADDRESS_H
