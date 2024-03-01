@@ -4,7 +4,7 @@
  * @license  : MIT
  **/
 
-#progma once
+#pragma once
 #ifndef SLED_UNITS_TIMESTAMP_H
 #define SLED_UNITS_TIMESTAMP_H
 #include "sled/units/time_delta.h"

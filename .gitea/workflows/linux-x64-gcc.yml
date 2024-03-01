@@ -1,0 +1,46 @@
+name: linux-x64-gcc
+on:
+  push:
+    paths:
+      - ".gitea/workflows/linux-x64-gcc.yml"
+      - "3party/**"
+      - "benchmark/**"
+      - "include/**"
+      - "src/**"
+      - "tests/**"
+      - "CMakeLists.txt"
+  pull_request:
+    paths:
+      - ".gitea/workflows/linux-x64-gcc.yml"
+      - "3party/**"
+      - "benchmark/**"
+      - "include/**"
+      - "src/**"
+      - "tests/**"
+      - "CMakeLists.txt"
+
+concurrency:
+  group: linux-x64-gcc-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux-gcc:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        build_type: ["Debug", "Release"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: install-tools
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y cmake make
+      - name: configure
+        run: |
+          mkdir build && cd build
+          cmake .. -DCMAKE_BUILD_TYPE=${{matrix.build_type}}
+      - name: build
+        run: |
+          cmake --build build -j `nproc`

@@ -1,4 +1,4 @@
-#progam once
+#pragma once
 #ifndef SLED_BYTE_ORDER_H
 #define SLED_BYTE_ORDER_H
 #include <arpa/inet.h>
