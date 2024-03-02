@@ -8,6 +8,7 @@
 #ifndef SLED_LOG_LOG_H
 #define SLED_LOG_LOG_H
 #include "sled/system/location.h"
+#include <assert.h>
 #include <fmt/format.h>
 
 namespace sled {
