@@ -28,6 +28,7 @@ target_sources(
           src/network/socket_address.cc
           src/network/socket_server.cc
           src/strings/base64.cc
+          src/strings/utils.cc
           src/synchronization/event.cc
           src/synchronization/mutex.cc
           src/synchronization/sequence_checker_internal.cc
