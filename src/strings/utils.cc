@@ -44,14 +44,15 @@ StrSplit(const std::string &str, const std::string &delim, bool skip_empty)
 std::string
 Trim(const std::string &str, const std::string &chars)
 {
-    return TrimLeft(TrimRight(str));
+    return TrimLeft(TrimRight(str, chars), chars);
 }
 
 std::string
 TrimLeft(const std::string &str, const std::string &chars)
 {
     size_t start = 0;
-    while (start < str.size() && chars.find(str[start]) != std::string::npos) {
+    while (start < str.size()
+           && chars.find_first_of(str[start]) != std::string::npos) {
         ++start;
     }
     return str.substr(start);
@@ -61,7 +62,9 @@ std::string
 TrimRight(const std::string &str, const std::string &chars)
 {
     size_t end = str.size();
-    while (end > 0 && chars.find(str[end - 1]) != std::string::npos) { --end; }
+    while (end > 0 && chars.find_first_of(str[end - 1]) != std::string::npos) {
+        --end;
+    }
     return str.substr(0, end);
 }
 
