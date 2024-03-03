@@ -20,7 +20,9 @@ add_subdirectory(3party/fmt EXCLUDE_FROM_ALL)
 target_include_directories(sled PUBLIC 3party/eigen)
 target_sources(
   sled
-  PRIVATE src/log/log.cc
+  PRIVATE 
+          src/filesystem/path.cc
+          src/log/log.cc
           src/network/async_resolver.cc
           src/network/ip_address.cc
           src/network/null_socket_server.cc
