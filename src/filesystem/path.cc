@@ -3,12 +3,18 @@
 #include <errno.h>
 #include <unistd.h>
 
+#ifndef PATH_MAX
+#define PATH_MAX_SZ 4096
+#else
+#define PATH_MAX_SZ PATH_MAX
+#endif
+
 namespace sled {
 Path
 Path::Current()
 {
-    char tmp_path[PATH_MAX];
-    if (getcwd(tmp_path, PATH_MAX)) {
+    char tmp_path[PATH_MAX_SZ];
+    if (getcwd(tmp_path, PATH_MAX_SZ)) {
         auto cwd = Path(tmp_path);
         return cwd;
     }
