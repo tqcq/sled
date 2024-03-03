@@ -1,6 +1,8 @@
+#pragma once
 #ifndef SLED_STRINGS_UTILS_H
 #define SLED_STRINGS_UTILS_H
 #include <string>
+#include <vector>
 
 namespace sled {
 
@@ -10,6 +12,14 @@ std::string ToHex(const std::string &str);
 std::string StrJoin(const std::vector<std::string> &strings,
                     const std::string &delim,
                     bool skip_empty = false);
+std::vector<std::string> StrSplit(const std::string &str,
+                                  const std::string &delim,
+                                  bool skip_empty = false);
+std::string Trim(const std::string &str, const std::string &chars = " \t\n\r");
+std::string TrimLeft(const std::string &str,
+                     const std::string &chars = " \t\n\r");
+std::string TrimRight(const std::string &str,
+                      const std::string &chars = " \t\n\r");
 
 }// namespace sled
 #endif//   SLED_STRINGS_UTILS_H
