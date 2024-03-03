@@ -20,6 +20,8 @@ std::string TrimLeft(const std::string &str,
                      const std::string &chars = " \t\n\r");
 std::string TrimRight(const std::string &str,
                       const std::string &chars = " \t\n\r");
+bool EndsWith(const std::string &str, const std::string &suffix);
+bool StartsWith(const std::string &str, const std::string &prefix);
 
 }// namespace sled
 #endif//   SLED_STRINGS_UTILS_H
