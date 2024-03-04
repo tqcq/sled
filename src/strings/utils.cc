@@ -1,7 +1,38 @@
 #include "sled/strings/utils.h"
 #include <sstream>
+#include <string.h>
 
 namespace sled {
+
+char
+ToLower(char c)
+{
+    return ::tolower(c);
+}
+
+char
+ToUpper(char c)
+{
+    return ::toupper(c);
+}
+
+std::string
+ToLower(const std::string &str)
+{
+    std::string result;
+    std::transform(str.begin(), str.end(), std::back_inserter(result),
+                   ::tolower);
+    return result;
+}
+
+std::string
+ToUpper(const std::string &str)
+{
+    std::string result;
+    std::transform(str.begin(), str.end(), std::back_inserter(result),
+                   ::toupper);
+    return result;
+}
 
 std::string
 StrJoin(const std::vector<std::string> &strings,

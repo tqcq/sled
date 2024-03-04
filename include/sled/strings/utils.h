@@ -6,6 +6,8 @@
 
 namespace sled {
 
+char ToLower(char c);
+char ToUpper(char c);
 std::string ToLower(const std::string &str);
 std::string ToUpper(const std::string &str);
 std::string ToHex(const std::string &str);
