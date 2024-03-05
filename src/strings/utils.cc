@@ -19,19 +19,17 @@ ToUpper(char c)
 std::string
 ToLower(const std::string &str)
 {
-    std::string result;
-    std::transform(str.begin(), str.end(), std::back_inserter(result),
-                   ::tolower);
-    return result;
+    std::stringstream ss;
+    for (auto &ch : str) { ss << ToLower(ch); }
+    return ss.str();
 }
 
 std::string
 ToUpper(const std::string &str)
 {
-    std::string result;
-    std::transform(str.begin(), str.end(), std::back_inserter(result),
-                   ::toupper);
-    return result;
+    std::stringstream ss;
+    for (auto &ch : str) { ss << ToUpper(ch); }
+    return ss.str();
 }
 
 std::string
