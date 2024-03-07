@@ -49,6 +49,8 @@ target_sources(
           src/system/thread.cc
           src/task_queue/pending_task_safety_flag.cc
           src/task_queue/task_queue_base.cc
+          src/timer/task_queue_timeout.cc
+          src/timer/timer.cc
           src/units/time_delta.cc
           src/units/timestamp.cc
           src/operations_chain.cc

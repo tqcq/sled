@@ -53,6 +53,22 @@ public:
         PostDelayedTaskImpl(std::move(task), delay, traits, location);
     }
 
+    void
+    PostDelayedTaskWithPrecision(DelayPrecision precision,
+                                 std::function<void()> &&task,
+                                 TimeDelta delay,
+                                 const Location &location = Location::Current())
+    {
+        switch (precision) {
+        case DelayPrecision::kLow:
+            PostDelayedTask(std::move(task), delay, location);
+            break;
+        case DelayPrecision::kHigh:
+            PostDelayedHighPrecisionTask(std::move(task), delay, location);
+            break;
+        }
+    }
+
     static TaskQueueBase *Current();
 
     bool IsCurrent() const { return Current() == this; };
