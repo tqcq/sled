@@ -5,8 +5,8 @@ namespace sled {
 size_t
 StrippedPathLength()
 {
-#ifdef __SLED_LOCATION_STRIPPED_PATH
-    const char *my_path = __SLED_LOCATION_STRIPPED_PATH;
+#ifdef __SLED_LOCATION_PATH
+    const char *my_path = __SLED_LOCATION_PATH;
 #else
     const char *my_path = "sled/src/system/location.cc";
 #endif
