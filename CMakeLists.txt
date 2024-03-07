@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_EXTENSIONS OFF)
 
 option(SLED_BUILD_BENCHMARK "Build benchmark" OFF)
 option(SLED_BUILD_TESTS "Build tests" OFF)
+option(SLED_LOCATION_STRIPPED_PATH "" "src/base/location.cc")
 
 set(BUILD_STATIC ON)
 set(BUILD_RTTR_DYNAMIC OFF)
@@ -20,6 +21,9 @@ endif()
 
 if (NOT TARGET fmt)
     add_subdirectory(3party/fmt EXCLUDE_FROM_ALL)
+endif()
+if (SLED_LOCATION_STRIPPED_PATH)
+    target_compile_definitions(sled PRIVATE __SLED_LOCATION_STRIPPED_PATH="${SLED_LOCATION_STRIPPED_PATH}")
 endif()
 # add_subdirectory(3party/eigen EXCLUDE_FROM_ALL)
 target_include_directories(sled PUBLIC 3party/eigen)
