@@ -97,6 +97,14 @@ GetCurrentUTCTime()
     return result;
 }
 
+static LogLevel g_log_level = LogLevel::kTrace;
+
+void
+SetLogLevel(LogLevel level)
+{
+    g_log_level = level;
+}
+
 void
 Log(LogLevel level,
     const char *tag,
@@ -106,6 +114,8 @@ Log(LogLevel level,
     const char *func_name,
     ...)
 {
+    if (level < g_log_level) { return; }
+
     static std::atomic_bool allow(true);
     ScopedAtomicWaiter waiter(allow);
     int len = file_name ? strlen(file_name) : 0;

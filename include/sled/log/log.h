@@ -20,6 +20,7 @@ enum class LogLevel {
     kError,
     kFatal,
 };
+void SetLogLevel(LogLevel level);
 
 void Log(LogLevel level,
          const char *tag,
