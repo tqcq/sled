@@ -86,6 +86,7 @@ private:
 };
 
 using MutexLock = LockGuard<Mutex>;
+using MutexGuard = LockGuard<Mutex>;
 using RecursiveMutexLock = LockGuard<RecursiveMutex>;
 
 // class MutexLock final {
