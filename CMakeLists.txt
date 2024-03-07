@@ -14,8 +14,13 @@ set(BUILD_UNIT_TESTS OFF)
 set(BUILD_EXAMPLES OFF)
 add_library(sled STATIC "")
 
-add_subdirectory(3party/rpc_core EXCLUDE_FROM_ALL)
-add_subdirectory(3party/fmt EXCLUDE_FROM_ALL)
+if (NOT TARGET rpc_core)
+    add_subdirectory(3party/rpc_core EXCLUDE_FROM_ALL)
+endif()
+
+if (NOT TARGET fmt)
+    add_subdirectory(3party/fmt EXCLUDE_FROM_ALL)
+endif()
 # add_subdirectory(3party/eigen EXCLUDE_FROM_ALL)
 target_include_directories(sled PUBLIC 3party/eigen)
 target_sources(
