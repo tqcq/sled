@@ -38,7 +38,9 @@ private:
 template<typename T>
 class ThreadLocal final {
 public:
-    ThreadLocal() : key_(detail::ThreadLocalManager::NextKey()) {}
+    static_assert(std::is_pointer<T>::value, "T must be a pointer type");
+
+    inline ThreadLocal() : key_(detail::ThreadLocalManager::NextKey()) {}
 
     ~ThreadLocal()
     { /*detail::ThreadLocalManager::Instance().Delete(key_); */

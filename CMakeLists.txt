@@ -15,6 +15,10 @@ set(BUILD_UNIT_TESTS OFF)
 set(BUILD_EXAMPLES OFF)
 add_library(sled STATIC "")
 
+if (NOT TARGET marl)
+    add_subdirectory(3party/marl EXCLUDE_FROM_ALL)
+endif()
+
 if (NOT TARGET rpc_core)
     add_subdirectory(3party/rpc_core EXCLUDE_FROM_ALL)
 endif()
@@ -68,7 +72,7 @@ target_include_directories(
   PUBLIC include
   PRIVATE src)
 
-target_link_libraries(sled PUBLIC rpc_core fmt)
+target_link_libraries(sled PUBLIC rpc_core fmt marl)
 
 if(SLED_BUILD_BENCHMARK)
     find_package(benchmark REQUIRED)
