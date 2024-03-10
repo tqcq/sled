@@ -1,5 +1,5 @@
-#include "sled/strings/base64.h"
 #include <fmt/format.h>
+#include <sled/strings/base64.h>
 #include <sstream>
 
 namespace sled {

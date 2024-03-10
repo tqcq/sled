@@ -77,7 +77,11 @@ target_link_libraries(sled PUBLIC rpc_core fmt marl)
 if(SLED_BUILD_BENCHMARK)
     find_package(benchmark REQUIRED)
 
-    add_executable(sled_benchmark "src/system/fiber/fiber_bench.cc")
+    add_executable(sled_benchmark 
+        src/random_bench.cc
+        src/strings/base64_bench.cc
+        src/system/fiber/fiber_bench.cc
+        )
     target_link_libraries(sled_benchmark PRIVATE sled benchmark::benchmark
                                                benchmark::benchmark_main)
 endif(SLED_BUILD_BENCHMARK)
