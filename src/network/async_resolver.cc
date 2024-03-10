@@ -45,7 +45,6 @@ AsyncResolver::AsyncResolver() : error_(-1), state_(new State) {}
 AsyncResolver::~AsyncResolver()
 {
     MutexLock lock(&state_->mutex);
-    ;
     state_->status = State::Status::kDead;
 }
 

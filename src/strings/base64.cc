@@ -45,6 +45,11 @@ Base64::Encode(const std::string &input)
         }
     }
 
+    /**
+     * value_bits      
+     * 2           ->  4  -> (8 - value_bits - 2)
+     * 4           ->  2  -> (8 - value_bits - 2)
+     **/
     if (value_bits > 0) {
         ss << kBase64Chars[((value << 8) >> (value_bits + 2)) & 0x3F];
     }
@@ -63,10 +68,10 @@ Base64::Decode(const std::string &input)
     for (unsigned char c : input) {
         if (-1 != kInvBase64Chars[c]) {
             // valid base64 character
-            value = (value << 6) + kInvBase64Chars[c];
+            value = (value << 6) | kInvBase64Chars[c];
             value_bits += 6;
-            if (value_bits >= 0) {
-                ss << char((value >> value_bits) & 0xFF);
+            if (value_bits >= 8) {
+                ss << char((value >> (value_bits - 8)) & 0xFF);
                 value_bits -= 8;
             }
         } else if (c == '=') {
@@ -81,6 +86,7 @@ Base64::Decode(const std::string &input)
         }
         ++index;
     }
+
     return make_status_or<std::string>(ss.str());
 }
 }// namespace sled

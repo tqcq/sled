@@ -1,12 +1,12 @@
 #pragma once
-#ifndef SLED_SYSTEM_FIBER_FIBER_SCHEDULER_H
-#define SLED_SYSTEM_FIBER_FIBER_SCHEDULER_H
+#ifndef SLED_SYSTEM_FIBER_SCHEDULER_H
+#define SLED_SYSTEM_FIBER_SCHEDULER_H
 #include <marl/defer.h>
 #include <marl/scheduler.h>
 #include <marl/task.h>
 
 namespace sled {
-using FiberScheduler = marl::Scheduler;
+using Scheduler = marl::Scheduler;
 
 // schedule() schedules the task T to be asynchronously called using the
 // currently bound scheduler.
@@ -42,4 +42,4 @@ Schedule(Function &&f)
 }
 }// namespace sled
 
-#endif//  SLED_SYSTEM_FIBER_FIBER_SCHEDULER_H
+#endif//  SLED_SYSTEM_FIBER_SCHEDULER_H

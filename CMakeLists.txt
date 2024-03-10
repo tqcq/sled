@@ -77,12 +77,25 @@ target_link_libraries(sled PUBLIC rpc_core fmt marl)
 if(SLED_BUILD_BENCHMARK)
     find_package(benchmark REQUIRED)
 
-    add_executable(sled_benchmark benchmark/strings/base64_benchmark.cc)
+    add_executable(sled_benchmark "src/system/fiber/fiber_bench.cc")
     target_link_libraries(sled_benchmark PRIVATE sled benchmark::benchmark
                                                benchmark::benchmark_main)
 endif(SLED_BUILD_BENCHMARK)
 
 if(SLED_BUILD_TESTS)
-    find_package(gtest REQUIRED)
-    add_executable(sled_tests "")
+    include(FetchContent)
+    FetchContent_Declare(
+      googletest
+      URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+    )
+    FetchContent_MakeAvailable(googletest)
+    add_executable(sled_tests 
+        src/filesystem/path_test.cc
+        src/strings/base64_test.cc
+        src/cleanup_test.cc
+        src/status_or_test.cc
+        src/system/fiber/fiber_test.cc
+        )
+    target_link_libraries(sled_tests PRIVATE sled GTest::gtest GTest::gtest_main)
+    add_test(NAME sled_tests COMMAND sled_tests)
 endif(SLED_BUILD_TESTS)
