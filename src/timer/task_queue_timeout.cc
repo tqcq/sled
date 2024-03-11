@@ -16,6 +16,7 @@ void
 TaskQueueTimeoutFactory::TaskQueueTimeout::Start(DurationMs duration_ms,
                                                  TimeoutID timeout_id)
 {
+    ASSERT(timeout_expiration_ == std::numeric_limits<TimeMs>::max(), "");
     timeout_expiration_ = parent_.get_time_() + duration_ms;
     timeout_id_ = timeout_id;
 
@@ -30,19 +31,25 @@ TaskQueueTimeoutFactory::TaskQueueTimeout::Start(DurationMs duration_ms,
     parent_.task_queue_.PostDelayedTaskWithPrecision(
         precision_,
         [timeout_id, this]() {
+            LOGV("timer", "Timeout expired: {}", timeout_id);
+            ASSERT(posted_task_expiration_
+                       != std::numeric_limits<TimeMs>::max(),
+                   "");
             posted_task_expiration_ = std::numeric_limits<TimeMs>::max();
+
             if (timeout_expiration_ == std::numeric_limits<TimeMs>::max()) {
                 // cancelled timer
                 // do nothing
             } else {
-                DurationMs remaining =
-                    timeout_expiration_ - parent_.get_time_();
-                timeout_expiration_ = std::numeric_limits<TimeMs>::max();
-                if (remaining > 0) {
-                    Start(remaining, timeout_id);
-                } else {
-                    LOGD("", "Timeout Triggered: {}", timeout_id);
+                const TimeMs now = parent_.get_time_();
+                if (timeout_expiration_ <= now) {
+                    timeout_expiration_ = std::numeric_limits<TimeMs>::max();
+                    LOGD("timer", "Timeout Triggered: {}", timeout_id);
                     parent_.on_expired_(timeout_id_);
+                } else {
+                    const DurationMs remaining = timeout_expiration_ - now;
+                    timeout_expiration_ = std::numeric_limits<TimeMs>::max();
+                    Start(remaining, timeout_id);
                 }
             }
         },

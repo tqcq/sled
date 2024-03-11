@@ -30,21 +30,21 @@ public:
 
     virtual void Delete() = 0;
 
-    void PostTask(std::function<void()> &&task,
-                  const Location &location = Location::Current())
+    inline void PostTask(std::function<void()> &&task,
+                         const Location &location = Location::Current())
     {
         PostTaskImpl(std::move(task), PostTaskTraits{}, location);
     }
 
-    void PostDelayedTask(std::function<void()> &&task,
-                         TimeDelta delay,
-                         const Location &location = Location::Current())
+    inline void PostDelayedTask(std::function<void()> &&task,
+                                TimeDelta delay,
+                                const Location &location = Location::Current())
     {
         PostDelayedTaskImpl(std::move(task), delay, PostDelayedTaskTraits{},
                             location);
     }
 
-    void
+    inline void
     PostDelayedHighPrecisionTask(std::function<void()> &&task,
                                  TimeDelta delay,
                                  const Location &location = Location::Current())
@@ -53,7 +53,7 @@ public:
         PostDelayedTaskImpl(std::move(task), delay, traits, location);
     }
 
-    void
+    inline void
     PostDelayedTaskWithPrecision(DelayPrecision precision,
                                  std::function<void()> &&task,
                                  TimeDelta delay,

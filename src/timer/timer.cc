@@ -42,6 +42,40 @@ Timer::Start()
     }
 }
 
+void
+Timer::Stop()
+{
+    if (is_running()) {
+        timeout_->Stop();
+        expiration_count_ = 0;
+        is_running_ = false;
+    }
+}
+
+void
+Timer::Trigger(TimerGeneration generation)
+{
+    if (!is_running_ || generation != generation_) { return; }
+    ++expiration_count_;
+    is_running_ = false;
+    // if max_restarts > exppiration_count_ then restart
+    {
+        is_running_ = true;
+        generation_ = TimerGeneration(generation_ + 1);
+        timeout_->Start(duration_, MakeTimeoutId(id_, generation_));
+    }
+
+    sled::optional<DurationMs> new_duration = on_expired_();
+    if (new_duration.has_value() && new_duration != duration_) {
+        duration_ = new_duration.value();
+        if (is_running_) {
+            timeout_->Stop();
+            generation_ = TimerGeneration(generation_ + 1);
+            timeout_->Start(duration_, MakeTimeoutId(id_, generation_));
+        }
+    }
+}
+
 std::unique_ptr<Timer>
 TimerManager::CreateTimer(const std::string &name, Timer::OnExpired on_expired)
 {
@@ -56,5 +90,14 @@ TimerManager::CreateTimer(const std::string &name, Timer::OnExpired on_expired)
         std::move(timeout)));
     timers_[id] = timer.get();
     return timer;
+}
+
+void
+TimerManager::HandleTimeout(TimeoutID id)
+{
+    TimerID timer_id = id >> 32;
+    TimerGeneration generation = id & 0xffffffff;
+    auto it = timers_.find(timer_id);
+    if (it != timers_.end()) { it->second->Trigger(generation); }
 }
 }// namespace sled

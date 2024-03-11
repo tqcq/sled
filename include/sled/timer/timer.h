@@ -26,7 +26,7 @@ public:
 
     const DurationMs &duration() const { return duration_; }
 
-    int expireation_count() const { return expiration_count_; }
+    int expiration_count() const { return expiration_count_; }
 
     bool is_running() const { return is_running_; }
 
@@ -38,6 +38,7 @@ private:
           OnExpired on_expired,
           UnregisterHandler unregister_handler,
           std::unique_ptr<Timeout> timeout);
+    void Trigger(TimerGeneration generation);
 
     const TimerID id_;
     const std::string name_;
