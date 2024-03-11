@@ -51,6 +51,7 @@ target_sources(
           src/synchronization/thread_local.cc
           src/system/location.cc
           src/system/thread.cc
+          src/system/thread_pool.cc
           src/task_queue/pending_task_safety_flag.cc
           src/task_queue/task_queue_base.cc
           src/timer/task_queue_timeout.cc
@@ -81,6 +82,7 @@ if(SLED_BUILD_BENCHMARK)
         src/random_bench.cc
         src/strings/base64_bench.cc
         src/system/fiber/fiber_bench.cc
+        src/system/thread_pool_bench.cc
         src/system_time_bench.cc)
     target_link_libraries(sled_benchmark PRIVATE sled benchmark::benchmark
                                                benchmark::benchmark_main)
@@ -99,6 +101,7 @@ if(SLED_BUILD_TESTS)
         src/cleanup_test.cc
         src/status_or_test.cc
         src/system/fiber/fiber_test.cc
+        src/system/thread_pool_test.cc
         )
     target_link_libraries(sled_tests PRIVATE sled GTest::gtest GTest::gtest_main)
     add_test(NAME sled_tests COMMAND sled_tests)
