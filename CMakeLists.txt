@@ -81,7 +81,7 @@ if(SLED_BUILD_BENCHMARK)
         src/random_bench.cc
         src/strings/base64_bench.cc
         src/system/fiber/fiber_bench.cc
-        )
+        src/system_time_bench.cc)
     target_link_libraries(sled_benchmark PRIVATE sled benchmark::benchmark
                                                benchmark::benchmark_main)
 endif(SLED_BUILD_BENCHMARK)
