@@ -66,5 +66,5 @@
 #include "sled/time_utils.h"
 #include "sled/variant.h"
 
-#include "inja.h"
+#include "inja.hpp"
 #endif//  SLED_SLED_H
