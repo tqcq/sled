@@ -31,7 +31,7 @@ if (SLED_LOCATION_PATH)
     target_compile_definitions(sled PRIVATE __SLED_LOCATION_PATH="${SLED_LOCATION_PATH}")
 endif()
 # add_subdirectory(3party/eigen EXCLUDE_FROM_ALL)
-target_include_directories(sled PUBLIC 3party/eigen)
+target_include_directories(sled PUBLIC 3party/eigen 3party/inja)
 target_sources(
   sled
   PRIVATE 
