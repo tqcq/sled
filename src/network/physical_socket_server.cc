@@ -400,7 +400,7 @@ void
 PhysicalSocket::SetError(int error)
 {
     // MutexLock lock(&mutex_);
-    LockGuard<Mutex> lock(&mutex_);
+    MutexGuard lock(&mutex_);
     error_ = error;
 }
 

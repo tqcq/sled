@@ -7,6 +7,54 @@
 
 namespace sled {
 
+static const char *
+GetConsoleColorPrefix(LogLevel level)
+{
+    switch (level) {
+    case LogLevel::kTrace:
+        return "\033[0;37m";
+    case LogLevel::kDebug:
+        return "\033[0;36m";
+    case LogLevel::kInfo:
+        return "\033[0;32m";
+    case LogLevel::kWarning:
+        return "\033[0;33m";
+    case LogLevel::kError:
+        return "\033[0;31m";
+    case LogLevel::kFatal:
+        return "\033[0;31m";
+    default:
+        return "\033[0m";
+    }
+}
+
+static const char *
+GetConsoleColorSuffix()
+{
+    return "\033[0m";
+}
+
+static const char *
+ToShortString(LogLevel level)
+{
+    switch (level) {
+    case LogLevel::kTrace:
+        return "T";
+    case LogLevel::kDebug:
+        return "D";
+    case LogLevel::kInfo:
+        return "I";
+    case LogLevel::kWarning:
+        return "W";
+    case LogLevel::kError:
+        return "E";
+    case LogLevel::kFatal:
+        return "F";
+    default:
+        return "#";
+    }
+}
+
 class ScopedAtomicWaiter {
 public:
     ScopedAtomicWaiter(std::atomic_bool &flag) : flag_(flag)
@@ -49,6 +97,14 @@ GetCurrentUTCTime()
     return result;
 }
 
+static LogLevel g_log_level = LogLevel::kTrace;
+
+void
+SetLogLevel(LogLevel level)
+{
+    g_log_level = level;
+}
+
 void
 Log(LogLevel level,
     const char *tag,
@@ -58,14 +114,18 @@ Log(LogLevel level,
     const char *func_name,
     ...)
 {
+    if (level < g_log_level) { return; }
+
     static std::atomic_bool allow(true);
     ScopedAtomicWaiter waiter(allow);
     int len = file_name ? strlen(file_name) : 0;
     while (len > 0 && file_name[len - 1] != '/') { len--; }
 
-    auto msg = fmt::format("{} {}:{}@{} {} {}", GetCurrentUTCTime(),
-                           file_name + len, line, func_name, tag, fmt);
-    std::cout << msg << std::endl;
+    auto msg = fmt::format("{} {} {} {}:{}@{}: {}", GetCurrentUTCTime(),
+                           ToShortString(level), tag, file_name + len, line,
+                           func_name, fmt);
+    std::cout << GetConsoleColorPrefix(level) << msg << GetConsoleColorSuffix()
+              << std::endl;
 }
 
 }// namespace sled

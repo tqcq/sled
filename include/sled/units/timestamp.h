@@ -63,7 +63,7 @@ public:
     }
 
     template<typename T = int64_t>
-    constexpr T ns()
+    constexpr T ns() const
     {
         return ToMultiple<1000, T>();
     }

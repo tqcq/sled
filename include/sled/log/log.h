@@ -8,6 +8,7 @@
 #ifndef SLED_LOG_LOG_H
 #define SLED_LOG_LOG_H
 #include "sled/system/location.h"
+#include <assert.h>
 #include <fmt/format.h>
 
 namespace sled {
@@ -19,6 +20,7 @@ enum class LogLevel {
     kError,
     kFatal,
 };
+void SetLogLevel(LogLevel level);
 
 void Log(LogLevel level,
          const char *tag,

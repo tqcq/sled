@@ -28,7 +28,7 @@ public:
 
     StatusOr(StatusOr &&other)
         : status_(std::move(other.status_)),
-          value_(std::move(value_))
+          value_(std::move(other.value_))
     {
         other.status_ = MakeDefaultStatus();
     }
