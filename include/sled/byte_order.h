@@ -26,6 +26,25 @@
 #define __BIG_ENDIAN BIG_ENDIAN
 #define __LITTLE_ENDIAN LITTLE_ENDIAN
 #define __PDP_ENDIAN PDP_ENDIAN
+#elif defined(__EMSCRIPTEN__)
+#define htobe16(x) __builtin_bswap16(x)
+#define htole16(x) (x)
+#define be16toh(x) __builtin_bswap16(x)
+#define le16toh(x) (x)
+
+#define htobe32(x) __builtin_bswap32(x)
+#define htole32(x) (x)
+#define be32toh(x) __builtin_bswap32(x)
+#define le32toh(x) (x)
+
+#define htobe64(x) __builtin_bswap64(x)
+#define htole64(x) (x)
+#define be64toh(x) __builtin_bswap64(x)
+#define le64toh(x) (x)
+// #define __BYTE_ORDER __BYTE_ORDER__
+// #define __BIG_ENDIAN __ORDER_BIG_ENDIAN__
+// #define __LITTLE_ENDIAN __ORDER_LITTLE_ENDIAN__
+// #define __PDP_ENDIAN __ORDER_PDP_ENDIAN__
 #endif
 
 inline uint16_t
@@ -52,4 +71,4 @@ NetworkToHost32(uint32_t n)
     return be32toh(n);
 }
 
-#endif // SLED_BYTE_ORDER_H
+#endif// SLED_BYTE_ORDER_H
