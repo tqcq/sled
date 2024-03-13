@@ -99,6 +99,7 @@ if(SLED_BUILD_TESTS)
     )
     FetchContent_MakeAvailable(googletest)
     add_executable(sled_tests 
+		src/any_test.cc
         src/filesystem/path_test.cc
         src/strings/base64_test.cc
         src/cleanup_test.cc
