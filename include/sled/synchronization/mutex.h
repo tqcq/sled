@@ -9,6 +9,7 @@
 #ifndef SLED_SYNCHRONIZATION_MUTEX_H
 #define SLED_SYNCHRONIZATION_MUTEX_H
 
+#include "sled/lang/attributes.h"
 #include "sled/units/time_delta.h"
 #include <chrono>
 #include <condition_variable>
@@ -75,7 +76,7 @@ private:
 template<typename TLock,
          typename std::enable_if<internal::HasLockAndUnlock<TLock>::value,
                                  TLock>::type * = nullptr>
-class LockGuard final {
+class SLED_DEPRECATED LockGuard final {
 public:
     LockGuard(const LockGuard &) = delete;
     LockGuard &operator=(const LockGuard &) = delete;
@@ -89,23 +90,23 @@ private:
     friend class ConditionVariable;
 };
 
-class MutexGuard final {
+class MutexLock final {
 public:
-    MutexGuard(Mutex *mutex) : lock_(*mutex) {}
+    MutexLock(Mutex *mutex) : lock_(*mutex) {}
 
-    MutexGuard(const MutexGuard &) = delete;
-    MutexGuard &operator=(const MutexGuard &) = delete;
+    MutexLock(const MutexLock &) = delete;
+    MutexLock &operator=(const MutexLock &) = delete;
 
 private:
     friend class ConditionVariable;
     marl::lock lock_;
 };
 
-using MutexLock = MutexGuard;
+using MutexGuard SLED_DEPRECATED = MutexLock;
 // using MutexGuard = marl::lock;
 // using MutexLock = LockGuard<Mutex>;
 // using MutexGuard = LockGuard<Mutex>;
-using RecursiveMutexLock = LockGuard<RecursiveMutex>;
+using RecursiveMutexLock SLED_DEPRECATED = LockGuard<RecursiveMutex>;
 
 // class MutexLock final {
 // public:

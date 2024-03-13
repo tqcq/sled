@@ -345,7 +345,12 @@ public:
     {}
 
     template<typename ValueType>
-    inline Any(ValueType &&value) : value_(std::move(value))
+    inline Any(
+        ValueType &&value,
+        typename std::enable_if<!std::is_same<Any &, ValueType>::value>::type
+            * = 0,
+        typename std::enable_if<!std::is_const<ValueType>::value>::type * = 0)
+        : value_(std::forward<ValueType &&>(value))
     {}
 
     // ~Any() noexcept {}
@@ -371,13 +376,13 @@ public:
     }
 
     template<typename ValueType>
-    inline auto Cast() const -> ValueType
+    inline auto Cast() const -> ValueType const
     {
         return any_cast<ValueType>(value_);
     }
 
     template<typename ValueType>
-    inline auto Cast() -> ValueType
+    inline ValueType Cast() const &&
     {
         return any_cast<ValueType>(value_);
     }
@@ -414,8 +419,9 @@ public:
         return *this;
     }
 
-private:
     any value_;
+
+private:
 };
 
 }// namespace sled
