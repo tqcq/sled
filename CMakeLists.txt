@@ -32,7 +32,8 @@ if (SLED_LOCATION_PATH)
     target_compile_definitions(sled PRIVATE __SLED_LOCATION_PATH="${SLED_LOCATION_PATH}")
 endif()
 # add_subdirectory(3party/eigen EXCLUDE_FROM_ALL)
-target_include_directories(sled PUBLIC 3party/eigen 3party/inja)
+target_include_directories(sled 
+	PUBLIC 3party/eigen 3party/inja include)
 target_sources(
   sled
   PRIVATE 
@@ -68,11 +69,6 @@ target_sources(
 # set(BUILD_RTTR_DYNAMIC OFF) set(BUILD_UNIT_TESTS OFF)
 # set(BUILD_WITH_STATIC_RUNTIME_LIBS ON) set(BUILD_WITH_DOCUMENTATION OFF)
 # add_subdirectory(3party/rttr EXCLUDE_FROM_ALL)
-
-target_include_directories(
-  sled
-  PUBLIC include
-  PRIVATE src)
 
 target_link_libraries(sled PUBLIC rpc_core fmt marl protobuf::libprotobuf)
 

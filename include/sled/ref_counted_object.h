@@ -10,6 +10,7 @@
 
 #include "sled/ref_count.h"
 #include "sled/ref_counter.h"
+#include <memory>
 
 namespace sled {
 
