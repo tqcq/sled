@@ -159,9 +159,9 @@ private:
     void ClearCurrentTaskQueue();
 
     mutable Mutex mutex_;
-    std::queue<std::function<void()>> messages_;
-    std::priority_queue<DelayedMessage> delayed_messages_;
-    uint32_t delayed_next_num_;
+    std::queue<std::function<void()>> messages_ GUARDED_BY(mutex_);
+    std::priority_queue<DelayedMessage> delayed_messages_ GUARDED_BY(mutex_);
+    uint32_t delayed_next_num_ GUARDED_BY(mutex_);
     bool fInitialized_;
     bool fDestroyed_;
     std::atomic<int> stop_;
@@ -183,8 +183,9 @@ public:
 
     AutoSocketServerThread(const AutoSocketServerThread &) = delete;
     AutoSocketServerThread &operator=(const AutoSocketServerThread &) = delete;
+
 private:
-    Thread* old_thread_;
+    Thread *old_thread_;
 };
 
 }// namespace sled

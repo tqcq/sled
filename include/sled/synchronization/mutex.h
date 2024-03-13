@@ -5,10 +5,10 @@
  **/
 
 #pragma once
-#include "marl/conditionvariable.h"
 #ifndef SLED_SYNCHRONIZATION_MUTEX_H
 #define SLED_SYNCHRONIZATION_MUTEX_H
 
+#include "marl/conditionvariable.h"
 #include "sled/lang/attributes.h"
 #include "sled/units/time_delta.h"
 #include <chrono>
@@ -61,13 +61,13 @@ public:
     RecursiveMutex(const RecursiveMutex &) = delete;
     RecursiveMutex &operator=(const RecursiveMutex &) = delete;
 
-    inline void Lock() { impl_.lock(); }
+    inline void Lock() EXCLUSIVE_LOCK_FUNCTION() { impl_.lock(); }
 
     inline bool TryLock() { return impl_.try_lock(); }
 
     inline void AssertHeld() {}
 
-    inline void Unlock() { impl_.unlock(); }
+    inline void Unlock() UNLOCK_FUNCTION() { impl_.unlock(); }
 
 private:
     std::recursive_mutex impl_;
@@ -76,14 +76,17 @@ private:
 template<typename TLock,
          typename std::enable_if<internal::HasLockAndUnlock<TLock>::value,
                                  TLock>::type * = nullptr>
-class SLED_DEPRECATED LockGuard final {
+class SLED_DEPRECATED() LockGuard final {
 public:
     LockGuard(const LockGuard &) = delete;
     LockGuard &operator=(const LockGuard &) = delete;
 
-    explicit LockGuard(TLock *lock) : mutex_(lock) { mutex_->Lock(); };
+    explicit LockGuard(TLock *lock) EXCLUSIVE_LOCK_FUNCTION() : mutex_(lock)
+    {
+        mutex_->Lock();
+    };
 
-    ~LockGuard() { mutex_->Unlock(); };
+    ~LockGuard() UNLOCK_FUNCTION() { mutex_->Unlock(); };
 
 private:
     TLock *mutex_;
@@ -102,11 +105,11 @@ private:
     marl::lock lock_;
 };
 
-using MutexGuard SLED_DEPRECATED = MutexLock;
+using MutexGuard SLED_DEPRECATED() = MutexLock;
 // using MutexGuard = marl::lock;
 // using MutexLock = LockGuard<Mutex>;
 // using MutexGuard = LockGuard<Mutex>;
-using RecursiveMutexLock SLED_DEPRECATED = LockGuard<RecursiveMutex>;
+using RecursiveMutexLock SLED_DEPRECATED() = LockGuard<RecursiveMutex>;
 
 // class MutexLock final {
 // public:
