@@ -15,6 +15,7 @@ set(BUILD_UNIT_TESTS OFF)
 set(BUILD_EXAMPLES OFF)
 add_library(sled STATIC "")
 
+add_subdirectory(3party/protobuf-3.21.12 EXCLUDE_FROM_ALL)
 if (NOT TARGET marl)
     add_subdirectory(3party/marl EXCLUDE_FROM_ALL)
 endif()
@@ -73,10 +74,12 @@ target_include_directories(
   PUBLIC include
   PRIVATE src)
 
-target_link_libraries(sled PUBLIC rpc_core fmt marl)
+target_link_libraries(sled PUBLIC rpc_core fmt marl protobuf::libprotobuf)
 
 if(SLED_BUILD_BENCHMARK)
-    find_package(benchmark REQUIRED)
+	if (NOT TARGET benchmark) 
+    	find_package(benchmark REQUIRED)
+	endif()
 
     add_executable(sled_benchmark 
         src/random_bench.cc
