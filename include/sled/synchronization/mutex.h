@@ -28,8 +28,7 @@ struct HasLockAndUnlock {
     template<typename>
     static char Test(...);
 
-    static constexpr bool value =
-        std::is_same<decltype(Test<T>(0)), int>::value;
+    static constexpr bool value = std::is_same<decltype(Test<T>(0)), int>::value;
 };
 }// namespace internal
 
@@ -72,9 +71,7 @@ private:
     std::recursive_mutex impl_;
 };
 
-template<typename TLock,
-         typename std::enable_if<internal::HasLockAndUnlock<TLock>::value,
-                                 TLock>::type * = nullptr>
+template<typename TLock, typename std::enable_if<internal::HasLockAndUnlock<TLock>::value, TLock>::type * = nullptr>
 class LockGuard final {
 public:
     LockGuard(const LockGuard &) = delete;
@@ -159,9 +156,7 @@ public:
             cv_.wait(lock.lock_, std::forward<Predicate>(pred));
             return true;
         } else {
-            return cv_.wait_for(lock.lock_,
-                                std::chrono::milliseconds(timeout.ms()),
-                                std::forward<Predicate>(pred));
+            return cv_.wait_for(lock.lock_, std::chrono::milliseconds(timeout.ms()), std::forward<Predicate>(pred));
         }
     }
 

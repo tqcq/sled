@@ -51,6 +51,7 @@ target_sources(
           src/synchronization/sequence_checker_internal.cc
           src/synchronization/thread_local.cc
           src/system/location.cc
+		  src/system/pid.cc
           src/system/thread.cc
           src/system/thread_pool.cc
           src/task_queue/pending_task_safety_flag.cc
@@ -100,6 +101,7 @@ if(SLED_BUILD_TESTS)
     FetchContent_MakeAvailable(googletest)
     add_executable(sled_tests 
         src/filesystem/path_test.cc
+		src/futures/future_test.cc
         src/strings/base64_test.cc
         src/cleanup_test.cc
         src/status_or_test.cc
