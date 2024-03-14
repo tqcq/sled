@@ -25,7 +25,7 @@ public:
     }
 
 private:
-    bool happended_ = false;
+    bool happended_ GUARDED_BY(mutex_) = false;
     Mutex mutex_;
 };
 

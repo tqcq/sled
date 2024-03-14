@@ -36,7 +36,7 @@ public:
     Mutex mutex_;
     ConditionVariable cv_;
     const bool is_manual_reset_;
-    bool event_status_;
+    bool event_status_ GUARDED_BY(mutex_);
 };
 
 }// namespace sled

@@ -70,11 +70,6 @@ target_sources(
 # set(BUILD_WITH_STATIC_RUNTIME_LIBS ON) set(BUILD_WITH_DOCUMENTATION OFF)
 # add_subdirectory(3party/rttr EXCLUDE_FROM_ALL)
 
-target_include_directories(
-  sled
-  PUBLIC include
-  PRIVATE src)
-
 target_link_libraries(sled PUBLIC rpc_core fmt marl protobuf::libprotobuf)
 
 if(SLED_BUILD_BENCHMARK)
@@ -100,6 +95,7 @@ if(SLED_BUILD_TESTS)
     )
     FetchContent_MakeAvailable(googletest)
     add_executable(sled_tests 
+		src/any_test.cc
         src/filesystem/path_test.cc
         src/strings/base64_test.cc
         src/cleanup_test.cc

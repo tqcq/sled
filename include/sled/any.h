@@ -332,6 +332,98 @@ any_cast(any &&operand)
     return any_cast<ValueType>(operand);
 }
 
+class Any final {
+public:
+    inline Any() {}
+
+    inline Any(const Any &other) : value_(other.value_) {}
+
+    inline Any(Any &&other) noexcept : value_(std::move(other.value_)) {}
+
+    template<typename ValueType>
+    inline Any(const ValueType &value) : value_(value)
+    {}
+
+    template<typename ValueType>
+    inline Any(
+        ValueType &&value,
+        typename std::enable_if<!std::is_same<Any &, ValueType>::value>::type
+            * = 0,
+        typename std::enable_if<!std::is_const<ValueType>::value>::type * = 0)
+        : value_(std::forward<ValueType &&>(value))
+    {}
+
+    // ~Any() noexcept {}
+
+    Any &operator=(const Any &rhs)
+    {
+        Any(rhs).swap(*this);
+        return *this;
+    }
+
+    Any &operator=(Any &&rhs) noexcept
+    {
+        rhs.swap(*this);
+        Any().swap(rhs);
+        return *this;
+    }
+
+    template<typename ValueType>
+    Any &operator=(ValueType &&rhs)
+    {
+        Any(static_cast<ValueType &&>(rhs)).swap(*this);
+        return *this;
+    }
+
+    template<typename ValueType>
+    inline auto Cast() const -> ValueType const
+    {
+        return any_cast<ValueType>(value_);
+    }
+
+    template<typename ValueType>
+    inline ValueType Cast() const &&
+    {
+        return any_cast<ValueType>(value_);
+    }
+
+    template<typename ValueType, typename U = ValueType>
+    inline auto CastOr(U &&default_value) const -> ValueType
+    {
+        try {
+            return any_cast<ValueType>(value_);
+        } catch (const bad_any_cast &e) {
+            return static_cast<ValueType>(default_value);
+        }
+    }
+
+    template<typename ValueType, typename U = ValueType>
+    inline auto CastOr(U &&default_value) -> ValueType
+    {
+        try {
+            return any_cast<ValueType>(value_);
+        } catch (const bad_any_cast &e) {
+            return static_cast<ValueType>(default_value);
+        }
+    }
+
+    void Reset() noexcept { Any().swap(*this); }
+
+    bool HasValue() const noexcept { return value_.has_value(); }
+
+    const std::type_info &Type() const noexcept { return value_.type(); }
+
+    Any &swap(Any &rhs) noexcept
+    {
+        std::swap(value_, rhs.value_);
+        return *this;
+    }
+
+    any value_;
+
+private:
+};
+
 }// namespace sled
 
 #endif /* SLED_ANY_H */

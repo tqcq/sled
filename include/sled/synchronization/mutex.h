@@ -5,10 +5,11 @@
  **/
 
 #pragma once
-#include "marl/conditionvariable.h"
 #ifndef SLED_SYNCHRONIZATION_MUTEX_H
 #define SLED_SYNCHRONIZATION_MUTEX_H
 
+#include "marl/conditionvariable.h"
+#include "sled/lang/attributes.h"
 #include "sled/units/time_delta.h"
 #include <chrono>
 #include <condition_variable>
@@ -59,13 +60,13 @@ public:
     RecursiveMutex(const RecursiveMutex &) = delete;
     RecursiveMutex &operator=(const RecursiveMutex &) = delete;
 
-    inline void Lock() { impl_.lock(); }
+    inline void Lock() EXCLUSIVE_LOCK_FUNCTION() { impl_.lock(); }
 
     inline bool TryLock() { return impl_.try_lock(); }
 
     inline void AssertHeld() {}
 
-    inline void Unlock() { impl_.unlock(); }
+    inline void Unlock() UNLOCK_FUNCTION() { impl_.unlock(); }
 
 private:
     std::recursive_mutex impl_;
@@ -77,32 +78,35 @@ public:
     LockGuard(const LockGuard &) = delete;
     LockGuard &operator=(const LockGuard &) = delete;
 
-    explicit LockGuard(TLock *lock) : mutex_(lock) { mutex_->Lock(); };
+    explicit LockGuard(TLock *lock) EXCLUSIVE_LOCK_FUNCTION() : mutex_(lock)
+    {
+        mutex_->Lock();
+    };
 
-    ~LockGuard() { mutex_->Unlock(); };
+    ~LockGuard() UNLOCK_FUNCTION() { mutex_->Unlock(); };
 
 private:
     TLock *mutex_;
     friend class ConditionVariable;
 };
 
-class MutexGuard final {
+class MutexLock final {
 public:
-    MutexGuard(Mutex *mutex) : lock_(*mutex) {}
+    MutexLock(Mutex *mutex) : lock_(*mutex) {}
 
-    MutexGuard(const MutexGuard &) = delete;
-    MutexGuard &operator=(const MutexGuard &) = delete;
+    MutexLock(const MutexLock &) = delete;
+    MutexLock &operator=(const MutexLock &) = delete;
 
 private:
     friend class ConditionVariable;
     marl::lock lock_;
 };
 
-using MutexLock = MutexGuard;
+using MutexGuard SLED_DEPRECATED() = MutexLock;
 // using MutexGuard = marl::lock;
 // using MutexLock = LockGuard<Mutex>;
 // using MutexGuard = LockGuard<Mutex>;
-using RecursiveMutexLock = LockGuard<RecursiveMutex>;
+using RecursiveMutexLock SLED_DEPRECATED() = LockGuard<RecursiveMutex>;
 
 // class MutexLock final {
 // public:
