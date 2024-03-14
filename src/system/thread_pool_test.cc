@@ -4,13 +4,13 @@
 
 std::random_device rd;
 std::mt19937 mt(rd());
-std::uniform_int_distribution<int> dist(-10, 10);
+std::uniform_int_distribution<int> dist(-5, 5);
 auto rnd = std::bind(dist, mt);
 
 void
 simulate_hard_computation()
 {
-    std::this_thread::sleep_for(std::chrono::milliseconds(20 + rnd()));
+    // std::this_thread::sleep_for(std::chrono::milliseconds(10 + rnd()));
 }
 
 // Simple function that adds multiplies two numbers and prints the result
