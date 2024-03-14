@@ -32,7 +32,7 @@ if (SLED_LOCATION_PATH)
     target_compile_definitions(sled PRIVATE __SLED_LOCATION_PATH="${SLED_LOCATION_PATH}")
 endif()
 # add_subdirectory(3party/eigen EXCLUDE_FROM_ALL)
-target_include_directories(sled PUBLIC 3party/eigen 3party/inja)
+target_include_directories(sled PUBLIC 3party/eigen 3party/inja 3party/rxcpp)
 target_sources(
   sled
   PRIVATE 
@@ -101,12 +101,12 @@ if(SLED_BUILD_TESTS)
     FetchContent_MakeAvailable(googletest)
     add_executable(sled_tests 
         src/filesystem/path_test.cc
-		src/futures/future_test.cc
         src/strings/base64_test.cc
         src/cleanup_test.cc
         src/status_or_test.cc
         src/system/fiber/fiber_test.cc
         src/system/thread_pool_test.cc
+		src/rx_test.cc
         )
     target_link_libraries(sled_tests PRIVATE sled GTest::gtest GTest::gtest_main)
     add_test(NAME sled_tests COMMAND sled_tests)

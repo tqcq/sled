@@ -67,4 +67,5 @@
 #include "sled/variant.h"
 
 #include "inja.hpp"
+#include "rx.h"
 #endif//  SLED_SLED_H
