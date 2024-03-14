@@ -1,7 +1,5 @@
-#include <chrono>
 #include <gtest/gtest.h>
 #include <sled/rx.h>
-#include <sled/time_utils.h>
 
 TEST(RX, interval)
 {
