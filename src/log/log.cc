@@ -16,7 +16,8 @@ GetConsoleColorPrefix(LogLevel level)
     case LogLevel::kDebug:
         return "\033[0;36m";
     case LogLevel::kInfo:
-        return "\033[0;32m";
+        return "\033[0m";
+        // return "\033[0;32m";
     case LogLevel::kWarning:
         return "\033[0;33m";
     case LogLevel::kError:
@@ -87,10 +88,7 @@ GetCurrentUTCTime()
     std::strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%S", &tm);
     std::string result(buf);
 #if true
-    return result
-        + fmt::format(".{:03d}Z",
-                      static_cast<int>(now % kNumNanosecsPerSec)
-                          / kNumNanosecsPerMillisec);
+    return result + fmt::format(".{:03d}Z", static_cast<int>(now % kNumNanosecsPerSec) / kNumNanosecsPerMillisec);
 #else
     return result + "Z";
 #endif
@@ -106,13 +104,7 @@ SetLogLevel(LogLevel level)
 }
 
 void
-Log(LogLevel level,
-    const char *tag,
-    const char *fmt,
-    const char *file_name,
-    int line,
-    const char *func_name,
-    ...)
+Log(LogLevel level, const char *tag, const char *fmt, const char *file_name, int line, const char *func_name, ...)
 {
     if (level < g_log_level) { return; }
 
@@ -121,11 +113,9 @@ Log(LogLevel level,
     int len = file_name ? strlen(file_name) : 0;
     while (len > 0 && file_name[len - 1] != '/') { len--; }
 
-    auto msg = fmt::format("{} {} {} {}:{}@{}: {}", GetCurrentUTCTime(),
-                           ToShortString(level), tag, file_name + len, line,
-                           func_name, fmt);
-    std::cout << GetConsoleColorPrefix(level) << msg << GetConsoleColorSuffix()
-              << std::endl;
+    auto msg = fmt::format("{} {} {} {}:{}@{}: {}", GetCurrentUTCTime(), ToShortString(level), tag, file_name + len,
+                           line, func_name, fmt);
+    std::cout << GetConsoleColorPrefix(level) << msg << GetConsoleColorSuffix() << std::endl;
 }
 
 }// namespace sled
