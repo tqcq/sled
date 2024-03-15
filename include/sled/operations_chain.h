@@ -5,6 +5,7 @@
  **/
 
 #pragma once
+#include "sled/make_ref_counted.h"
 #ifndef SLED_OPERATIONS_CHAIN_H
 #define SLED_OPERATIONS_CHAIN_H
 
@@ -60,12 +61,14 @@ public:
     bool IsEmpty() const;
 
     template<typename FunctorT>
-    void ChainOperation(FunctorT &&functor)
+    scoped_refptr<OperationsChain> ChainOperation(FunctorT &&functor)
     {
-        auto wrapper = new internal::OperationWithFunctor<FunctorT>(std::forward<FunctorT>(functor), CreateOpeartionsChainCallback());
+        auto wrapper = new internal::OperationWithFunctor<FunctorT>(std::forward<FunctorT>(functor),
+                                                                    CreateOpeartionsChainCallback());
         chained_operations_.push(std::unique_ptr<internal::OperationWithFunctor<FunctorT>>(wrapper));
 
         if (chained_operations_.size() == 1) { chained_operations_.front()->Run(); }
+        return scoped_refptr<OperationsChain>(this);
     }
 
 private:
