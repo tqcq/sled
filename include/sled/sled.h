@@ -10,6 +10,9 @@
 #include "sled/filesystem/path.h"
 #include "sled/filesystem/temporary_file.h"
 
+// lang
+#include "lang/attributes.h"
+
 // log
 #include "sled/log/log.h"
 
