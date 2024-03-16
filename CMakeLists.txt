@@ -15,6 +15,7 @@ set(BUILD_UNIT_TESTS OFF)
 set(BUILD_EXAMPLES OFF)
 add_library(sled STATIC "")
 
+add_subdirectory(3party/cppuprofile EXCLUDE_FROM_ALL)
 add_subdirectory(3party/protobuf-3.21.12 EXCLUDE_FROM_ALL)
 if (NOT TARGET marl)
     add_subdirectory(3party/marl EXCLUDE_FROM_ALL)
@@ -44,6 +45,7 @@ target_sources(
           src/network/physical_socket_server.cc
           src/network/socket_address.cc
           src/network/socket_server.cc
+		  src/profiling/profiling.cc
           src/strings/base64.cc
           src/strings/utils.cc
           src/synchronization/event.cc
@@ -70,7 +72,7 @@ target_sources(
 # set(BUILD_WITH_STATIC_RUNTIME_LIBS ON) set(BUILD_WITH_DOCUMENTATION OFF)
 # add_subdirectory(3party/rttr EXCLUDE_FROM_ALL)
 
-target_link_libraries(sled PUBLIC rpc_core fmt marl protobuf::libprotobuf)
+target_link_libraries(sled PUBLIC rpc_core fmt marl protobuf::libprotobuf cppuprofile)
 
 if(SLED_BUILD_BENCHMARK)
 	if (NOT TARGET benchmark) 
@@ -97,6 +99,7 @@ if(SLED_BUILD_TESTS)
     add_executable(sled_tests 
 		src/any_test.cc
         src/filesystem/path_test.cc
+		src/profiling/profiling_test.cc
         src/strings/base64_test.cc
         src/cleanup_test.cc
         src/status_or_test.cc
