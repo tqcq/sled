@@ -3,9 +3,8 @@
 #include "sled/units/time_delta.h"
 
 namespace sled {
-TaskQueueTimeoutFactory::TaskQueueTimeout::TaskQueueTimeout(
-    TaskQueueTimeoutFactory &parent,
-    sled::TaskQueueBase::DelayPrecision precision)
+TaskQueueTimeoutFactory::TaskQueueTimeout::TaskQueueTimeout(TaskQueueTimeoutFactory &parent,
+                                                            sled::TaskQueueBase::DelayPrecision precision)
     : parent_(parent),
       precision_(precision)
 {}
@@ -13,8 +12,7 @@ TaskQueueTimeoutFactory::TaskQueueTimeout::TaskQueueTimeout(
 TaskQueueTimeoutFactory::TaskQueueTimeout::~TaskQueueTimeout() {}
 
 void
-TaskQueueTimeoutFactory::TaskQueueTimeout::Start(DurationMs duration_ms,
-                                                 TimeoutID timeout_id)
+TaskQueueTimeoutFactory::TaskQueueTimeout::Start(DurationMs duration_ms, TimeoutID timeout_id)
 {
     ASSERT(timeout_expiration_ == std::numeric_limits<TimeMs>::max(), "");
     timeout_expiration_ = parent_.get_time_() + duration_ms;
@@ -32,9 +30,7 @@ TaskQueueTimeoutFactory::TaskQueueTimeout::Start(DurationMs duration_ms,
         precision_,
         [timeout_id, this]() {
             LOGV("timer", "Timeout expired: {}", timeout_id);
-            ASSERT(posted_task_expiration_
-                       != std::numeric_limits<TimeMs>::max(),
-                   "");
+            ASSERT(posted_task_expiration_ != std::numeric_limits<TimeMs>::max(), "");
             posted_task_expiration_ = std::numeric_limits<TimeMs>::max();
 
             if (timeout_expiration_ == std::numeric_limits<TimeMs>::max()) {
@@ -44,7 +40,7 @@ TaskQueueTimeoutFactory::TaskQueueTimeout::Start(DurationMs duration_ms,
                 const TimeMs now = parent_.get_time_();
                 if (timeout_expiration_ <= now) {
                     timeout_expiration_ = std::numeric_limits<TimeMs>::max();
-                    LOGD("timer", "Timeout Triggered: {}", timeout_id);
+                    LOGV("timer", "Timeout Triggered: {}", timeout_id);
                     parent_.on_expired_(timeout_id_);
                 } else {
                     const DurationMs remaining = timeout_expiration_ - now;
