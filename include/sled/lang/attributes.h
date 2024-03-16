@@ -14,7 +14,8 @@
 #if defined(GUARDED_BY)
 #undef GUARDED_BY
 #endif
-#define GUARDED_BY(x) __attribute__((guarded_by(x)))
+
+#define GUARDED_BY(x) THREAD_ANNOTATION_ATTRIBUTE__(guarded_by(x))
 
 #if defined(__clang__)
 #define EXCLUSIVE_TRYLOCK_FUNCTION(...) THREAD_ANNOTATION_ATTRIBUTE__(exclusive_trylock_function(__VA_ARGS__))

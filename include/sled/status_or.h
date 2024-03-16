@@ -96,13 +96,13 @@ public:
     T &&value() &&
     {
         CheckHasValue();
-        return **this;
+        return std::move(**this);
     }
 
     T const &&value() const &&
     {
         CheckHasValue();
-        return **this;
+        return std::move(**this);
     }
 
     T &value_or(T &&val) &
