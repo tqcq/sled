@@ -630,31 +630,6 @@ else()
 
 endif()
 
-if(BUILD_TESTING)
-  set(LOW_LEVEL_ALLOC_UNITTEST_INCLUDES
-          src/base/low_level_alloc.h
-          src/base/basictypes.h
-          src/gperftools/malloc_hook.h
-          src/gperftools/malloc_hook_c.h
-          src/malloc_hook-inl.h
-          ${SPINLOCK_INCLUDES}
-          ${LOGGING_INCLUDES})
-  set(low_level_alloc_unittest_SOURCES src/base/low_level_alloc.cc
-          src/malloc_hook.cc
-          src/mmap_hook.cc
-          src/tests/low_level_alloc_unittest.cc
-          ${LOW_LEVEL_ALLOC_UNITTEST_INCLUDES})
-  if(MSVC OR MINGW)
-      list(APPEND low_level_alloc_unittest_SOURCES src/windows/port.cc)
-  endif()
-  add_executable(low_level_alloc_unittest ${low_level_alloc_unittest_SOURCES})
-  # By default, MallocHook takes stack traces for use by the heap-checker.
-  # We don't need that functionality here, so we turn it off to reduce deps.
-  target_compile_definitions(low_level_alloc_unittest PRIVATE NO_TCMALLOC_SAMPLES)
-  target_link_libraries(low_level_alloc_unittest spinlock sysinfo logging)
-  add_test(low_level_alloc_unittest low_level_alloc_unittest)
-endif()
-
 ### ------- stack trace
 
 if(WITH_STACK_TRACE)
