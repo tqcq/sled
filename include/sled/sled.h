@@ -30,6 +30,9 @@
 // numerics
 #include "sled/numerics/divide_round.h"
 
+// profiling
+#include "sled/profiling/profiling.h"
+
 // strings
 #include "sled/strings/base64.h"
 #include "sled/strings/utils.h"
