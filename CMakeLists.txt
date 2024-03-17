@@ -15,6 +15,7 @@ set(BUILD_UNIT_TESTS OFF)
 set(BUILD_EXAMPLES OFF)
 add_library(sled STATIC "")
 
+add_subdirectory(3party/gperftools EXCLUDE_FROM_ALL)
 add_subdirectory(3party/cppuprofile EXCLUDE_FROM_ALL)
 add_subdirectory(3party/protobuf-3.21.12 EXCLUDE_FROM_ALL)
 if (NOT TARGET marl)
@@ -72,7 +73,9 @@ target_sources(
 # set(BUILD_WITH_STATIC_RUNTIME_LIBS ON) set(BUILD_WITH_DOCUMENTATION OFF)
 # add_subdirectory(3party/rttr EXCLUDE_FROM_ALL)
 
-target_link_libraries(sled PUBLIC rpc_core fmt marl protobuf::libprotobuf cppuprofile)
+target_link_libraries(sled 
+    PUBLIC rpc_core fmt marl protobuf::libprotobuf cppuprofile tcmalloc_and_profiler_static
+)
 
 if(SLED_BUILD_BENCHMARK)
 	if (NOT TARGET benchmark) 
@@ -106,7 +109,7 @@ if(SLED_BUILD_TESTS)
         src/system/fiber/fiber_test.cc
         src/system/thread_pool_test.cc
 		src/rx_test.cc
-        )
+    )
     target_link_libraries(sled_tests PRIVATE sled GTest::gtest GTest::gtest_main)
     add_test(NAME sled_tests COMMAND sled_tests)
 endif(SLED_BUILD_TESTS)
