@@ -29,7 +29,9 @@ TaskQueueTimeoutFactory::TaskQueueTimeout::Start(DurationMs duration_ms, Timeout
     parent_.task_queue_.PostDelayedTaskWithPrecision(
         precision_,
         [timeout_id, this]() {
+            if (timeout_id != this->timeout_id_) { return; }
             LOGV("timer", "Timeout expired: {}", timeout_id);
+
             ASSERT(posted_task_expiration_ != std::numeric_limits<TimeMs>::max(), "");
             posted_task_expiration_ = std::numeric_limits<TimeMs>::max();
 
