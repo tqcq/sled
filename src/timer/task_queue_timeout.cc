@@ -7,7 +7,8 @@ namespace sled {
 TaskQueueTimeoutFactory::TaskQueueTimeout::TaskQueueTimeout(TaskQueueTimeoutFactory &parent,
                                                             sled::TaskQueueBase::DelayPrecision precision)
     : parent_(parent),
-      precision_(precision)
+      precision_(precision),
+      safety_flag_(PendingTaskSafetyFlag::Create())
 {}
 
 TaskQueueTimeoutFactory::TaskQueueTimeout::~TaskQueueTimeout() {}

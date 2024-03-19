@@ -54,7 +54,7 @@ private:
 inline std::function<void()>
 SafeTask(scoped_refptr<PendingTaskSafetyFlag> flag, std::function<void()> task)
 {
-    return [task, flag]() mutable {
+    return [flag, task]() mutable {
         if (flag->alive()) { std::move(task)(); }
     };
 }
