@@ -6,8 +6,7 @@ sled::scoped_refptr<PendingTaskSafetyFlag>
 PendingTaskSafetyFlag::CreateInternal(bool alive)
 {
     // Explicit new, to access private constructor.
-    return sled::scoped_refptr<PendingTaskSafetyFlag>(
-        new PendingTaskSafetyFlag(alive));
+    return sled::scoped_refptr<PendingTaskSafetyFlag>(new PendingTaskSafetyFlag(alive));
 }
 
 sled::scoped_refptr<PendingTaskSafetyFlag>
@@ -31,7 +30,7 @@ PendingTaskSafetyFlag::CreateDetachedInactive()
 void
 PendingTaskSafetyFlag::SetNotAlive()
 {
-    alive_ = true;
+    alive_ = false;
 }
 
 void
