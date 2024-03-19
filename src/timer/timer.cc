@@ -47,6 +47,7 @@ Timer::Stop()
 {
     if (is_running()) {
         timeout_->Stop();
+        generation_ = TimerGeneration(generation_ + 1);
         expiration_count_ = 0;
         is_running_ = false;
     }
@@ -58,6 +59,7 @@ Timer::Trigger(TimerGeneration generation)
     if (!is_running_ || generation != generation_) { return; }
     ++expiration_count_;
     is_running_ = false;
+
     // if max_restarts > exppiration_count_ then restart
     {
         is_running_ = true;
@@ -82,12 +84,10 @@ TimerManager::CreateTimer(const std::string &name, Timer::OnExpired on_expired)
     next_id_ = TimerID(next_id_ + 1);
     TimerID id = next_id_;
 
-    std::unique_ptr<Timeout> timeout =
-        timeout_creator_(sled::TaskQueueBase::DelayPrecision::kHigh);
+    std::unique_ptr<Timeout> timeout = timeout_creator_(sled::TaskQueueBase::DelayPrecision::kHigh);
     auto timer = std::unique_ptr<Timer>(new Timer(
         id, name, std::move(on_expired),
-        /* ungrgister_handler=*/[this, id]() { timers_.erase(id); },
-        std::move(timeout)));
+        /* ungrgister_handler=*/[this, id]() { timers_.erase(id); }, std::move(timeout)));
     timers_[id] = timer.get();
     return timer;
 }
