@@ -11,7 +11,7 @@ TaskQueueTimeoutFactory::TaskQueueTimeout::TaskQueueTimeout(TaskQueueTimeoutFact
       safety_flag_(PendingTaskSafetyFlag::Create())
 {}
 
-TaskQueueTimeoutFactory::TaskQueueTimeout::~TaskQueueTimeout() {}
+TaskQueueTimeoutFactory::TaskQueueTimeout::~TaskQueueTimeout() { safety_flag_->SetNotAlive(); }
 
 void
 TaskQueueTimeoutFactory::TaskQueueTimeout::Start(DurationMs duration_ms, TimeoutID timeout_id)
@@ -31,12 +31,14 @@ TaskQueueTimeoutFactory::TaskQueueTimeout::Start(DurationMs duration_ms, Timeout
 
     posted_task_expiration_ = timeout_expiration_;
     auto safety_flag = safety_flag_;
+
     parent_.task_queue_.PostDelayedTaskWithPrecision(
         precision_,
         SafeTask(safety_flag_,
                  [timeout_id, this]() {
                      // if (timeout_id != this->timeout_id_) { return; }
                      LOGV("timer", "Timeout expired: {}", timeout_id);
+                     // FIXME: this is a bug, the posted_task_expiration_ should be reset to max
                      ASSERT(posted_task_expiration_ != std::numeric_limits<TimeMs>::max(), "");
                      posted_task_expiration_ = std::numeric_limits<TimeMs>::max();
 
