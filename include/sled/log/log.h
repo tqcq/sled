@@ -90,4 +90,20 @@ void Log(LogLevel level, const char *tag, const char *fmt, const char *file_name
 #define LOGE_EVERY_N(n, tag, fmt, ...) __LOG_EVERY_N(n, sled::LogLevel::kError, tag, fmt, ##__VA_ARGS__)
 #define LOGF_EVERY_N(n, tag, fmt, ...) __LOG_EVERY_N(n, sled::LogLevel::kFatal, tag, fmt, ##__VA_ARGS__)
 
+#define __LOG_ONCE(level, tag, fmt, ...)                                                                               \
+    do {                                                                                                               \
+        static bool __sled_log_once##__FUNCTION__##__LINE__ = false;                                                   \
+        if (!__sled_log_once##__FUNCTION__##__LINE__) {                                                                \
+            __sled_log_once##__FUNCTION__##__LINE__ = true;                                                            \
+            SLOG(level, tag, fmt, ##__VA_ARGS__);                                                                      \
+        }                                                                                                              \
+    } while (0)
+
+#define LOGV_ONCE(tag, fmt, ...) __LOG_ONCE(sled::LogLevel::kTrace, tag, fmt, ##__VA_ARGS__)
+#define LOGD_ONCE(tag, fmt, ...) __LOG_ONCE(sled::LogLevel::kDebug, tag, fmt, ##__VA_ARGS__)
+#define LOGI_ONCE(tag, fmt, ...) __LOG_ONCE(sled::LogLevel::kInfo, tag, fmt, ##__VA_ARGS__)
+#define LOGW_ONCE(tag, fmt, ...) __LOG_ONCE(sled::LogLevel::kWarning, tag, fmt, ##__VA_ARGS__)
+#define LOGE_ONCE(tag, fmt, ...) __LOG_ONCE(sled::LogLevel::kError, tag, fmt, ##__VA_ARGS__)
+#define LOGF_ONCE(tag, fmt, ...) __LOG_ONCE(sled::LogLevel::kFatal, tag, fmt, ##__VA_ARGS__)
+
 #endif// SLED_LOG_LOG_H
