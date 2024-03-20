@@ -77,4 +77,17 @@ void Log(LogLevel level, const char *tag, const char *fmt, const char *file_name
 
 #define ASSERT(cond, fmt, ...) SLOG_ASSERT(cond, "ASSERT", fmt, ##__VA_ARGS__)
 
+#define __LOG_EVERY_N(n, level, tag, fmt, ...)                                                                         \
+    do {                                                                                                               \
+        static int __sled_log_count##__LINE__ = 0;                                                                     \
+        if (__sled_log_count##__LINE++ % n == 0) { SLOG(level, tag, fmt, ##__VA_ARGS__); }                             \
+    } while (0)
+
+#define LOGV_EVERY_N(n, tag, fmt, ...) __LOG_EVERY_N(n, sled::LogLevel::kTrace, tag, fmt, ##__VA_ARGS__)
+#define LOGD_EVERY_N(n, tag, fmt, ...) LOG_EVERY_N(n, sled::LogLevel::kDebug, tag, fmt, ##__VA_ARGS__)
+#define LOGI_EVERY_N(n, tag, fmt, ...) LOG_EVERY_N(n, sled::LogLevel::kInfo, tag, fmt, ##__VA_ARGS__)
+#define LOGW_EVERY_N(n, tag, fmt, ...) LOG_EVERY_N(n, sled::LogLevel::kWarning, tag, fmt, ##__VA_ARGS__)
+#define LOGE_EVERY_N(n, tag, fmt, ...) LOG_EVERY_N(n, sled::LogLevel::kError, tag, fmt, ##__VA_ARGS__)
+#define LOGF_EVERY_N(n, tag, fmt, ...) LOG_EVERY_N(n, sled::LogLevel::kFatal, tag, fmt, ##__VA_ARGS__)
+
 #endif// SLED_LOG_LOG_H
