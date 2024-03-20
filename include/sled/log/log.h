@@ -79,8 +79,8 @@ void Log(LogLevel level, const char *tag, const char *fmt, const char *file_name
 
 #define __LOG_EVERY_N(n, level, tag, fmt, ...)                                                                         \
     do {                                                                                                               \
-        static int __sled_log_count##__LINE__ = 0;                                                                     \
-        if (__sled_log_count##__LINE__++ % n == 0) { SLOG(level, tag, fmt, ##__VA_ARGS__); }                           \
+        static int __sled_log_count##__FUNCTION__##__LINE__ = 0;                                                       \
+        if (__sled_log_count##__FUNCTION__##__LINE__++ % n == 0) { SLOG(level, tag, fmt, ##__VA_ARGS__); }             \
     } while (0)
 
 #define LOGV_EVERY_N(n, tag, fmt, ...) __LOG_EVERY_N(n, sled::LogLevel::kTrace, tag, fmt, ##__VA_ARGS__)
