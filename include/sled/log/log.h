@@ -10,6 +10,7 @@
 #include "sled/system/location.h"
 #include <assert.h>
 #include <fmt/format.h>
+#include <fmt/ostream.h>// support fmt base ostream
 
 namespace sled {
 enum class LogLevel {
