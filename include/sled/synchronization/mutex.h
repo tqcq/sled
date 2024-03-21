@@ -78,10 +78,7 @@ public:
     LockGuard(const LockGuard &) = delete;
     LockGuard &operator=(const LockGuard &) = delete;
 
-    explicit LockGuard(TLock *lock) EXCLUSIVE_LOCK_FUNCTION() : mutex_(lock)
-    {
-        mutex_->Lock();
-    };
+    explicit LockGuard(TLock *lock) EXCLUSIVE_LOCK_FUNCTION() : mutex_(lock) { mutex_->Lock(); };
 
     ~LockGuard() UNLOCK_FUNCTION() { mutex_->Unlock(); };
 
@@ -150,7 +147,7 @@ public:
     template<typename Predicate>
     inline void Wait(MutexLock &lock, Predicate &&pred)
     {
-        cv_.wait(lock, std::forward<Predicate>(pred));
+        cv_.wait(lock.lock_, std::forward<Predicate>(pred));
     }
 
     template<typename Predicate>
