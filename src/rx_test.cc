@@ -1,4 +1,3 @@
-#include "schedulers/rx-currentthread.hpp"
 #include <gtest/gtest.h>
 #include <sled/rx.h>
 
