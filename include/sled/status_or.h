@@ -108,21 +108,25 @@ public:
     T &value_or(T &&val) &
     {
         if (!ok()) return val;
+        return **this;
     }
 
     T const &value_or(T &&val) const &
     {
         if (!ok()) return val;
+        return **this;
     }
 
     T &&value_or(T &&val) &&
     {
-        if (!ok()) return val;
+        if (!ok()) return std::forward<T>(val);
+        return std::move(**this);
     }
 
     T const &&value_or(T &&val) const &&
     {
-        if (!ok()) return val;
+        if (!ok()) return std::forward<T>(val);
+        return std::move(**this);
     }
 
     Status const &status() const & { return status_; }
