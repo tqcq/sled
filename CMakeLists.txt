@@ -68,7 +68,9 @@ target_sources(
           src/sigslot.cc
           src/status.cc
           src/system_time.cc
-          src/time_utils.cc)
+          src/time_utils.cc
+		  src/uri.cc
+)
 # set(BUILD_RTTR_DYNAMIC OFF) set(BUILD_UNIT_TESTS OFF)
 # set(BUILD_WITH_STATIC_RUNTIME_LIBS ON) set(BUILD_WITH_DOCUMENTATION OFF)
 # add_subdirectory(3party/rttr EXCLUDE_FROM_ALL)
@@ -109,6 +111,7 @@ if(SLED_BUILD_TESTS)
         src/system/fiber/fiber_test.cc
         src/system/thread_pool_test.cc
 		src/rx_test.cc
+		src/uri_test.cc
     )
     target_link_libraries(sled_tests PRIVATE sled GTest::gtest GTest::gtest_main)
     add_test(NAME sled_tests COMMAND sled_tests)
