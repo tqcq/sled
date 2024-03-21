@@ -44,8 +44,7 @@ StatusCodeToString(StatusCode code)
     case StatusCode::kDataLoss:
         return "DATA_LOSS";
     default:
-        return "UNEXPECTED_STATUS_CODE="
-            + std::to_string(static_cast<int>(code));
+        return "UNEXPECTED_STATUS_CODE=" + std::to_string(static_cast<int>(code));
     }
 }
 }// namespace internal
@@ -59,8 +58,7 @@ operator<<(std::ostream &os, StatusCode code)
 bool
 operator==(ErrorInfo const &a, ErrorInfo const &b)
 {
-    return a.reason_ == b.reason_ && a.domain_ == b.domain_
-        && a.metadata_ == b.metadata_;
+    return a.reason_ == b.reason_ && a.domain_ == b.domain_ && a.metadata_ == b.metadata_;
 }
 
 bool
@@ -73,10 +71,7 @@ class Status::Impl {
 public:
     using PayloadType = std::unordered_map<std::string, std::string>;
 
-    explicit Impl(StatusCode code,
-                  std::string message,
-                  ErrorInfo error_info,
-                  PayloadType payload)
+    explicit Impl(StatusCode code, std::string message, ErrorInfo error_info, PayloadType payload)
         : code_(code),
           message_(std::move(message)),
           error_info_(std::move(error_info)),
@@ -95,14 +90,11 @@ public:
 
     friend inline bool operator==(Impl const &a, Impl const &b)
     {
-        return a.code_ == b.code_ && a.message_ == b.message_
-            && a.error_info_ == b.error_info_ && a.payload_ == b.payload_;
+        return a.code_ == b.code_ && a.message_ == b.message_ && a.error_info_ == b.error_info_
+            && a.payload_ == b.payload_;
     }
 
-    friend inline bool operator!=(Impl const &a, Impl const &b)
-    {
-        return !(a == b);
-    }
+    friend inline bool operator!=(Impl const &a, Impl const &b) { return !(a == b); }
 
 private:
     StatusCode code_;
@@ -118,9 +110,7 @@ Status::Status(Status &&) noexcept = default;
 Status &Status::operator=(Status &&) noexcept = default;
 
 // Deep copy
-Status::Status(Status const &other)
-    : impl_(other.ok() ? nullptr : new auto(*other.impl_))
-{}
+Status::Status(Status const &other) : impl_(other.ok() ? nullptr : new auto(*other.impl_)) {}
 
 // Deep copy
 Status &
@@ -131,11 +121,7 @@ Status::operator=(Status const &other)
 }
 
 Status::Status(StatusCode code, std::string message, ErrorInfo error_info)
-    : impl_(code == StatusCode::kOk ? nullptr
-                                    : new Status::Impl(code,
-                                                       std::move(message),
-                                                       std::move(error_info),
-                                                       {}))
+    : impl_(code == StatusCode::kOk ? nullptr : new Status::Impl(code, std::move(message), std::move(error_info), {}))
 {}
 
 StatusCode
@@ -170,18 +156,30 @@ operator<<(std::ostream &os, const Status &s)
     if (s.ok()) return os << StatusCode::kOk;
     os << s.code() << ": " << s.message();
     auto const &e = s.error_info();
-    if (e.reason().empty() && e.domain().empty() && e.metadata().empty()) {
-        return os;
+    if (e.reason().empty() && e.domain().empty() && e.metadata().empty()) { return os; }
+
+    os << "error_info={";
+    bool first_field = true;
+    if (!e.reason().empty()) {
+        os << "reason=" << e.reason();
+        first_field = false;
     }
-    os << "error_info={reason" << e.reason();
-    os << ", domain=" << e.domain();
-    os << ", metadata={";
-    char const *sep = "";
-    for (auto const &item : e.metadata()) {
-        os << sep << item.first << "=" << item.second;
-        sep = ", ";
+    if (!e.domain().empty()) {
+        if (first_field) os << ", ";
+        os << ", domain=" << e.domain();
+        first_field = false;
     }
-    return os << "}}";
+    if (!e.metadata().empty()) {
+        if (first_field) os << ", ";
+        os << "metadata={";
+        char const *sep = "";
+        for (auto const &item : e.metadata()) {
+            os << item.first << "=" << item.second << ", ";
+            sep = ", ";
+        }
+        os << "}";
+    }
+    return os << "}";
 }
 
 namespace internal {

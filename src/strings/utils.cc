@@ -33,9 +33,7 @@ ToUpper(const std::string &str)
 }
 
 std::string
-StrJoin(const std::vector<std::string> &strings,
-        const std::string &delim,
-        bool skip_empty)
+StrJoin(const std::vector<std::string> &strings, const std::string &delim, bool skip_empty)
 {
     if (strings.empty()) { return ""; }
 
@@ -59,9 +57,7 @@ StrSplit(const std::string &str, const std::string &delim, bool skip_empty)
     size_t start = 0;
     size_t next_pos = str.find_first_of(delim, start);
     while (next_pos != std::string::npos) {
-        if (!skip_empty || next_pos > start) {
-            result.emplace_back(str.substr(start, next_pos - start));
-        }
+        if (!skip_empty || next_pos > start) { result.emplace_back(str.substr(start, next_pos - start)); }
         start = next_pos + 1;
         next_pos = str.find_first_of(delim, start);
     }
@@ -93,15 +89,31 @@ TrimRight(const std::string &str, const std::string &chars)
 bool
 EndsWith(const std::string &str, const std::string &suffix)
 {
-    return str.size() >= suffix.size()
-        && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+    return str.size() >= suffix.size() && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
 }
 
 bool
 StartsWith(const std::string &str, const std::string &prefix)
 {
-    return str.size() >= prefix.size()
-        && str.compare(0, prefix.size(), prefix) == 0;
+    return str.size() >= prefix.size() && str.compare(0, prefix.size(), prefix) == 0;
+}
+
+bool
+EndsWithIgnoreCase(const std::string &str, const std::string &suffix)
+{
+    return EndsWith(ToLower(str), ToLower(suffix));
+}
+
+bool
+StartsWithIgnoreCase(const std::string &str, const std::string &prefix)
+{
+    return StartsWith(ToLower(str), ToLower(prefix));
+}
+
+bool
+EqualsIgnoreCase(const std::string &lhs, const std::string &rhs)
+{
+    return ToLower(lhs) == ToLower(rhs);
 }
 
 }// namespace sled

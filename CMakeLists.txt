@@ -15,6 +15,8 @@ set(BUILD_UNIT_TESTS OFF)
 set(BUILD_EXAMPLES OFF)
 add_library(sled STATIC "")
 
+add_subdirectory(3party/gperftools EXCLUDE_FROM_ALL)
+# add_subdirectory(3party/cppuprofile EXCLUDE_FROM_ALL)
 add_subdirectory(3party/protobuf-3.21.12 EXCLUDE_FROM_ALL)
 if (NOT TARGET marl)
     add_subdirectory(3party/marl EXCLUDE_FROM_ALL)
@@ -48,6 +50,7 @@ target_sources(
           src/network/physical_socket_server.cc
           src/network/socket_address.cc
           src/network/socket_server.cc
+		  src/profiling/profiling.cc
           src/strings/base64.cc
           src/strings/utils.cc
           src/synchronization/event.cc
@@ -73,8 +76,23 @@ target_sources(
 # set(BUILD_RTTR_DYNAMIC OFF) set(BUILD_UNIT_TESTS OFF)
 # set(BUILD_WITH_STATIC_RUNTIME_LIBS ON) set(BUILD_WITH_DOCUMENTATION OFF)
 # add_subdirectory(3party/rttr EXCLUDE_FROM_ALL)
+include(CheckCCompilerFlag)
+check_c_compiler_flag("-Wl,--whole-archive" SUPPORT_COMPILE_WHOLE_ARCHIVE)
+if (SUPPORT_COMPILE_WHOLE_ARCHIVE)
+	set(WHOLE_ARCHIVE_WRAPPER_START "-Wl,--whole-archive")
+	set(WHOLE_ARCHIVE_WRAPPER_END "-Wl,--no-whole-archive")
+endif()
 
-target_link_libraries(sled PUBLIC rpc_core fmt marl protobuf::libprotobuf)
+
+target_link_libraries(sled 
+    PUBLIC rpc_core fmt marl protobuf::libprotobuf # cppuprofile 
+    # ${WHOLE_ARCHIVE_WRAPPER_START}
+	tcmalloc_and_profiler_static
+	# ${WHOLE_ARCHIVE_WRAPPER_END}
+)
+
+## set fPIC
+set_target_properties(sled PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 if(SLED_BUILD_BENCHMARK)
 	if (NOT TARGET benchmark) 
@@ -102,13 +120,14 @@ if(SLED_BUILD_TESTS)
 		src/exec/just_test.cc
 		src/any_test.cc
         src/filesystem/path_test.cc
+		src/profiling/profiling_test.cc
         src/strings/base64_test.cc
         src/cleanup_test.cc
         src/status_or_test.cc
         src/system/fiber/fiber_test.cc
         src/system/thread_pool_test.cc
 		src/rx_test.cc
-        )
+    )
     target_link_libraries(sled_tests PRIVATE sled GTest::gtest GTest::gtest_main)
     add_test(NAME sled_tests COMMAND sled_tests)
 endif(SLED_BUILD_TESTS)

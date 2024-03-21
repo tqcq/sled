@@ -10,11 +10,11 @@
 
 #include "sled/ref_counted_base.h"
 #include "sled/scoped_refptr.h"
+#include <functional>
 
 namespace sled {
 
-class PendingTaskSafetyFlag final
-    : public sled::RefCountedNonVirtual<PendingTaskSafetyFlag> {
+class PendingTaskSafetyFlag final : public sled::RefCountedNonVirtual<PendingTaskSafetyFlag> {
 public:
     static sled::scoped_refptr<PendingTaskSafetyFlag> Create();
     static sled::scoped_refptr<PendingTaskSafetyFlag> CreateDetached();
@@ -29,10 +29,35 @@ protected:
     explicit PendingTaskSafetyFlag(bool alive) : alive_(alive) {}
 
 private:
-    static sled::scoped_refptr<PendingTaskSafetyFlag>
-    CreateInternal(bool alive);
+    static sled::scoped_refptr<PendingTaskSafetyFlag> CreateInternal(bool alive);
     bool alive_ = true;
 };
+
+class ScopedTaskSafety final {
+public:
+    ScopedTaskSafety() = default;
+
+    explicit ScopedTaskSafety(scoped_refptr<PendingTaskSafetyFlag> flag) : flag_(std::move(flag)) {}
+
+    ~ScopedTaskSafety() { flag_->SetNotAlive(); }
+
+    void reset(scoped_refptr<PendingTaskSafetyFlag> new_flag = PendingTaskSafetyFlag::Create())
+    {
+        flag_->SetNotAlive();
+        flag_ = std::move(new_flag);
+    }
+
+private:
+    scoped_refptr<PendingTaskSafetyFlag> flag_;
+};
+
+inline std::function<void()>
+SafeTask(scoped_refptr<PendingTaskSafetyFlag> flag, std::function<void()> task)
+{
+    return [flag, task]() mutable {
+        if (flag->alive()) { std::move(task)(); }
+    };
+}
 
 }// namespace sled
 

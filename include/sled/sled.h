@@ -1,9 +1,17 @@
 #pragma once
 #ifndef SLED_SLED_H
 #define SLED_SLED_H
+
+// thrid_party
+#include "inja.hpp"
+#include "rx.h"
+
 // filesystem
 #include "sled/filesystem/path.h"
 #include "sled/filesystem/temporary_file.h"
+
+// lang
+#include "lang/attributes.h"
 
 // log
 #include "sled/log/log.h"
@@ -21,6 +29,9 @@
 
 // numerics
 #include "sled/numerics/divide_round.h"
+
+// profiling
+#include "sled/profiling/profiling.h"
 
 // strings
 #include "sled/strings/base64.h"
@@ -65,7 +76,4 @@
 #include "sled/system_time.h"
 #include "sled/time_utils.h"
 #include "sled/variant.h"
-
-#include "inja.hpp"
-#include "rx.h"
 #endif//  SLED_SLED_H

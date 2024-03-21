@@ -23,20 +23,18 @@ WasDeduced()
 }
 }// namespace internal
 
-template<typename Arg = internal::Tag,
-         typename Callback = std::function<void()>>
+template<typename Arg = internal::Tag, typename Callback = std::function<void()>>
 class Cleanup final {
 public:
-    static_assert(internal::WasDeduced<Arg>(),
-                  "Do not specify the first template argument");
+    static_assert(internal::WasDeduced<Arg>(), "Do not specify the first template argument");
 
     Cleanup(Callback callback) : callback_(std::move(callback)) {}
 
     Cleanup(Cleanup &&other) = default;
 
-    void Cancel() && { callback_.reset(); }
+    void Cancel() { callback_.reset(); }
 
-    void Invoke() &&
+    void Invoke()
     {
         assert(callback_);
         (*callback_)();

@@ -49,9 +49,7 @@ class ErrorInfo {
 public:
     ErrorInfo() = default;
 
-    explicit ErrorInfo(std::string reason,
-                       std::string domain,
-                       std::unordered_map<std::string, std::string> metadata)
+    explicit ErrorInfo(std::string reason, std::string domain, std::unordered_map<std::string, std::string> metadata)
         : reason_(std::move(reason)),
           domain_(std::move(domain)),
           metadata_(std::move(metadata))
@@ -61,18 +59,13 @@ public:
 
     std::string const &domain() const { return domain_; }
 
-    std::unordered_map<std::string, std::string> const &metadata() const
-    {
-        return metadata_;
-    }
+    std::unordered_map<std::string, std::string> const &metadata() const { return metadata_; }
 
     friend bool operator==(ErrorInfo const &, ErrorInfo const &);
     friend bool operator!=(ErrorInfo const &, ErrorInfo const &);
 
 private:
-    friend void internal::AddMetadata(ErrorInfo &,
-                                      std::string const &key,
-                                      std::string value);
+    friend void internal::AddMetadata(ErrorInfo &, std::string const &key, std::string value);
     std::string reason_;
     std::string domain_;
     std::unordered_map<std::string, std::string> metadata_;

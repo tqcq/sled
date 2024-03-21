@@ -17,8 +17,7 @@ namespace sled {
 template<typename T>
 class StatusOr final {
 public:
-    static_assert(!std::is_reference<T>::value,
-                  "StatusOr<T> requires T to **not** be a reference type");
+    static_assert(!std::is_reference<T>::value, "StatusOr<T> requires T to **not** be a reference type");
     using value_type = T;
 
     StatusOr() : StatusOr(MakeDefaultStatus()) {}
@@ -26,9 +25,7 @@ public:
     StatusOr(StatusOr const &) = default;
     StatusOr &operator=(StatusOr const &) = default;
 
-    StatusOr(StatusOr &&other)
-        : status_(std::move(other.status_)),
-          value_(std::move(other.value_))
+    StatusOr(StatusOr &&other) : status_(std::move(other.status_)), value_(std::move(other.value_))
     {
         other.status_ = MakeDefaultStatus();
     }
@@ -43,10 +40,7 @@ public:
 
     StatusOr(Status rhs) : status_(std::move(rhs))
     {
-        if (status_.ok()) {
-            throw std::invalid_argument(
-                "Status::OK is not a valid argument to StatusOr<T>");
-        }
+        if (status_.ok()) { throw std::invalid_argument("Status::OK is not a valid argument to StatusOr<T>"); }
     }
 
     StatusOr &operator=(Status status)
@@ -57,9 +51,7 @@ public:
 
     template<typename U = T,
              /// @code implementation detail
-             typename std::enable_if<
-                 !std::is_same<StatusOr, typename std::decay<U>::type>::value,
-                 int>::type = 0
+             typename std::enable_if<!std::is_same<StatusOr, typename std::decay<U>::type>::value, int>::type = 0
              /// @code end
              >
     StatusOr &operator=(U &&rhs)
@@ -104,33 +96,37 @@ public:
     T &&value() &&
     {
         CheckHasValue();
-        return **this;
+        return std::move(**this);
     }
 
     T const &&value() const &&
     {
         CheckHasValue();
-        return **this;
+        return std::move(**this);
     }
 
     T &value_or(T &&val) &
     {
         if (!ok()) return val;
+        return **this;
     }
 
     T const &value_or(T &&val) const &
     {
         if (!ok()) return val;
+        return **this;
     }
 
     T &&value_or(T &&val) &&
     {
-        if (!ok()) return val;
+        if (!ok()) return std::forward<T>(val);
+        return std::move(**this);
     }
 
     T const &&value_or(T &&val) const &&
     {
-        if (!ok()) return val;
+        if (!ok()) return std::forward<T>(val);
+        return std::move(**this);
     }
 
     Status const &status() const & { return status_; }
@@ -138,10 +134,7 @@ public:
     Status &&status() && { return std::move(status_); }
 
 private:
-    static Status MakeDefaultStatus()
-    {
-        return Status{StatusCode::kUnknown, "default"};
-    }
+    static Status MakeDefaultStatus() { return Status{StatusCode::kUnknown, "default"}; }
 
     void CheckHasValue() const &
     {
