@@ -15,7 +15,11 @@ struct ThenReceiver {
     template<typename T>
     void SetValue(T &&value)
     {
-        receiver.SetValue(func(std::forward<T>(value)));
+        try {
+            receiver.SetValue(func(std::forward<T>(value)));
+        } catch (...) {
+            receiver.SetError(std::current_exception());
+        }
     }
 
     void SetError(std::exception_ptr err) { receiver.SetError(err); }
@@ -32,8 +36,9 @@ struct ThenOperation {
 
 template<typename TSender, typename F>
 struct ThenSender {
-    using result_t = typename eggs::invoke_result_t<F, SenderResultT<TSender>>;
-    TSender sender;
+    using S = typename std::remove_cv<typename std::remove_reference<TSender>::type>::type;
+    using result_t = typename eggs::invoke_result_t<F, SenderResultT<S>>;
+    S sender;
     F func;
 
     template<typename TReceiver>
@@ -45,7 +50,7 @@ struct ThenSender {
 
 template<typename TSender, typename F>
 ThenSender<TSender, F>
-Then(TSender sender, F &&func)
+Then(TSender &&sender, F &&func)
 {
     return {std::forward<TSender>(sender), std::forward<F>(func)};
 }

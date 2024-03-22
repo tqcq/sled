@@ -12,7 +12,7 @@ struct JustOperation {
     TReceiver receiver;
     T value;
 
-    void Start() { receiver.SetValue(std::move(value)); }
+    void Start() { receiver.SetValue(value); }
 };
 
 template<typename T>

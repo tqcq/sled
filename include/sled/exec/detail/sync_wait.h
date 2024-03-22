@@ -8,7 +8,7 @@
 #include <exception>
 
 namespace sled {
-struct SyncWaitData {
+struct SyncWaitState {
     sled::Mutex lock;
     sled::ConditionVariable cv;
     std::exception_ptr err;
@@ -17,7 +17,7 @@ struct SyncWaitData {
 
 template<typename T>
 struct SyncWaitReceiver {
-    SyncWaitData &data;
+    SyncWaitState &data;
     sled::optional<T> &value;
 
     void SetValue(T &&val)
@@ -49,7 +49,7 @@ sled::optional<SenderResultT<TSender>>
 SyncWait(TSender sender)
 {
     using T = SenderResultT<TSender>;
-    SyncWaitData data;
+    SyncWaitState data;
     sled::optional<T> value;
 
     auto op = sender.Connect(SyncWaitReceiver<T>{data, value});

@@ -120,6 +120,7 @@ if(SLED_BUILD_TESTS)
 		src/exec/just_test.cc
 		src/any_test.cc
         src/filesystem/path_test.cc
+		src/futures/future_test.cc
 		# src/profiling/profiling_test.cc
         src/strings/base64_test.cc
         src/cleanup_test.cc

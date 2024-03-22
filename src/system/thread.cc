@@ -45,8 +45,7 @@ void
 ThreadManager::RemoveInternal(Thread *message_queue)
 {
     MutexLock lock(&cirt_);
-    auto iter = std::find(message_queues_.begin(), message_queues_.end(),
-                          message_queue);
+    auto iter = std::find(message_queues_.begin(), message_queues_.end(), message_queue);
     if (iter != message_queues_.end()) { message_queues_.erase(iter); }
 }
 
@@ -96,8 +95,7 @@ ThreadManager::ProcessAllMessageQueueInternal()
     MutexLock lock(&cirt_);
     for (Thread *queue : message_queues_) {
         queues_not_done.fetch_add(1);
-        auto sub =
-            MakeCleanup([&queues_not_done] { queues_not_done.fetch_sub(1); });
+        auto sub = MakeCleanup([&queues_not_done] { queues_not_done.fetch_sub(1); });
         queue->PostDelayedTask([&sub] {}, TimeDelta::Zero());
     }
 
@@ -115,9 +113,7 @@ ThreadManager::SetCurrentThreadInternal(Thread *message_queue)
 
 Thread::Thread(SocketServer *ss) : Thread(ss, /*do_init=*/true) {}
 
-Thread::Thread(std::unique_ptr<SocketServer> ss)
-    : Thread(std::move(ss), /*do_init=*/true)
-{}
+Thread::Thread(std::unique_ptr<SocketServer> ss) : Thread(std::move(ss), /*do_init=*/true) {}
 
 Thread::Thread(SocketServer *ss, bool do_init)
     : delayed_next_num_(0),
@@ -131,11 +127,7 @@ Thread::Thread(SocketServer *ss, bool do_init)
     if (do_init) { DoInit(); }
 }
 
-Thread::Thread(std::unique_ptr<SocketServer> ss, bool do_init)
-    : Thread(ss.get(), do_init)
-{
-    own_ss_ = std::move(ss);
-}
+Thread::Thread(std::unique_ptr<SocketServer> ss, bool do_init) : Thread(ss.get(), do_init) { own_ss_ = std::move(ss); }
 
 Thread::~Thread()
 {
@@ -244,13 +236,10 @@ Thread::Get(int cmsWait)
             cmsNext = cmsDelayNext;
         } else {
             cmsNext = std::max<int64_t>(0, cmsTotal - cmsElapsed);
-            if ((cmsDelayNext != kForever) && (cmsDelayNext < cmsNext)) {
-                cmsNext = cmsDelayNext;
-            }
+            if ((cmsDelayNext != kForever) && (cmsDelayNext < cmsNext)) { cmsNext = cmsDelayNext; }
         }
         {
-            if (!ss_->Wait(cmsNext == kForever ? SocketServer::kForever
-                                               : TimeDelta::Millis(cmsNext),
+            if (!ss_->Wait(cmsNext == kForever ? SocketServer::kForever : TimeDelta::Millis(cmsNext),
                            /*process_io=*/true)) {
                 return nullptr;
             }
@@ -266,9 +255,7 @@ Thread::Get(int cmsWait)
 }
 
 void
-Thread::PostTaskImpl(std::function<void()> &&task,
-                     const PostTaskTraits &traits,
-                     const Location &location)
+Thread::PostTaskImpl(std::function<void()> &&task, const PostTaskTraits &traits, const Location &location)
 {
     if (IsQuitting()) { return; }
     {
@@ -303,8 +290,7 @@ Thread::PostDelayedTaskImpl(std::function<void()> &&task,
 }
 
 void
-Thread::BlockingCallImpl(std::function<void()> functor,
-                         const Location &location)
+Thread::BlockingCallImpl(std::function<void()> &&functor, const Location &location)
 {
     if (IsQuitting()) { return; }
     if (IsCurrent()) {
@@ -373,8 +359,7 @@ Thread::SetName(const std::string &name, const void *obj)
 void
 Thread::EnsureIsCurrentTaskQueue()
 {
-    task_queue_registration_.reset(
-        new TaskQueueBase::CurrentTaskQueueSetter(this));
+    task_queue_registration_.reset(new TaskQueueBase::CurrentTaskQueueSetter(this));
 }
 
 void
@@ -426,8 +411,7 @@ Thread::PreRun(void *pv)
 }
 
 bool
-Thread::WrapCurrentWithThreadManager(ThreadManager *thread_manager,
-                                     bool need_synchronize_access)
+Thread::WrapCurrentWithThreadManager(ThreadManager *thread_manager, bool need_synchronize_access)
 {
     // assert(!IsRunning());
     owned_ = false;
@@ -498,8 +482,7 @@ Thread::Current()
     return thread;
 }
 
-AutoSocketServerThread::AutoSocketServerThread(SocketServer *ss)
-    : Thread(ss, /*do_init=*/false)
+AutoSocketServerThread::AutoSocketServerThread(SocketServer *ss) : Thread(ss, /*do_init=*/false)
 {
     DoInit();
     old_thread_ = ThreadManager::Instance()->CurrentThread();
