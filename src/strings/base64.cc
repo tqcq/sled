@@ -1,11 +1,13 @@
 #include "sled/strings/base64.h"
+#include "sled/log/log.h"
 #include "sled/synchronization/call_once.h"
 #include <fmt/format.h>
 #include <sstream>
 
 namespace sled {
 const char kBase64Chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-static int kInvBase64Chars[(1 << sizeof(char))];
+std::array<int, 1 << (8 * sizeof(char))> kInvBase64Chars;
+// static int kInvBase64Chars[(1 << sizeof(char))];
 static OnceFlag once_flag;
 
 inline bool
@@ -15,16 +17,22 @@ IsBase64(char c)
 }
 
 std::string
-Base64::Encode(void *ptr, size_t len)
+Base64::Encode(const uint8_t *const ptr, size_t len)
 {
-    auto data = reinterpret_cast<unsigned char *>(ptr);
+    auto data = (unsigned char *) (ptr);
     return Encode(std::vector<unsigned char>(data, data + len));
 }
 
 std::string
 Base64::Encode(const std::string &input)
 {
-    return Encode((void *) input.data(), input.length());
+    return Encode((uint8_t *) input.data(), input.length());
+}
+
+std::string
+Base64::Encode(const char *const data)
+{
+    return Encode((uint8_t *) data, strlen(data));
 }
 
 std::string
@@ -57,8 +65,8 @@ StatusOr<std::string>
 Base64::Decode(const std::string &input)
 {
     CallOnce(once_flag, [&] {
-        std::fill(kInvBase64Chars, kInvBase64Chars + sizeof(kInvBase64Chars), -1);
-        for (int i = 0; i < sizeof(kBase64Chars); i++) { kInvBase64Chars[kBase64Chars[i]] = i; }
+        std::fill(kInvBase64Chars.begin(), kInvBase64Chars.end(), -1);
+        for (int i = 0; kBase64Chars[i]; i++) { kInvBase64Chars[kBase64Chars[i]] = i; }
     });
 
     std::stringstream ss;
@@ -86,5 +94,17 @@ Base64::Decode(const std::string &input)
     }
 
     return make_status_or<std::string>(ss.str());
+}
+
+StatusOr<std::string>
+Base64::Decode(const std::vector<unsigned char> &base64)
+{
+    return Decode(std::string(base64.begin(), base64.end()));
+}
+
+StatusOr<std::string>
+Base64::Decode(const uint8_t *const ptr, size_t len)
+{
+    return Decode(std::string((char *) ptr, len));
 }
 }// namespace sled

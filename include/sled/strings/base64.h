@@ -16,10 +16,13 @@ namespace sled {
 
 class Base64 {
 public:
-    static std::string Encode(void *ptr, size_t len);
+    static std::string Encode(const uint8_t *const ptr, size_t len);
     static std::string Encode(const std::vector<unsigned char> &data);
     static std::string Encode(const std::string &data);
+    static std::string Encode(const char *const data);
     static StatusOr<std::string> Decode(const std::string &base64);
+    static StatusOr<std::string> Decode(const std::vector<unsigned char> &base64);
+    static StatusOr<std::string> Decode(const uint8_t *const ptr, size_t len);
 };
 
 }// namespace sled
