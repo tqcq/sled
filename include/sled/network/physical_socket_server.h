@@ -59,9 +59,9 @@ private:
     bool WaitSelect(int64_t cusWait, bool process_io);
 
     uint64_t next_dispatcher_key_ = 0;
-    std::unordered_map<uint64_t, Dispatcher *> dispatcher_by_key_;
-    std::unordered_map<Dispatcher *, uint64_t> key_by_dispatcher_;
-    std::vector<uint64_t> current_dispatcher_keys_;
+    std::unordered_map<uint64_t, Dispatcher *> dispatcher_by_key_ GUARDED_BY(lock_);
+    std::unordered_map<Dispatcher *, uint64_t> key_by_dispatcher_ GUARDED_BY(lock_);
+    std::vector<uint64_t> current_dispatcher_keys_ GUARDED_BY(lock_);
     Signaler *signal_wakeup_;
     // Mutex lock_;
     RecursiveMutex lock_;
@@ -91,10 +91,7 @@ public:
     int Send(const void *pv, size_t cb) override;
     int SendTo(const void *pv, size_t cb, const SocketAddress &addr) override;
     int Recv(void *pv, size_t cb, int64_t *timestamp) override;
-    int RecvFrom(void *pv,
-                 size_t cb,
-                 SocketAddress *paddr,
-                 int64_t *timestamp) override;
+    int RecvFrom(void *pv, size_t cb, SocketAddress *paddr, int64_t *timestamp) override;
     int Listen(int backlog) override;
     Socket *Accept(SocketAddress *paddr) override;
 
@@ -108,16 +105,9 @@ protected:
     int DoConnect(const SocketAddress &addr);
     virtual SOCKET DoAccept(SOCKET socket, sockaddr *addr, socklen_t *addrlen);
     virtual int DoSend(SOCKET socket, const char *buf, int len, int flags);
-    virtual int DoSendTo(SOCKET socket,
-                         const char *buf,
-                         int len,
-                         int flags,
-                         const struct sockaddr *dest_addr,
-                         socklen_t addrlen);
-    int DoReadFromSocket(void *buffer,
-                         size_t length,
-                         SocketAddress *out_addr,
-                         int64_t *timestamp);
+    virtual int
+    DoSendTo(SOCKET socket, const char *buf, int len, int flags, const struct sockaddr *dest_addr, socklen_t addrlen);
+    int DoReadFromSocket(void *buffer, size_t length, SocketAddress *out_addr, int64_t *timestamp);
 
     void OnResolveResult(AsyncResolverInterface *resolver);
     void UpdateLastError();
@@ -134,7 +124,7 @@ protected:
     bool udp_;
     int family_ = 0;
     mutable Mutex mutex_;
-    int error_;
+    int error_ GUARDED_BY(mutex_);
     ConnState state_;
     AsyncResolver *resolver_;
 

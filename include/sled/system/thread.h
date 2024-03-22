@@ -59,25 +59,6 @@ public:
     Thread(const Thread &) = delete;
     Thread &operator=(const Thread &) = delete;
 
-    void BlockingCall(std::function<void()> functor,
-                      const Location &location = Location::Current())
-    {
-        BlockingCallImpl(functor, location);
-    }
-
-    template<typename Functor,
-             typename ReturnT = typename std::result_of<Functor()>::type,
-             typename = typename std::enable_if<!std::is_void<ReturnT>::value,
-                                                ReturnT>::type>
-    ReturnT BlockingCall(Functor &&functor,
-                         const Location &location = Location::Current())
-    {
-        ReturnT result;
-        BlockingCall([&] { result = std::forward<Functor>(functor)(); },
-                     location);
-        return result;
-    }
-
     static std::unique_ptr<Thread> CreateWithSocketServer();
     static std::unique_ptr<Thread> Create();
     static Thread *Current();
@@ -122,8 +103,7 @@ protected:
         bool operator<(const DelayedMessage &dmsg) const
         {
             return (dmsg.run_time_ms < run_time_ms)
-                || ((dmsg.run_time_ms == run_time_ms)
-                    && (dmsg.message_number < message_number));
+                || ((dmsg.run_time_ms == run_time_ms) && (dmsg.message_number < message_number));
         }
 
         int64_t delay_ms;
@@ -132,15 +112,12 @@ protected:
         mutable std::function<void()> functor;
     };
 
-    void PostTaskImpl(std::function<void()> &&task,
-                      const PostTaskTraits &traits,
-                      const Location &location) override;
+    void PostTaskImpl(std::function<void()> &&task, const PostTaskTraits &traits, const Location &location) override;
     void PostDelayedTaskImpl(std::function<void()> &&task,
                              TimeDelta delay,
                              const PostDelayedTaskTraits &traits,
                              const Location &location) override;
-    virtual void BlockingCallImpl(std::function<void()> functor,
-                                  const Location &location);
+    void BlockingCallImpl(std::function<void()> &&functor, const Location &location) override;
 
     void DoInit();
     void DoDestroy();
@@ -150,8 +127,7 @@ private:
     std::function<void()> Get(int cmsWait);
     void Dispatch(std::function<void()> &&task);
     static void *PreRun(void *pv);
-    bool WrapCurrentWithThreadManager(ThreadManager *thread_manager,
-                                      bool need_synchronize_access);
+    bool WrapCurrentWithThreadManager(ThreadManager *thread_manager, bool need_synchronize_access);
     bool IsRunning();
 
     // for ThreadManager
@@ -171,8 +147,7 @@ private:
     std::unique_ptr<std::thread> thread_;
     bool owned_;
 
-    std::unique_ptr<TaskQueueBase::CurrentTaskQueueSetter>
-        task_queue_registration_;
+    std::unique_ptr<TaskQueueBase::CurrentTaskQueueSetter> task_queue_registration_;
     friend class ThreadManager;
 };
 
