@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_EXTENSIONS OFF)
 
 option(SLED_BUILD_BENCHMARK "Build benchmark" OFF)
 option(SLED_BUILD_TESTS "Build tests" OFF)
+option(SLED_BUILD_FUZZ "Build fuzzer test" OFF)
 option(SLED_LOCATION_PATH "" "sled/src/system/location.cc")
 
 set(BUILD_STATIC ON)
@@ -119,7 +120,7 @@ if(SLED_BUILD_TESTS)
     )
     FetchContent_MakeAvailable(googletest)
     add_executable(sled_tests 
-		src/exec/just_test.cc
+		# src/exec/just_test.cc
 		src/any_test.cc
         src/filesystem/path_test.cc
 		src/futures/future_test.cc
@@ -135,3 +136,15 @@ if(SLED_BUILD_TESTS)
     target_link_libraries(sled_tests PRIVATE sled GTest::gtest GTest::gtest_main)
     add_test(NAME sled_tests COMMAND sled_tests)
 endif(SLED_BUILD_TESTS)
+
+if (SLED_BUILD_FUZZ)
+
+macro(add_fuzz_test name sources)
+  add_executable(${name} ${sources})
+  target_link_libraries(${name} PRIVATE sled)
+  target_compile_options(${name} PRIVATE -g -O1 -fsanitize=fuzzer,address -fsanitize-coverage=trace-cmp)
+  target_link_options(${name} PRIVATE -fsanitize=fuzzer,address -fsanitize-coverage=trace-cmp)
+endmacro()
+
+add_fuzz_test(base64_fuzz src/strings/base64_fuzz.cc)
+endif (SLED_BUILD_FUZZ)

@@ -10,13 +10,16 @@
 
 #include "sled/status_or.h"
 #include <string>
+#include <vector>
 
 namespace sled {
 
 class Base64 {
 public:
-    static std::string Encode(const std::string &input);
-    static StatusOr<std::string> Decode(const std::string &input);
+    static std::string Encode(void *ptr, size_t len);
+    static std::string Encode(const std::vector<unsigned char> &data);
+    static std::string Encode(const std::string &data);
+    static StatusOr<std::string> Decode(const std::string &base64);
 };
 
 }// namespace sled

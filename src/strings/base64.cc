@@ -1,20 +1,12 @@
 #include "sled/strings/base64.h"
+#include "sled/synchronization/call_once.h"
 #include <fmt/format.h>
 #include <sstream>
 
 namespace sled {
 const char kBase64Chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-const int kInvBase64Chars[] = {
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61,
-    -1, -1, -1, -1, -1, -1, -1, 0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-    22, 23, 24, 25, -1, -1, -1, -1, -1, -1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44,
-    45, 46, 47, 48, 49, 50, 51, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-    -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-};
+static int kInvBase64Chars[(1 << sizeof(char))];
+static OnceFlag once_flag;
 
 inline bool
 IsBase64(char c)
@@ -23,13 +15,25 @@ IsBase64(char c)
 }
 
 std::string
+Base64::Encode(void *ptr, size_t len)
+{
+    auto data = reinterpret_cast<unsigned char *>(ptr);
+    return Encode(std::vector<unsigned char>(data, data + len));
+}
+
+std::string
 Base64::Encode(const std::string &input)
 {
+    return Encode((void *) input.data(), input.length());
+}
+
+std::string
+Base64::Encode(const std::vector<unsigned char> &data)
+{
     std::stringstream ss;
-    const unsigned char *data = reinterpret_cast<const unsigned char *>(input.c_str());
     int value = 0;
     int value_bits = 0;
-    for (unsigned char c : input) {
+    for (unsigned char c : data) {
         value = (value << 8) + c;
         value_bits += 8;
         while (value_bits >= 6) {
@@ -52,6 +56,11 @@ Base64::Encode(const std::string &input)
 StatusOr<std::string>
 Base64::Decode(const std::string &input)
 {
+    CallOnce(once_flag, [&] {
+        std::fill(kInvBase64Chars, kInvBase64Chars + sizeof(kInvBase64Chars), -1);
+        for (int i = 0; i < sizeof(kBase64Chars); i++) { kInvBase64Chars[kBase64Chars[i]] = i; }
+    });
+
     std::stringstream ss;
     int value = 0;
     int value_bits = 0;

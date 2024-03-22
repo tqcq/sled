@@ -20,11 +20,11 @@ public:
     // using ParamType = std::pair<std::string, std::string>;
     using ParamMap = std::map<std::string, std::string>;
     // http://xxx.com/index.html?field=value
-    static URI ParseAbsoluteURI(const std::string &uri);
+    static URI ParseAbsoluteURI(const std::string &uri_str);
     // http://xxx.com/index.html?field=value#download
-    static URI ParseURI(const std::string &uri);
+    static URI ParseURI(const std::string &uri_str);
     // http://xxx.com/index.html
-    static URI ParseURIReference(const std::string &uri);
+    static URI ParseURIReference(const std::string &uri_str);
 
     // setter getter
     __SLED_URI_GETTER_AND_SETTER(std::string, scheme)
