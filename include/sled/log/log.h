@@ -7,6 +7,7 @@
 #ifndef SLED_LOG_LOG_H
 #define SLED_LOG_LOG_H
 #pragma once
+
 #include "sled/system/location.h"
 #include <assert.h>
 #include <fmt/chrono.h>
@@ -18,6 +19,13 @@
 #include <fmt/ranges.h>
 #include <fmt/std.h>
 #include <fmt/xchar.h>
+
+template<typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
+auto
+format_as(const T &value) -> int
+{
+    return static_cast<int>(value);
+}
 
 namespace sled {
 enum class LogLevel {
