@@ -12,17 +12,8 @@
 #include <assert.h>
 // clang-format off
 #include <fmt/ostream.h>// support fmt base ostream
+#include <fmt/time.h>
 
-// clang-format on
-// #include <fmt/chrono.h>
-// #include <fmt/color.h>
-// #include <fmt/compile.h>
-// #include <fmt/format.h>
-// #include <fmt/printf.h>
-// #include <fmt/ranges.h>
-// #include <fmt/std.h>
-// #include <fmt/xchar.h>
-// #include <sstream>
 
 namespace {
 template<typename S, typename T>

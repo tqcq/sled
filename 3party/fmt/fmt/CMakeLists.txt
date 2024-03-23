@@ -7,7 +7,7 @@ if (HAVE_OPEN)
   set(FMT_SOURCES ${FMT_SOURCES} posix.cc)
 endif ()
 
-add_library(fmt ${FMT_SOURCES} ${FMT_HEADERS} ../README.rst ../ChangeLog.rst)
+add_library(fmt ${FMT_SOURCES} ${FMT_HEADERS}) #../README.rst ../ChangeLog.rst)
 add_library(fmt::fmt ALIAS fmt)
 
 # Starting with cmake 3.1 the CXX_STANDARD property can be used instead.
