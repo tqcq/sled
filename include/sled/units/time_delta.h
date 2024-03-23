@@ -9,6 +9,7 @@
 #define SLED_UNITS_TIME_DELTA_H
 
 #include "sled/units/unit_base.h"
+#include <chrono>
 #include <string>
 
 namespace sled {
@@ -43,10 +44,10 @@ public:
         return FromValue(value);
     }
 
-    template<typename T, typename V>
-    inline TimeDelta(std::chrono::duration<T, V> duration)
+    template<typename Clock, typename Duration>
+    inline TimeDelta(const std::chrono::duration<Clock, Duration> &duration)
     {
-        *this = Micros(std::chrono::duration_cast<std::chrono::microseconds>(duration));
+        *this = FromValue(std::chrono::duration_cast<std::chrono::microseconds>(duration).count());
     }
 
     TimeDelta() = delete;

@@ -238,6 +238,7 @@ private:
 // -----------------------------------------------------------------------------
 
 namespace promise_hpp {
+
 template<typename T>
 class promise final {
 public:
@@ -261,6 +262,8 @@ public:
 
     friend bool operator!=(const promise &l, const promise &r) noexcept { return l.state_ != r.state_; }
 
+    promise GetFuture() const { return promise(*this); }
+
     //
     // get
     //
@@ -282,6 +285,11 @@ public:
     //
 
     void Wait() const noexcept { state_->Wait(); }
+
+    inline promise_wait_status WaitFor(const sled::TimeDelta &timeout_duration) const
+    {
+        return state_->wait_for(std::chrono::microseconds(timeout_duration.us()));
+    }
 
     template<typename Rep, typename Period>
     promise_wait_status WaitFor(const std::chrono::duration<Rep, Period> &timeout_duration) const
@@ -628,6 +636,9 @@ private:
         std::vector<handler> handlers_;
     };
 };
+
+template<typename T>
+using future = promise<T>;
 }// namespace promise_hpp
 
 // -----------------------------------------------------------------------------
@@ -660,16 +671,18 @@ public:
 
     friend bool operator!=(const promise &l, const promise &r) noexcept { return l.state_ != r.state_; }
 
+    promise GetFuture() const { return promise(*this); }
+
     //
     // get
     //
 
-    void get() const { state_->get(); }
+    void Get() const { state_->get(); }
 
-    void get_or_default() const
+    void GetOr() const
     {
         try {
-            return get();
+            return Get();
         } catch (...) {
             // nothing
         }
@@ -679,16 +692,21 @@ public:
     // wait
     //
 
-    void wait() const noexcept { state_->wait(); }
+    void Wait() const noexcept { state_->wait(); }
+
+    inline promise_wait_status WaitFor(const sled::TimeDelta &timeout_duration) const
+    {
+        return state_->wait_for(timeout_duration);
+    }
 
     template<typename Rep, typename Period>
-    promise_wait_status wait_for(const std::chrono::duration<Rep, Period> &timeout_duration) const
+    promise_wait_status WaitFor(const std::chrono::duration<Rep, Period> &timeout_duration) const
     {
         return state_->wait_for(timeout_duration);
     }
 
     template<typename Clock, typename Duration>
-    promise_wait_status wait_until(const std::chrono::time_point<Clock, Duration> &timeout_time) const
+    promise_wait_status WaitUntil(const std::chrono::time_point<Clock, Duration> &timeout_time) const
     {
         return state_->wait_until(timeout_time);
     }
@@ -697,12 +715,12 @@ public:
     // resolve/reject
     //
 
-    bool resolve() { return state_->resolve(); }
+    bool Resolve() { return state_->resolve(); }
 
-    bool reject(std::exception_ptr e) noexcept { return state_->reject(e); }
+    bool Reject(std::exception_ptr e) noexcept { return state_->reject(e); }
 
     template<typename E>
-    bool reject(E &&e)
+    bool Reject(E &&e)
     {
         return state_->reject(std::make_exception_ptr(std::forward<E>(e)));
     }
@@ -712,11 +730,11 @@ public:
     //
 
     template<typename ResolveF, typename ResolveR = eggs::invoke_result_t<ResolveF>>
-    std::enable_if_t<is_promise_v<ResolveR>, promise<typename ResolveR::value_type>> then(ResolveF &&on_resolve)
+    std::enable_if_t<is_promise_v<ResolveR>, promise<typename ResolveR::value_type>> Then(ResolveF &&on_resolve)
     {
         promise<typename ResolveR::value_type> next;
 
-        then([n = next, f = std::forward<ResolveF>(on_resolve)]() mutable {
+        Then([n = next, f = std::forward<ResolveF>(on_resolve)]() mutable {
             auto np = eggs::invoke(std::forward<decltype(f)>(f));
             std::move(np)
                 .then([n](auto &&...nvs) mutable { n.resolve(std::forward<decltype(nvs)>(nvs)...); })
@@ -727,36 +745,36 @@ public:
     }
 
     template<typename ResolveF>
-    auto then_all(ResolveF &&on_resolve)
+    auto ThenAll(ResolveF &&on_resolve)
     {
-        return then([f = std::forward<ResolveF>(on_resolve)]() mutable {
+        return Then([f = std::forward<ResolveF>(on_resolve)]() mutable {
             auto r = eggs::invoke(std::forward<decltype(f)>(f));
             return make_all_promise(std::move(r));
         });
     }
 
     template<typename ResolveF>
-    auto then_any(ResolveF &&on_resolve)
+    auto ThenAny(ResolveF &&on_resolve)
     {
-        return then([f = std::forward<ResolveF>(on_resolve)]() mutable {
+        return Then([f = std::forward<ResolveF>(on_resolve)]() mutable {
             auto r = eggs::invoke(std::forward<decltype(f)>(f));
             return make_any_promise(std::move(r));
         });
     }
 
     template<typename ResolveF>
-    auto then_race(ResolveF &&on_resolve)
+    auto ThenRace(ResolveF &&on_resolve)
     {
-        return then([f = std::forward<ResolveF>(on_resolve)]() mutable {
+        return Then([f = std::forward<ResolveF>(on_resolve)]() mutable {
             auto r = eggs::invoke(std::forward<decltype(f)>(f));
             return make_race_promise(std::move(r));
         });
     }
 
     template<typename ResolveF>
-    auto then_tuple(ResolveF &&on_resolve)
+    auto ThenTuple(ResolveF &&on_resolve)
     {
-        return then([f = std::forward<ResolveF>(on_resolve)]() mutable {
+        return Then([f = std::forward<ResolveF>(on_resolve)]() mutable {
             auto r = eggs::invoke(std::forward<decltype(f)>(f));
             return make_tuple_promise(std::move(r));
         });
@@ -767,7 +785,7 @@ public:
     //
 
     template<typename ResolveF, typename ResolveR = eggs::invoke_result_t<ResolveF>>
-    std::enable_if_t<!is_promise_v<ResolveR>, promise<ResolveR>> then(ResolveF &&on_resolve)
+    std::enable_if_t<!is_promise_v<ResolveR>, promise<ResolveR>> Then(ResolveF &&on_resolve)
     {
         promise<ResolveR> next;
 
@@ -779,7 +797,7 @@ public:
     }
 
     template<typename ResolveF, typename RejectF, typename ResolveR = eggs::invoke_result_t<ResolveF>>
-    std::enable_if_t<!is_promise_v<ResolveR>, promise<ResolveR>> then(ResolveF &&on_resolve, RejectF &&on_reject)
+    std::enable_if_t<!is_promise_v<ResolveR>, promise<ResolveR>> Then(ResolveF &&on_resolve, RejectF &&on_reject)
     {
         promise<ResolveR> next;
 
@@ -793,9 +811,9 @@ public:
     //
 
     template<typename RejectF>
-    promise<void> except(RejectF &&on_reject)
+    promise<void> Except(RejectF &&on_reject)
     {
-        return then([]() {}, std::forward<RejectF>(on_reject));
+        return Then([]() {}, std::forward<RejectF>(on_reject));
     }
 
     //
@@ -803,9 +821,9 @@ public:
     //
 
     template<typename FinallyF>
-    promise<void> finally(FinallyF &&on_finally)
+    promise<void> Finally(FinallyF &&on_finally)
     {
-        return then([f = on_finally]() { eggs::invoke(std::move(f)); },
+        return Then([f = on_finally]() { eggs::invoke(std::move(f)); },
                     [f = on_finally](std::exception_ptr e) {
                         eggs::invoke(std::move(f));
                         std::rethrow_exception(e);
@@ -839,6 +857,16 @@ private:
             cond_var_.Wait(lock, [this]() { return status_ != status::pending; });
         }
 
+        promise_wait_status wait_for(const sled::TimeDelta &timeout_duration) const
+        {
+            sled::MutexLock lock(&mutex_);
+            // std::unique_lock lock(mutex_);
+            // return cond_var_.wait_for(lock, timeout_duration, [this]() { return status_ != status::pending; })
+            return cond_var_.WaitFor(lock, timeout_duration, [this]() { return status_ != status::pending; })
+                ? promise_wait_status::no_timeout
+                : promise_wait_status::timeout;
+        }
+
         template<typename Rep, typename Period>
         promise_wait_status wait_for(const std::chrono::duration<Rep, Period> &timeout_duration) const
         {
@@ -856,7 +884,8 @@ private:
             sled::MutexLock lock(&mutex_);
             // std::unique_lock lock(mutex_);
             // return cond_var_.wait_until(lock, timeout_time, [this]() { return status_ != status::pending; })
-            return cond_var_.WaitFor(lock, timeout_time, [this]() { return status_ != status::pending; })
+            auto duration = timeout_time - std::chrono::system_clock::now();
+            return cond_var_.WaitFor(lock, duration, [this]() { return status_ != status::pending; })
                 ? promise_wait_status::no_timeout
                 : promise_wait_status::timeout;
         }
@@ -1048,7 +1077,7 @@ inline promise<void>
 make_resolved_promise()
 {
     promise<void> result;
-    result.resolve();
+    result.Resolve();
     return result;
 }
 
@@ -1070,7 +1099,7 @@ promise<void>
 make_rejected_promise(E &&e)
 {
     promise<void> result;
-    result.reject(std::forward<E>(e));
+    result.Reject(std::forward<E>(e));
     return result;
 }
 
@@ -1315,6 +1344,9 @@ template<typename T>
 using Promise = promise_hpp::promise<T>;
 
 template<typename T>
+using Future = promise_hpp::future<T>;
+
+template<typename T>
 inline auto
 MakePromise() -> Promise<T>
 {
@@ -1332,7 +1364,7 @@ inline auto
 MakeResolvedPromise() -> Promise<void>
 {
     Promise<void> result;
-    result.resolve();
+    result.Resolve();
     return result;
 }
 
@@ -1348,7 +1380,7 @@ inline Promise<void>
 make_rejected_promise(E &&e)
 {
     Promise<void> result;
-    result.reject(std::forward<E>(e));
+    result.Reject(std::forward<E>(e));
     return result;
 }
 

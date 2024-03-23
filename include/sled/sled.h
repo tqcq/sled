@@ -10,6 +10,9 @@
 #include "sled/filesystem/path.h"
 #include "sled/filesystem/temporary_file.h"
 
+// futures
+#include "sled/futures/promise.h"
+
 // lang
 #include "lang/attributes.h"
 
