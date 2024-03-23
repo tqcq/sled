@@ -4,10 +4,9 @@
  * @license  : MIT
  **/
 
-#pragma once
-
 #ifndef SLED_NETWORK_IP_ADDRESS_H
 #define SLED_NETWORK_IP_ADDRESS_H
+#pragma once
 
 #include "sled/byte_order.h"
 #include <arpa/inet.h>
@@ -29,10 +28,7 @@ public:
         u_.ip4 = ip4;
     }
 
-    explicit IPAddress(const in6_addr &ip6) : family_(AF_INET6)
-    {
-        u_.ip6 = ip6;
-    }
+    explicit IPAddress(const in6_addr &ip6) : family_(AF_INET6) { u_.ip6 = ip6; }
 
     explicit IPAddress(uint32_t ip_in_host_byte_order) : family_(AF_INET)
     {
@@ -40,10 +36,7 @@ public:
         u_.ip4.s_addr = HostToNetwork32(ip_in_host_byte_order);
     }
 
-    IPAddress(const IPAddress &other) : family_(other.family_)
-    {
-        ::memcpy(&u_, &other.u_, sizeof(u_));
-    }
+    IPAddress(const IPAddress &other) : family_(other.family_) { ::memcpy(&u_, &other.u_, sizeof(u_)); }
 
     virtual ~IPAddress() = default;
 

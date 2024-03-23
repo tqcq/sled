@@ -4,10 +4,9 @@
  * @license  : MIT
  **/
 
-#pragma once 
-
 #ifndef SLED_NETWORK_SOCKET_FACTORY_H
 #define SLED_NETWORK_SOCKET_FACTORY_H
+#pragma once
 
 #include "sled/network/socket.h"
 

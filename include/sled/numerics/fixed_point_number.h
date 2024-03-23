@@ -22,9 +22,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#pragma once
 #ifndef FIXED_POINT_H_
 #define FIXED_POINT_H_
+#pragma once
 #include <Eigen/Eigen>
 #include <cmath>
 #include <cstdint>
@@ -186,8 +186,7 @@ template<int shift, typename T>
 constexpr T
 signed_rsh(T x)
 {
-    return shifter<shift, (shift >= 0), (abs_helper(shift) >= sizeof(T) * 8),
-                   T>::op(x);
+    return shifter<shift, (shift >= 0), (abs_helper(shift) >= sizeof(T) * 8), T>::op(x);
 }
 
 /*Signed right shift, run time version.*/
@@ -195,9 +194,7 @@ template<typename T>
 T
 signed_rsh(T x, int shift)
 {
-    return std::abs(shift) < sizeof(T) * 8
-        ? (shift < 0 ? x << -shift : x >> shift)
-        : 0;
+    return std::abs(shift) < sizeof(T) * 8 ? (shift < 0 ? x << -shift : x >> shift) : 0;
 }
 
 /*Signed left shift, compile-time version*/
@@ -213,9 +210,7 @@ template<typename T>
 T
 signed_lsh(T x, int shift)
 {
-    return std::abs(shift) < sizeof(T) * 8
-        ? (shift < 0 ? x >> -shift : x << shift)
-        : 0;
+    return std::abs(shift) < sizeof(T) * 8 ? (shift < 0 ? x >> -shift : x << shift) : 0;
 }
 
 /*Multiplies and simultaneously right-shifts the argument values,
@@ -381,8 +376,7 @@ template<unsigned fb>
 fp::q<f, I>
 fp::q<f, I>::operator/(q<fb, I> b) const
 {
-    static const I msb = (I) 1
-        << (sizeof(I) * 8 - 1);//Most significant bit for the type
+    static const I msb = (I) 1 << (sizeof(I) * 8 - 1);//Most significant bit for the type
     //Make b positive so that leading zeroes can be properly computed
     I abs_b = b.i < 0 ? -b.i : b.i;
     unsigned lz = fp_internal::clz(abs_b);//Amount of leading zeroes
@@ -398,9 +392,7 @@ fp::q<f, I>::operator/(q<fb, I> b) const
     }
     q<f, I> t;
     t.i = (I) fp_internal::mul_rsh(//adjust the radix point of (this*r)
-        r.i,
-        (typename std::make_unsigned<I>::type)(this->i < 0 ? -this->i
-                                                           : this->i),
+        r.i, (typename std::make_unsigned<I>::type)(this->i < 0 ? -this->i : this->i),
         sizeof(i) * 16 - fb - lz - (d == msb) - 1);
     t.i = (b.i < 0) ^ (this->i < 0) ? -t.i : t.i;//set correct sign
     return t;
@@ -552,10 +544,8 @@ fp::q<f, I>::operator>=(q<fb, I> b) const
     I mb = fp_internal::signed_rsh<fb>(b.i);
     return (ma > mb)
         || ((ma == mb)
-            && ((typename std::make_unsigned<I>::type)
-                    fp_internal::signed_lsh<bits - f>(i)
-                >= (typename std::make_unsigned<I>::type)
-                    fp_internal::signed_lsh<bits - fb>(b.i)));
+            && ((typename std::make_unsigned<I>::type) fp_internal::signed_lsh<bits - f>(i)
+                >= (typename std::make_unsigned<I>::type) fp_internal::signed_lsh<bits - fb>(b.i)));
 }
 
 template<unsigned f, typename I>
@@ -568,10 +558,8 @@ fp::q<f, I>::operator>(q<fb, I> b) const
     I mb = fp_internal::signed_rsh<fb>(b.i);
     return (ma > mb)
         || ((ma == mb)
-            && ((typename std::make_unsigned<I>::type)
-                    fp_internal::signed_lsh<bits - f>(i)
-                > (typename std::make_unsigned<I>::type)
-                    fp_internal::signed_lsh<bits - fb>(b.i)));
+            && ((typename std::make_unsigned<I>::type) fp_internal::signed_lsh<bits - f>(i)
+                > (typename std::make_unsigned<I>::type) fp_internal::signed_lsh<bits - fb>(b.i)));
 }
 
 template<unsigned f, typename I>
@@ -584,10 +572,8 @@ fp::q<f, I>::operator<=(q<fb, I> b) const
     I mb = fp_internal::signed_rsh<fb>(b.i);
     return (ma < mb)
         || ((ma == mb)
-            && ((typename std::make_unsigned<I>::type)
-                    fp_internal::signed_lsh<bits - f>(i)
-                <= (typename std::make_unsigned<I>::type)
-                    fp_internal::signed_lsh<bits - fb>(b.i)));
+            && ((typename std::make_unsigned<I>::type) fp_internal::signed_lsh<bits - f>(i)
+                <= (typename std::make_unsigned<I>::type) fp_internal::signed_lsh<bits - fb>(b.i)));
 }
 
 template<unsigned f, typename I>
@@ -600,10 +586,8 @@ fp::q<f, I>::operator<(q<fb, I> b) const
     I mb = fp_internal::signed_rsh<fb>(b.i);
     return (ma < mb)
         || ((ma == mb)
-            && ((typename std::make_unsigned<I>::type)
-                    fp_internal::signed_lsh<bits - f>(i)
-                < (typename std::make_unsigned<I>::type)
-                    fp_internal::signed_lsh<bits - fb>(b.i)));
+            && ((typename std::make_unsigned<I>::type) fp_internal::signed_lsh<bits - f>(i)
+                < (typename std::make_unsigned<I>::type) fp_internal::signed_lsh<bits - fb>(b.i)));
 }
 
 template<unsigned f, typename I>
@@ -611,8 +595,7 @@ template<unsigned fb>
 bool
 fp::q<f, I>::operator==(q<fb, I> b) const
 {
-    return fp_internal::signed_rsh<f - fb>(i) == b.i
-        && fp_internal::signed_rsh<fb - f>(b.i) == i;
+    return fp_internal::signed_rsh<f - fb>(i) == b.i && fp_internal::signed_rsh<fb - f>(b.i) == i;
 }
 
 template<unsigned f, typename I>
@@ -620,8 +603,7 @@ template<unsigned fb>
 bool
 fp::q<f, I>::operator!=(q<fb, I> b) const
 {
-    return fp_internal::signed_rsh<f - fb>(i) != b.i
-        || fp_internal::signed_rsh<fb - f>(b.i) != i;
+    return fp_internal::signed_rsh<f - fb>(i) != b.i || fp_internal::signed_rsh<fb - f>(b.i) != i;
 }
 
 template<unsigned f, typename I>

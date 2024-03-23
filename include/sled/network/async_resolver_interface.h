@@ -4,9 +4,9 @@
  * @license  : MIT
  **/
 
-#pragma once
 #ifndef SLED_NETWORK_ASYNC_RESOLVER_INTERFACE_H
 #define SLED_NETWORK_ASYNC_RESOLVER_INTERFACE_H
+#pragma once
 
 #include "sled/network/socket_address.h"
 #include "sled/sigslot.h"

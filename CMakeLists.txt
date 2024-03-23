@@ -56,7 +56,7 @@ target_sources(
           src/strings/utils.cc
           src/synchronization/event.cc
           src/synchronization/mutex.cc
-          src/synchronization/sequence_checker_internal.cc
+          src/synchronization/sequence_checker.cc
           src/synchronization/thread_local.cc
           src/system/location.cc
 		  src/system/pid.cc
@@ -126,6 +126,7 @@ if(SLED_BUILD_TESTS)
 		src/futures/future_test.cc
 		# src/profiling/profiling_test.cc
         src/strings/base64_test.cc
+        src/synchronization/sequence_checker_test.cc
         src/cleanup_test.cc
         src/status_or_test.cc
         src/system/fiber/fiber_test.cc

@@ -85,10 +85,7 @@ private:
     bool &flag_to_clear_;
 };
 
-PhysicalSocketServer::PhysicalSocketServer() : fWait_(false)
-{
-    signal_wakeup_ = new Signaler(this, fWait_);
-}
+PhysicalSocketServer::PhysicalSocketServer() : fWait_(false) { signal_wakeup_ = new Signaler(this, fWait_); }
 
 PhysicalSocketServer::~PhysicalSocketServer() { delete signal_wakeup_; }
 
@@ -158,9 +155,7 @@ PhysicalSocketServer::Update(Dispatcher *pdispatcher)
 int
 PhysicalSocketServer::ToCusWait(TimeDelta max_wait_duration)
 {
-    return max_wait_duration == Event::kForever
-        ? kForeverMs
-        : max_wait_duration.RoundUpTo(TimeDelta::Micros(1)).us();
+    return max_wait_duration == Event::kForever ? kForeverMs : max_wait_duration.RoundUpTo(TimeDelta::Micros(1)).us();
 }
 
 bool
@@ -174,17 +169,12 @@ PhysicalSocketServer::Wait(TimeDelta max_wait_duration, bool process_io)
 }
 
 static void
-ProcessEvents(Dispatcher *pdispatcher,
-              bool readable,
-              bool writable,
-              bool error_event,
-              bool check_error)
+ProcessEvents(Dispatcher *pdispatcher, bool readable, bool writable, bool error_event, bool check_error)
 {
     int errcode = 0;
     if (check_error) {
         socklen_t len = sizeof(errcode);
-        int res = ::getsockopt(pdispatcher->GetDescriptor(), SOL_SOCKET,
-                               SO_ERROR, &errcode, &len);
+        int res = ::getsockopt(pdispatcher->GetDescriptor(), SOL_SOCKET, SO_ERROR, &errcode, &len);
         if (res < 0) {
             if (error_event || errno != ENOTSOCK) { errcode = EBADF; }
         }
@@ -243,9 +233,7 @@ PhysicalSocketServer::WaitSelect(int64_t cusWait, bool process_io)
             for (auto const &kv : dispatcher_by_key_) {
                 uint64_t key = kv.first;
                 Dispatcher *pdispatcher = kv.second;
-                if (!process_io && (pdispatcher != signal_wakeup_)) {
-                    continue;
-                }
+                if (!process_io && (pdispatcher != signal_wakeup_)) { continue; }
                 current_dispatcher_keys_.push_back(key);
                 int fd = pdispatcher->GetDescriptor();
                 if (fd > fdmax) { fdmax = fd; }
@@ -278,8 +266,7 @@ PhysicalSocketServer::WaitSelect(int64_t cusWait, bool process_io)
                 bool writable = FD_ISSET(fd, &fdsWrite);
                 if (writable) { FD_CLR(fd, &fdsWrite); }
 
-                ProcessEvents(pdispatcher, readable, writable, false,
-                              readable || writable);
+                ProcessEvents(pdispatcher, readable, writable, false, readable || writable);
             }
         }
 
@@ -309,8 +296,7 @@ PhysicalSocket::PhysicalSocket(PhysicalSocketServer *ss, SOCKET s)
         SetEnabledEvents(DE_READ | DE_WRITE);
         int type = SOCK_STREAM;
         socklen_t len = sizeof(type);
-        const int res =
-            getsockopt(s_, SOL_SOCKET, SO_TYPE, (void *) &type, &len);
+        const int res = getsockopt(s_, SOL_SOCKET, SO_TYPE, (void *) &type, &len);
         udp_ = (SOCK_DGRAM == type);
     }
 }
@@ -399,8 +385,7 @@ void
 
 PhysicalSocket::SetError(int error)
 {
-    // MutexLock lock(&mutex_);
-    MutexGuard lock(&mutex_);
+    MutexLock lock(&mutex_);
     error_ = error;
 }
 
@@ -431,31 +416,24 @@ PhysicalSocket::SetOption(Option opt, int value)
 int
 PhysicalSocket::Send(const void *pv, size_t cb)
 {
-    int sent = DoSend(s_, reinterpret_cast<const char *>(pv),
-                      static_cast<int>(cb), MSG_NOSIGNAL);
+    int sent = DoSend(s_, reinterpret_cast<const char *>(pv), static_cast<int>(cb), MSG_NOSIGNAL);
     UpdateLastError();
-    if ((sent > 0 && sent < static_cast<int>(cb))
-        || (sent < 0 && IsBlockingError(GetError()))) {
+    if ((sent > 0 && sent < static_cast<int>(cb)) || (sent < 0 && IsBlockingError(GetError()))) {
         EnableEvents(DE_WRITE);
     }
     return sent;
 }
 
 int
-PhysicalSocket::SendTo(const void *buffer,
-                       size_t length,
-                       const SocketAddress &addr)
+PhysicalSocket::SendTo(const void *buffer, size_t length, const SocketAddress &addr)
 {
     sockaddr_storage saddr;
     size_t len = addr.ToSockAddrStorage(&saddr);
 
-    int sent =
-        DoSendTo(s_, static_cast<const char *>(buffer),
-                 static_cast<int>(length), MSG_NOSIGNAL,
-                 reinterpret_cast<sockaddr *>(&saddr), static_cast<int>(len));
+    int sent = DoSendTo(s_, static_cast<const char *>(buffer), static_cast<int>(length), MSG_NOSIGNAL,
+                        reinterpret_cast<sockaddr *>(&saddr), static_cast<int>(len));
     UpdateLastError();
-    if ((sent > 0 && sent < static_cast<int>(length))
-        || (sent < 0 && IsBlockingError(GetError()))) {
+    if ((sent > 0 && sent < static_cast<int>(length)) || (sent < 0 && IsBlockingError(GetError()))) {
         EnableEvents(DE_WRITE);
     }
     return sent;
@@ -483,10 +461,7 @@ PhysicalSocket::Recv(void *buffer, size_t length, int64_t *timestamp)
 }
 
 int
-PhysicalSocket::RecvFrom(void *buffer,
-                         size_t length,
-                         SocketAddress *out_addr,
-                         int64_t *timestamp)
+PhysicalSocket::RecvFrom(void *buffer, size_t length, SocketAddress *out_addr, int64_t *timestamp)
 {
     int received = DoReadFromSocket(buffer, length, out_addr, timestamp);
     UpdateLastError();
@@ -516,17 +491,12 @@ GetSocketRecvTimestamp(int socket)
 
     if (ret != 0) { return -1; }
 
-    int64_t timestamp =
-        static_cast<int64_t>(tv_ioctl.tv_sec) * kNumMicrosecsPerSec
-        + tv_ioctl.tv_usec;
+    int64_t timestamp = static_cast<int64_t>(tv_ioctl.tv_sec) * kNumMicrosecsPerSec + tv_ioctl.tv_usec;
     return timestamp;
 }
 
 int
-PhysicalSocket::DoReadFromSocket(void *buffer,
-                                 size_t length,
-                                 SocketAddress *out_addr,
-                                 int64_t *timestamp)
+PhysicalSocket::DoReadFromSocket(void *buffer, size_t length, SocketAddress *out_addr, int64_t *timestamp)
 {
     sockaddr_storage addr_storage;
     socklen_t addr_len = sizeof(addr_storage);
@@ -534,12 +504,10 @@ PhysicalSocket::DoReadFromSocket(void *buffer,
 
     int received = 0;
     if (out_addr) {
-        received = ::recvfrom(s_, static_cast<char *>(buffer),
-                              static_cast<int>(length), 0, addr, &addr_len);
+        received = ::recvfrom(s_, static_cast<char *>(buffer), static_cast<int>(length), 0, addr, &addr_len);
         SocketAddressFromSockAddrStorage(addr_storage, out_addr);
     } else {
-        received = ::recv(s_, static_cast<char *>(buffer),
-                          static_cast<int>(length), 0);
+        received = ::recv(s_, static_cast<char *>(buffer), static_cast<int>(length), 0);
     }
     if (timestamp) { *timestamp = GetSocketRecvTimestamp(s_); }
 
@@ -592,10 +560,7 @@ PhysicalSocket::Close()
 }
 
 SOCKET
-PhysicalSocket::DoAccept(SOCKET socket, sockaddr *addr, socklen_t *addrlen)
-{
-    return ::accept(socket, addr, addrlen);
-}
+PhysicalSocket::DoAccept(SOCKET socket, sockaddr *addr, socklen_t *addrlen) { return ::accept(socket, addr, addrlen); }
 
 int
 PhysicalSocket::DoSend(SOCKET socket, const char *buf, int len, int flags)
@@ -617,9 +582,7 @@ PhysicalSocket::DoSendTo(SOCKET socket,
 int
 PhysicalSocket::DoConnect(const SocketAddress &connect_addr)
 {
-    if ((s_ == INVALID_SOCKET) && !Create(connect_addr.family(), SOCK_STREAM)) {
-        return SOCKET_ERROR;
-    }
+    if ((s_ == INVALID_SOCKET) && !Create(connect_addr.family(), SOCK_STREAM)) { return SOCKET_ERROR; }
 
     sockaddr_storage addr_storage;
     size_t len = connect_addr.ToSockAddrStorage(&addr_storage);
@@ -702,13 +665,9 @@ PhysicalSocket::TranslateOption(Option opt, int *slevel, int *sopt)
     return 0;
 }
 
-SocketDispatcher::SocketDispatcher(PhysicalSocketServer *ss)
-    : PhysicalSocket(ss)
-{}
+SocketDispatcher::SocketDispatcher(PhysicalSocketServer *ss) : PhysicalSocket(ss) {}
 
-SocketDispatcher::SocketDispatcher(SOCKET s, PhysicalSocketServer *ss)
-    : PhysicalSocket(ss, s)
-{}
+SocketDispatcher::SocketDispatcher(SOCKET s, PhysicalSocketServer *ss) : PhysicalSocket(ss, s) {}
 
 SocketDispatcher::~SocketDispatcher() { Close(); }
 

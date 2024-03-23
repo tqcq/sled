@@ -6,6 +6,7 @@
 
 #ifndef SLED_QUEUE_CIRCLE_QUEUE_H
 #define SLED_QUEUE_CIRCLE_QUEUE_H
+#pragma once
 
 #include "sled/log/log.h"
 #include <array>
@@ -49,10 +50,7 @@ public:
         head_ = (head_ + 1) % (LEN + 1);
     }
 
-    size_t size() const
-    {
-        return tail_ >= head_ ? tail_ - head_ : (LEN + 1) - (head_ - tail_);
-    }
+    size_t size() const { return tail_ >= head_ ? tail_ - head_ : (LEN + 1) - (head_ - tail_); }
 
     bool empty() const { return (tail_ + 1) % (LEN + 1) == head_; }
 

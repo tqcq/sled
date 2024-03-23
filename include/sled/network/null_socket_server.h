@@ -4,9 +4,9 @@
  * @license  : MIT
  **/
 
-#pragma once
 #ifndef SLED_NETWORK_NULL_SOCKET_SERVER_H
 #define SLED_NETWORK_NULL_SOCKET_SERVER_H
+#pragma once
 
 #include "sled/network/socket_server.h"
 #include "sled/synchronization/event.h"
@@ -21,6 +21,7 @@ public:
     void WakeUp() override;
 
     Socket *CreateSocket(int family, int type) override;
+
 private:
     Event event_;
 };

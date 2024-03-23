@@ -4,17 +4,17 @@
  * @license  : MIT
  **/
 
-#pragma once
 #ifndef SLED_SYNCHRONIZATION_MUTEX_H
 #define SLED_SYNCHRONIZATION_MUTEX_H
+#pragma once
 
-#include "marl/conditionvariable.h"
 #include "sled/lang/attributes.h"
 #include "sled/units/time_delta.h"
 #include <chrono>
-#include <condition_variable>
+#include <marl/conditionvariable.h>
 #include <marl/mutex.h>
-#include <mutex>
+// #include <condition_variable>
+// #include <mutex>
 #include <type_traits>
 
 namespace sled {
@@ -60,36 +60,52 @@ public:
     RecursiveMutex(const RecursiveMutex &) = delete;
     RecursiveMutex &operator=(const RecursiveMutex &) = delete;
 
-    inline void Lock() EXCLUSIVE_LOCK_FUNCTION() { impl_.lock(); }
+    inline void Lock() SLED_SHARED_LOCK_FUNCTION() { impl_.lock(); }
 
-    inline bool TryLock() { return impl_.try_lock(); }
+    inline bool TryLock() SLED_SHARED_TRYLOCK_FUNCTION(true) { return impl_.try_lock(); }
 
     inline void AssertHeld() {}
 
-    inline void Unlock() UNLOCK_FUNCTION() { impl_.unlock(); }
+    inline void Unlock() SLED_UNLOCK_FUNCTION() { impl_.unlock(); }
 
 private:
     std::recursive_mutex impl_;
 };
 
-template<typename TLock, typename std::enable_if<internal::HasLockAndUnlock<TLock>::value, TLock>::type * = nullptr>
-class LockGuard final {
+class RecursiveMutexLock final {
 public:
-    LockGuard(const LockGuard &) = delete;
-    LockGuard &operator=(const LockGuard &) = delete;
+    RecursiveMutexLock(const RecursiveMutexLock &) = delete;
+    RecursiveMutexLock &operator=(const RecursiveMutexLock &) = delete;
 
-    explicit LockGuard(TLock *lock) EXCLUSIVE_LOCK_FUNCTION() : mutex_(lock) { mutex_->Lock(); };
+    explicit RecursiveMutexLock(RecursiveMutex *mutex) SLED_EXCLUSIVE_LOCK_FUNCTION(mutex) : mutex_(mutex)
+    {
+        mutex->Lock();
+    }
 
-    ~LockGuard() UNLOCK_FUNCTION() { mutex_->Unlock(); };
+    ~RecursiveMutexLock() SLED_UNLOCK_FUNCTION() { mutex_->Unlock(); }
 
 private:
-    TLock *mutex_;
-    friend class ConditionVariable;
+    RecursiveMutex *mutex_;
 };
 
+// public:
+//     LockGuard(const LockGuard &) = delete;
+//     LockGuard &operator=(const LockGuard &) = delete;
+//
+//     explicit LockGuard(TLock *lock) SLED_EXCLUSIVE_LOCK_FUNCTION(lock) : mutex_(lock) { mutex_->Lock(); };
+//
+//     ~LockGuard() SLED_UNLOCK_FUNCTION() { mutex_->Unlock(); };
+//
+// private:
+//     TLock *mutex_;
+//     friend class ConditionVariable;
+// };
+//
 class MutexLock final {
 public:
-    MutexLock(Mutex *mutex) : lock_(*mutex) {}
+    MutexLock(Mutex *mutex) SLED_EXCLUSIVE_LOCK_FUNCTION(mutex) : lock_(*mutex) {}
+
+    ~MutexLock() SLED_UNLOCK_FUNCTION() = default;
 
     MutexLock(const MutexLock &) = delete;
     MutexLock &operator=(const MutexLock &) = delete;
@@ -98,41 +114,6 @@ private:
     friend class ConditionVariable;
     marl::lock lock_;
 };
-
-using MutexGuard SLED_DEPRECATED() = MutexLock;
-// using MutexGuard = marl::lock;
-// using MutexLock = LockGuard<Mutex>;
-// using MutexGuard = LockGuard<Mutex>;
-using RecursiveMutexLock SLED_DEPRECATED() = LockGuard<RecursiveMutex>;
-
-// class MutexLock final {
-// public:
-//     MutexLock(const MutexLock &) = delete;
-//     MutexLock &operator=(const MutexLock &) = delete;
-//
-//     explicit MutexLock(Mutex *mutex) : mutex_(mutex) { mutex->Lock(); }
-//
-//     ~MutexLock() { mutex_->Unlock(); }
-//
-// private:
-//     Mutex *mutex_;
-// };
-//
-// class RecursiveMutexLock final {
-// public:
-//     RecursiveMutexLock(const RecursiveMutexLock &) = delete;
-//     RecursiveMutexLock &operator=(const RecursiveMutexLock &) = delete;
-//
-//     explicit RecursiveMutexLock(RecursiveMutex *mutex) : mutex_(mutex)
-//     {
-//         mutex->Lock();
-//     }
-//
-//     ~RecursiveMutexLock() { mutex_->Unlock(); }
-//
-// private:
-//     RecursiveMutex *mutex_;
-// };
 
 class ConditionVariable final {
 public:

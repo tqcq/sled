@@ -4,9 +4,9 @@
  * @license  : MIT
  **/
 
-#pragma once
 #ifndef SLED_SYNCHRONIZATION_ONE_TIME_EVENT_H
 #define SLED_SYNCHRONIZATION_ONE_TIME_EVENT_H
+#pragma once
 
 #include "sled/synchronization/mutex.h"
 

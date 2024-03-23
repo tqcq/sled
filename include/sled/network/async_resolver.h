@@ -4,9 +4,9 @@
  * @license  : MIT
  **/
 
-#pragma once
 #ifndef SLED_NETWORK_ASYNC_RESOLVER_H
 #define SLED_NETWORK_ASYNC_RESOLVER_H
+#pragma once
 
 #include "sled/network/async_resolver_interface.h"
 #include "sled/scoped_refptr.h"
@@ -34,8 +34,7 @@ private:
     SocketAddress addr_;
     std::vector<IPAddress> addresses_;
     int error_;
-    bool recursion_check_ =
-        false;// Protects against SignalDone calling into Destroy.
+    bool recursion_check_ = false;// Protects against SignalDone calling into Destroy.
     bool destroy_called_ = false;
     scoped_refptr<State> state_;
 };

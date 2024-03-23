@@ -4,9 +4,9 @@
  * @license  : MIT
  **/
 
-#pragma once
 #ifndef SLED_NETWORK_SOCKET_H
 #define SLED_NETWORK_SOCKET_H
+#pragma once
 
 #include "sled/network/socket_address.h"
 #include "sled/sigslot.h"
@@ -36,11 +36,9 @@ public:
     virtual int Bind(const SocketAddress &addr) = 0;
     virtual int Connect(const SocketAddress &addr) = 0;
     virtual int Send(const void *pv, size_t cb) = 0;
-    virtual int
-    SendTo(const void *pv, size_t cb, const SocketAddress &addr) = 0;
+    virtual int SendTo(const void *pv, size_t cb, const SocketAddress &addr) = 0;
     virtual int Recv(void *pv, size_t cb, int64_t *timestamp) = 0;
-    virtual int
-    RecvFrom(void *pv, size_t cb, SocketAddress *paddr, int64_t *timestamp) = 0;
+    virtual int RecvFrom(void *pv, size_t cb, SocketAddress *paddr, int64_t *timestamp) = 0;
     virtual int Listen(int backlog) = 0;
     virtual Socket *Accept(SocketAddress *paddr) = 0;
     virtual int Close() = 0;

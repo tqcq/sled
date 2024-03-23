@@ -4,9 +4,9 @@
  * @license  : MIT
  **/
 
-#pragma once
 #ifndef SLED_NETWORK_PHYSICAL_SOCKET_SERVER_H
 #define SLED_NETWORK_PHYSICAL_SOCKET_SERVER_H
+#pragma once
 
 #include "sled/network/async_resolver.h"
 #include "sled/sigslot.h"

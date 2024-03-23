@@ -4,9 +4,9 @@
  * @license  : MIT
  **/
 
-#pragma once
 #ifndef SLED_SYNCHRONIZATION_EVENT_H
 #define SLED_SYNCHRONIZATION_EVENT_H
+#pragma once
 
 #include "sled/synchronization/mutex.h"
 #include "sled/units/time_delta.h"
@@ -28,15 +28,13 @@ public:
 
     bool Wait(TimeDelta give_up_after)
     {
-        return Wait(give_up_after,
-                    give_up_after.IsPlusInfinity() ? TimeDelta::Seconds(3)
-                                                   : kForever);
+        return Wait(give_up_after, give_up_after.IsPlusInfinity() ? TimeDelta::Seconds(3) : kForever);
     }
 
     Mutex mutex_;
     ConditionVariable cv_;
     const bool is_manual_reset_;
-    bool event_status_ GUARDED_BY(mutex_);
+    bool event_status_ SLED_GUARDED_BY(mutex_);
 };
 
 }// namespace sled

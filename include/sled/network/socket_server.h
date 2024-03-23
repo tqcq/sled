@@ -4,9 +4,9 @@
  * @license  : MIT
  **/
 
-#pragma 
 #ifndef SLED_NETWORK_SOCKET_SERVER_H
 #define SLED_NETWORK_SOCKET_SERVER_H
+#pragma once
 
 #include "sled/network/socket_factory.h"
 #include "sled/units/time_delta.h"

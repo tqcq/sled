@@ -1,6 +1,6 @@
-#pragma once
 #ifndef SLED_FILESYSTEM_PATH_H
 #define SLED_FILESYSTEM_PATH_H
+#pragma once
 
 #include <string>
 

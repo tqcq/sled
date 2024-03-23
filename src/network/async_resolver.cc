@@ -1,5 +1,4 @@
 #include "sled/network/async_resolver.h"
-#include "sled/network/async_resolver_interface.h"
 #include "sled/ref_counted_base.h"
 #include "sled/synchronization/mutex.h"
 #include "sled/task_queue/task_queue_base.h"
@@ -15,9 +14,7 @@ struct AsyncResolver::State : public RefCountedBase {
 };
 
 int
-ResolveHostname(const std::string &hostname,
-                int family,
-                std::vector<IPAddress> *addresses)
+ResolveHostname(const std::string &hostname, int family, std::vector<IPAddress> *addresses)
 {
     if (!addresses) { return -1; }
 

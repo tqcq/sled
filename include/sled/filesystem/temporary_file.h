@@ -1,6 +1,6 @@
-#pragma once
 #ifndef SLED_FILESYSTEM_TEMPORARY_FILE_H
 #define SLED_FILESYSTEM_TEMPORARY_FILE_H
+#pragma once
 
 #include <string>
 

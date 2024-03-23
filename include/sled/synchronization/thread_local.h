@@ -4,9 +4,9 @@
  * @license  : MIT
  **/
 
-#pragma once
 #ifndef SLED_SYNCHRONIZATION_THREAD_LOCAL_H
 #define SLED_SYNCHRONIZATION_THREAD_LOCAL_H
+#pragma once
 #include <cstddef>
 #include <thread>
 #include <type_traits>
@@ -47,46 +47,35 @@ public:
     }
 
     template<typename PointerT = T>
-    typename std::enable_if<std::is_pointer<PointerT>::value, PointerT>::type
-    Get() const
+    typename std::enable_if<std::is_pointer<PointerT>::value, PointerT>::type Get() const
     {
-        auto ptr = detail::ThreadLocalManager::Instance().Get(
-            detail::ThreadLocalManager::CurrentThreadId(), key_);
+        auto ptr = detail::ThreadLocalManager::Instance().Get(detail::ThreadLocalManager::CurrentThreadId(), key_);
         return static_cast<PointerT>(ptr);
     }
 
     template<typename IntT = T>
-    typename std::enable_if<std::is_integral<IntT>::value, IntT>::type
-    Get() const
+    typename std::enable_if<std::is_integral<IntT>::value, IntT>::type Get() const
     {
         static_assert(sizeof(IntT) <= sizeof(void *), "");
-        auto ptr = detail::ThreadLocalManager::Instance().Get(
-            detail::ThreadLocalManager::CurrentThreadId(), key_);
-        return static_cast<IntT>(static_cast<char *>(ptr)
-                                 - static_cast<char *>(0));
+        auto ptr = detail::ThreadLocalManager::Instance().Get(detail::ThreadLocalManager::CurrentThreadId(), key_);
+        return static_cast<IntT>(static_cast<char *>(ptr) - static_cast<char *>(0));
     }
 
     template<typename PointerT = T,
-             typename std::enable_if<
-                 std::is_pointer<PointerT>::value
-                     || std::is_same<std::nullptr_t, PointerT>::value,
-                 PointerT>::type = nullptr>
+             typename std::enable_if<std::is_pointer<PointerT>::value || std::is_same<std::nullptr_t, PointerT>::value,
+                                     PointerT>::type = nullptr>
     void Set(PointerT value)
     {
-        detail::ThreadLocalManager::Instance().Set(
-            detail::ThreadLocalManager::CurrentThreadId(), key_,
-            static_cast<void *>(value));
+        detail::ThreadLocalManager::Instance().Set(detail::ThreadLocalManager::CurrentThreadId(), key_,
+                                                   static_cast<void *>(value));
     }
 
-    template<typename IntT = T,
-             typename std::enable_if<std::is_integral<IntT>::value, IntT>::type
-                 * = nullptr>
+    template<typename IntT = T, typename std::enable_if<std::is_integral<IntT>::value, IntT>::type * = nullptr>
     void Set(IntT value)
     {
         static_assert(sizeof(IntT) <= sizeof(void *), "");
-        detail::ThreadLocalManager::Instance().Set(
-            detail::ThreadLocalManager::CurrentThreadId(), key_,
-            (char *) 0 + value);
+        detail::ThreadLocalManager::Instance().Set(detail::ThreadLocalManager::CurrentThreadId(), key_,
+                                                   (char *) 0 + value);
     }
 
 private:

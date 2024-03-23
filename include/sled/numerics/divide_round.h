@@ -4,9 +4,9 @@
  * @license  : MIT
  **/
 
-#pragma once
 #ifndef SLED_NUMERICS_DIVIDE_ROUND_H
 #define SLED_NUMERICS_DIVIDE_ROUND_H
+#pragma once
 
 #include <type_traits>
 

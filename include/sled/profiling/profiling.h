@@ -1,6 +1,6 @@
-#pragma once
 #ifndef SLED_PROFILING_PROFILING_H
 #define SLED_PROFILING_PROFILING_H
+#pragma once
 
 #include "sled/system/location.h"
 #include <fmt/format.h>
