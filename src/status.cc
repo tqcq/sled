@@ -150,10 +150,25 @@ Status::Equals(Status const &a, Status const &b)
     return (a.ok() && b.ok()) || (a.impl_ && b.impl_ && *a.impl_ == *b.impl_);
 }
 
-std::ostream &
-operator<<(std::ostream &os, const Status &s)
+namespace internal {
+void
+AddMetadata(ErrorInfo &error_info, std::string const &key, std::string value)
 {
-    if (s.ok()) return os << StatusCode::kOk;
+    error_info.metadata_[key] = std::move(value);
+}
+
+void
+SetPayload(Status &s, std::string key, std::string payload)
+{
+    if (s.impl_) s.impl_->payload()[std::move(key)] = std::move(payload);
+}
+
+}// namespace internal
+
+std::ostream &
+operator<<(std::ostream &os, const sled::Status &s)
+{
+    if (s.ok()) return os << sled::StatusCode::kOk;
     os << s.code() << ": " << s.message();
     auto const &e = s.error_info();
     if (e.reason().empty() && e.domain().empty() && e.metadata().empty()) { return os; }
@@ -181,20 +196,5 @@ operator<<(std::ostream &os, const Status &s)
     }
     return os << "}";
 }
-
-namespace internal {
-void
-AddMetadata(ErrorInfo &error_info, std::string const &key, std::string value)
-{
-    error_info.metadata_[key] = std::move(value);
-}
-
-void
-SetPayload(Status &s, std::string key, std::string payload)
-{
-    if (s.impl_) s.impl_->payload()[std::move(key)] = std::move(payload);
-}
-
-}// namespace internal
 
 }// namespace sled
