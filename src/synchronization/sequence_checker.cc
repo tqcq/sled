@@ -1,4 +1,5 @@
 #include "sled/synchronization/sequence_checker.h"
+#include <sstream>
 
 namespace sled {
 SequenceChecker::SequenceChecker(InitialState initial_state)
