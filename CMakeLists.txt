@@ -124,6 +124,7 @@ if(SLED_BUILD_TESTS)
 		src/any_test.cc
         src/filesystem/path_test.cc
 		src/futures/future_test.cc
+		src/futures/promise_test.cc
         src/log/fmt_test.cc
 		# src/profiling/profiling_test.cc
         src/strings/base64_test.cc

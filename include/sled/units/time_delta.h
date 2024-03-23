@@ -43,6 +43,12 @@ public:
         return FromValue(value);
     }
 
+    template<typename T, typename V>
+    inline TimeDelta(std::chrono::duration<T, V> duration)
+    {
+        *this = Micros(std::chrono::duration_cast<std::chrono::microseconds>(duration));
+    }
+
     TimeDelta() = delete;
 
     template<typename T = int64_t>
@@ -69,15 +75,9 @@ public:
         return ToMultiple<1000, T>();
     }
 
-    constexpr int64_t seconds_or(int64_t fallback_value) const
-    {
-        return ToFractionOr<1000000>(fallback_value);
-    }
+    constexpr int64_t seconds_or(int64_t fallback_value) const { return ToFractionOr<1000000>(fallback_value); }
 
-    constexpr int64_t ms_or(int64_t fallback_value) const
-    {
-        return ToFractionOr<1000>(fallback_value);
-    }
+    constexpr int64_t ms_or(int64_t fallback_value) const { return ToFractionOr<1000>(fallback_value); }
 
     constexpr int64_t us_or(int64_t fallback_value) const { return ToValueOr(fallback_value); }
 

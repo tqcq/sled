@@ -134,11 +134,13 @@ public:
     template<typename Predicate>
     inline bool WaitFor(MutexLock &lock, TimeDelta timeout, Predicate &&pred)
     {
+        if (timeout.ns() < 0) { return pred(); }
+
         if (timeout == TimeDelta::PlusInfinity()) {
             cv_.wait(lock.lock_, std::forward<Predicate>(pred));
             return true;
         } else {
-            return cv_.wait_for(lock.lock_, std::chrono::milliseconds(timeout.ms()), std::forward<Predicate>(pred));
+            return cv_.wait_for(lock.lock_, std::chrono::microseconds(timeout.us()), std::forward<Predicate>(pred));
         }
     }
 
