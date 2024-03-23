@@ -38,10 +38,10 @@
 #include "sled/strings/utils.h"
 
 // synchorization
-#include "seld/synchronization/sequence_checker.h"
 #include "sled/synchronization/event.h"
 #include "sled/synchronization/mutex.h"
 #include "sled/synchronization/one_time_event.h"
+#include "sled/synchronization/sequence_checker.h"
 #include "sled/synchronization/thread_local.h"
 // system
 #include "sled/system/fiber/scheduler.h"
