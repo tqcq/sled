@@ -38,5 +38,5 @@ Base64Decode(benchmark::State &state)
     }
 }
 
-BENCHMARK(Base64Encode)->RangeMultiplier(10)->Range(10, 1000000);
-BENCHMARK(Base64Decode)->RangeMultiplier(10)->Range(10, 1000000);
+BENCHMARK(Base64Encode)->RangeMultiplier(100)->Range(10, 100000);
+BENCHMARK(Base64Decode)->RangeMultiplier(100)->Range(10, 100000);

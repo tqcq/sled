@@ -4,6 +4,7 @@
 #include <array>
 #include <fmt/format.h>
 #include <sstream>
+#include <string.h>
 
 namespace sled {
 const char kBase64Chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -17,38 +18,43 @@ IsBase64(char c)
     return isalnum(c) || c == '+' || c == '/';
 }
 
-std::string
-Base64::Encode(const uint8_t *const ptr, size_t len)
+size_t
+Base64::DecodedLength(const char *base64_data, size_t base64_len)
 {
-    auto data = (unsigned char *) (ptr);
-    return Encode(std::vector<unsigned char>(data, data + len));
+    if (base64_len <= 0) { return 0; }
+    /**
+     * The number of padding characters at the end of the base64 data
+     * is the number of '=' characters at the end of the base64 data.
+     **/
+    if (base64_data) {
+        size_t padding = (4 - (base64_len % 4)) % 4;
+        while (base64_data[--base64_len] == '=') { ++padding; }
+        return ((base64_len + 3) / 4) * 3 - ((5 + padding * 6) / 8);
+    } else {
+        return base64_len / 4 * 3 + ((base64_len % 4) * 6 + 5) / 8;
+    }
 }
 
 std::string
-Base64::Encode(const std::string &input)
-{
-    return Encode((uint8_t *) input.data(), input.length());
-}
+Base64::Encode(const uint8_t *ptr, size_t len)
 
-std::string
-Base64::Encode(const char *const data)
 {
-    return Encode((uint8_t *) data, strlen(data));
-}
+    // std::stringstream ss;
+    std::string result(EncodedLength(len), 0);
+    int write_idx = 0;
 
-std::string
-Base64::Encode(const std::vector<unsigned char> &data)
-{
-    std::stringstream ss;
     int value = 0;
     int value_bits = 0;
-    for (unsigned char c : data) {
-        value = (value << 8) + c;
+    while (len > 0) {
+        value = (value << 8) + *ptr;
         value_bits += 8;
         while (value_bits >= 6) {
             value_bits -= 6;
-            ss << kBase64Chars[(value >> value_bits) & 0x3F];
+            // ss << kBase64Chars[(value >> value_bits) & 0x3F];
+            result[write_idx++] = kBase64Chars[(value >> value_bits) & 0x3F];
         }
+        ++ptr;
+        --len;
     }
 
     /**
@@ -56,31 +62,40 @@ Base64::Encode(const std::vector<unsigned char> &data)
      * 2           ->  4  -> (8 - value_bits - 2)
      * 4           ->  2  -> (8 - value_bits - 2)
      **/
-    if (value_bits > 0) { ss << kBase64Chars[((value << 8) >> (value_bits + 2)) & 0x3F]; }
-    while (ss.str().size() % 4) { ss << '='; }
+    if (value_bits > 0) {
+        result[write_idx++] = kBase64Chars[(value << (6 - value_bits)) & 0x3F];
+        // ss << kBase64Chars[((value << 8) >> (value_bits + 2)) & 0x3F];
+    }
+    // while (ss.str().size() % 4) { ss << '='; }
+    while (write_idx % 4) { result[write_idx++] = '='; }
 
-    return ss.str();
+    // return ss.str();
+    return std::move(result);
 }
 
 StatusOr<std::string>
-Base64::Decode(const std::string &input)
+Base64::Decode(const uint8_t *ptr, size_t len)
 {
     CallOnce(once_flag, [&] {
         std::fill(kInvBase64Chars.begin(), kInvBase64Chars.end(), -1);
         for (int i = 0; kBase64Chars[i]; i++) { kInvBase64Chars[kBase64Chars[i]] = i; }
     });
 
-    std::stringstream ss;
+    int write_idx = 0;
+    std::string data(DecodedLength((char *) ptr, len), 0);
+    // std::stringstream ss;
     int value = 0;
     int value_bits = 0;
     int index = 0;
-    for (unsigned char c : input) {
+    for (int i = 0; i < len; i++) {
+        char c = ptr[i];
         if (-1 != kInvBase64Chars[c]) {
             // valid base64 character
             value = (value << 6) | kInvBase64Chars[c];
             value_bits += 6;
             if (value_bits >= 8) {
-                ss << char((value >> (value_bits - 8)) & 0xFF);
+                data[write_idx++] = (value >> (value_bits - 8)) & 0xFF;
+                // ss << char((value >> (value_bits - 8)) & 0xFF);
                 value_bits -= 8;
             }
         } else if (c == '=') {
@@ -93,19 +108,9 @@ Base64::Decode(const std::string &input)
         }
         ++index;
     }
+    while (write_idx < data.size()) data.pop_back();
 
-    return make_status_or<std::string>(ss.str());
+    return make_status_or<std::string>(data);
 }
 
-StatusOr<std::string>
-Base64::Decode(const std::vector<unsigned char> &base64)
-{
-    return Decode(std::string(base64.begin(), base64.end()));
-}
-
-StatusOr<std::string>
-Base64::Decode(const uint8_t *const ptr, size_t len)
-{
-    return Decode(std::string((char *) ptr, len));
-}
 }// namespace sled
