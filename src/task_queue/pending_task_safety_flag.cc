@@ -18,30 +18,37 @@ PendingTaskSafetyFlag::Create()
 sled::scoped_refptr<PendingTaskSafetyFlag>
 PendingTaskSafetyFlag::CreateDetached()
 {
-    return CreateInternal(true);
+    scoped_refptr<PendingTaskSafetyFlag> safety_flag = CreateInternal(true);
+    safety_flag->main_sequence_.Detach();
+    return safety_flag;
 }
 
 sled::scoped_refptr<PendingTaskSafetyFlag>
 PendingTaskSafetyFlag::CreateDetachedInactive()
 {
-    return CreateInternal(false);
+    scoped_refptr<PendingTaskSafetyFlag> safety_flag = CreateInternal(false);
+    safety_flag->main_sequence_.Detach();
+    return safety_flag;
 }
 
 void
 PendingTaskSafetyFlag::SetNotAlive()
 {
+    SLED_DCHECK_RUN_ON(&main_sequence_);
     alive_ = false;
 }
 
 void
 PendingTaskSafetyFlag::SetAlive()
 {
+    SLED_DCHECK_RUN_ON(&main_sequence_);
     alive_ = true;
 }
 
 bool
 PendingTaskSafetyFlag::alive() const
 {
+    SLED_DCHECK_RUN_ON(&main_sequence_);
     return alive_;
 }
 

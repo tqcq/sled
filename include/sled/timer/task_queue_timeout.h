@@ -1,8 +1,9 @@
-#pragma once
-#include "sled/scoped_refptr.h"
 #ifndef SLED_TIMER_QUEUE_TIMEOUT_H
 #define SLED_TIMER_QUEUE_TIMEOUT_H
+#pragma once
 
+#include "sled/scoped_refptr.h"
+#include "sled/synchronization/sequence_checker.h"
 #include "sled/task_queue/pending_task_safety_flag.h"
 #include "sled/task_queue/task_queue_base.h"
 #include "sled/timer/timeout.h"
@@ -45,6 +46,7 @@ private:
         scoped_refptr<PendingTaskSafetyFlag> safety_flag_;
     };
 
+    sled::SequenceChecker thread_checker_;
     sled::TaskQueueBase &task_queue_;
     const std::function<TimeMs()> get_time_;
     const std::function<void(TimeoutID)> on_expired_;

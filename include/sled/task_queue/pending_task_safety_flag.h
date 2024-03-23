@@ -4,12 +4,13 @@
  * @license  : MIT
  **/
 
-#pragma once
 #ifndef SLED_TASK_QUEUE_PENDING_TASK_SAFETY_FLAG_H
 #define SLED_TASK_QUEUE_PENDING_TASK_SAFETY_FLAG_H
 
+#pragma once
 #include "sled/ref_counted_base.h"
 #include "sled/scoped_refptr.h"
+#include "sled/synchronization/sequence_checker.h"
 #include <functional>
 
 namespace sled {
@@ -31,6 +32,7 @@ protected:
 private:
     static sled::scoped_refptr<PendingTaskSafetyFlag> CreateInternal(bool alive);
     bool alive_ = true;
+    SequenceChecker main_sequence_;
 };
 
 class ScopedTaskSafety final {

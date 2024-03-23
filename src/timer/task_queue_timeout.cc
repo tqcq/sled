@@ -11,11 +11,16 @@ TaskQueueTimeoutFactory::TaskQueueTimeout::TaskQueueTimeout(TaskQueueTimeoutFact
       safety_flag_(PendingTaskSafetyFlag::Create())
 {}
 
-TaskQueueTimeoutFactory::TaskQueueTimeout::~TaskQueueTimeout() { safety_flag_->SetNotAlive(); }
+TaskQueueTimeoutFactory::TaskQueueTimeout::~TaskQueueTimeout()
+{
+    SLED_DCHECK_RUN_ON(&parent_.thread_checker_);
+    safety_flag_->SetNotAlive();
+}
 
 void
 TaskQueueTimeoutFactory::TaskQueueTimeout::Start(DurationMs duration_ms, TimeoutID timeout_id)
 {
+    SLED_DCHECK_RUN_ON(&parent_.thread_checker_);
     ASSERT(timeout_expiration_ == std::numeric_limits<TimeMs>::max(), "");
     timeout_expiration_ = parent_.get_time_() + duration_ms;
     timeout_id_ = timeout_id;
@@ -36,10 +41,9 @@ TaskQueueTimeoutFactory::TaskQueueTimeout::Start(DurationMs duration_ms, Timeout
         precision_,
         SafeTask(safety_flag_,
                  [timeout_id, this]() {
-                     // if (timeout_id != this->timeout_id_) { return; }
                      LOGV("timer", "Timeout expired: {}", timeout_id);
-                     // FIXME: this is a bug, the posted_task_expiration_ should be reset to max
-                     ASSERT(posted_task_expiration_ != std::numeric_limits<TimeMs>::max(), "");
+                     SLED_DCHECK_RUN_ON(&parent_.thread_checker_);
+                     DCHECK(posted_task_expiration_ != std::numeric_limits<TimeMs>::max(), "");
                      posted_task_expiration_ = std::numeric_limits<TimeMs>::max();
 
                      if (timeout_expiration_ == std::numeric_limits<TimeMs>::max()) {
@@ -67,6 +71,8 @@ TaskQueueTimeoutFactory::TaskQueueTimeout::Start(DurationMs duration_ms, Timeout
 void
 TaskQueueTimeoutFactory::TaskQueueTimeout::Stop()
 {
+
+    SLED_DCHECK_RUN_ON(&parent_.thread_checker_);
     timeout_expiration_ = std::numeric_limits<TimeMs>::max();
 }
 
