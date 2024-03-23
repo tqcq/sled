@@ -10,22 +10,52 @@
 
 #include "sled/system/location.h"
 #include <assert.h>
-#include <fmt/chrono.h>
-#include <fmt/color.h>
-#include <fmt/compile.h>
-#include <fmt/format.h>
+// clang-format off
 #include <fmt/ostream.h>// support fmt base ostream
-#include <fmt/printf.h>
-#include <fmt/ranges.h>
-#include <fmt/std.h>
-#include <fmt/xchar.h>
 
-template<typename T, typename std::enable_if<std::is_enum<T>::value, int>::type = 0>
-auto
-format_as(const T &value) -> int
-{
-    return static_cast<int>(value);
-}
+// clang-format on
+// #include <fmt/chrono.h>
+// #include <fmt/color.h>
+// #include <fmt/compile.h>
+// #include <fmt/format.h>
+// #include <fmt/printf.h>
+// #include <fmt/ranges.h>
+// #include <fmt/std.h>
+// #include <fmt/xchar.h>
+// #include <sstream>
+
+namespace {
+template<typename S, typename T>
+class is_streamable {
+    template<typename SS, typename TT>
+    static auto test(int) -> decltype(std::declval<SS &>() << std::declval<TT>(), std::true_type());
+
+    template<typename, typename>
+    static auto test(...) -> std::false_type;
+
+public:
+    static const bool value = decltype(test<S, T>(0))::value;
+};
+
+struct OtherType {};
+
+}// namespace
+
+// template<typename T, typename std::enable_if<std::is_enum<T>::value, int>::type *>
+// auto
+// format_as(T const &value) -> decltype(fmt::underlying(value))
+// {
+//     return fmt::underlying(value);
+// }
+
+// template<typename T, typename std::enable_if<is_streamable<std::ostream, T>::value, int>::type *>
+// auto
+// format_as(T const &value) -> std::string
+// {
+//     std::stringstream ss;
+//     ss << value;
+//     return ss.str();
+// }
 
 namespace sled {
 enum class LogLevel {

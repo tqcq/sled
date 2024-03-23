@@ -98,7 +98,7 @@ private:
     std::unique_ptr<Impl> impl_;
 };
 
-std::ostream &operator<<(std::ostream &os, Status const &status);
+std::ostream &operator<<(std::ostream &os, sled::Status const &status);
 
 }// namespace sled
 

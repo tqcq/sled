@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <sled/log/log.h>
 #include <sled/status_or.h>
 
 TEST(StatusOr, TestStatusOr)

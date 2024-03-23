@@ -129,6 +129,7 @@ if(SLED_BUILD_TESTS)
         src/strings/base64_test.cc
         src/synchronization/sequence_checker_test.cc
         src/cleanup_test.cc
+        src/status_test.cc
         src/status_or_test.cc
         src/system/fiber/fiber_test.cc
         src/system/thread_pool_test.cc
