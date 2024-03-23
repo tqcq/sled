@@ -41,6 +41,7 @@
 #include "sled/strings/utils.h"
 
 // synchorization
+#include "sled/synchronization/call_once.h"
 #include "sled/synchronization/event.h"
 #include "sled/synchronization/mutex.h"
 #include "sled/synchronization/one_time_event.h"
