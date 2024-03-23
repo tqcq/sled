@@ -12,7 +12,6 @@
 #include <fmt/chrono.h>
 #include <fmt/color.h>
 #include <fmt/compile.h>
-#include <fmt/core.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>// support fmt base ostream
 #include <fmt/printf.h>
