@@ -1,6 +1,7 @@
 #include "sled/strings/base64.h"
 #include "sled/log/log.h"
 #include "sled/synchronization/call_once.h"
+#include <array>
 #include <fmt/format.h>
 #include <sstream>
 
