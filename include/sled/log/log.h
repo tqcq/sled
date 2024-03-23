@@ -9,8 +9,16 @@
 #pragma once
 #include "sled/system/location.h"
 #include <assert.h>
+#include <fmt/chrono.h>
+#include <fmt/color.h>
+#include <fmt/compile.h>
+#include <fmt/core.h>
 #include <fmt/format.h>
 #include <fmt/ostream.h>// support fmt base ostream
+#include <fmt/printf.h>
+#include <fmt/ranges.h>
+#include <fmt/std.h>
+#include <fmt/xchar.h>
 
 namespace sled {
 enum class LogLevel {
