@@ -66,6 +66,7 @@
 #include "sled/byte_order.h"
 #include "sled/cleanup.h"
 #include "sled/make_ref_counted.h"
+#include "sled/make_unique.h"
 #include "sled/operations_chain.h"
 #include "sled/optional.h"
 #include "sled/random.h"
