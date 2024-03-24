@@ -1405,6 +1405,34 @@ MakeAllPromise(Container &&container)
     return promise_hpp::make_all_promise(std::begin(container), std::end(container));
 }
 
+template<typename Iter>
+inline auto
+MakeAnyPromise(Iter begin, Iter end)
+{
+    return promise_hpp::make_any_promise(begin, end);
+}
+
+template<typename Container>
+inline auto
+MakeAnyPromise(Container &&container)
+{
+    return promise_hpp::make_any_promise(std::begin(container), std::end(container));
+}
+
+template<typename Iter>
+inline auto
+MakeRacePromise(Iter begin, Iter end)
+{
+    return promise_hpp::make_any_promise(begin, end);
+}
+
+template<typename Container>
+inline auto
+MakeRacePromise(Container &&container)
+{
+    return promise_hpp::make_any_promise(std::begin(container), std::end(container));
+}
+
 }// namespace sled
 
 #endif// SLED_FUTURES_PROMISE_H
