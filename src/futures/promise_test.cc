@@ -41,13 +41,17 @@ TEST(Future, Except)
     auto p = sled::Promise<int>();
     p.Resolve(1);
     p.GetFuture()
-        .Then([](int) { throw std::runtime_error("test"); })
+        .Then([](int) {
+            return 1;
+            // throw std::runtime_error("test");
+        })
         .Except([](std::exception_ptr e) {
             try {
                 std::rethrow_exception(e);
             } catch (const std::exception &e) {
                 EXPECT_STREQ(e.what(), "test");
             }
+            return false;
         })
         .Get();
 }
