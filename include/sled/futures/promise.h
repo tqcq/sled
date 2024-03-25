@@ -715,14 +715,14 @@ public:
     // resolve/reject
     //
 
-    bool Resolve() { return state_->resolve(); }
+    bool Resolve() { return state_->Resolve(); }
 
-    bool Reject(std::exception_ptr e) noexcept { return state_->reject(e); }
+    bool Reject(std::exception_ptr e) noexcept { return state_->Reject(e); }
 
     template<typename E>
     bool Reject(E &&e)
     {
-        return state_->reject(std::make_exception_ptr(std::forward<E>(e)));
+        return state_->Reject(std::make_exception_ptr(std::forward<E>(e)));
     }
 
     //
@@ -890,7 +890,7 @@ private:
                 : promise_wait_status::timeout;
         }
 
-        bool resolve()
+        bool Resolve()
         {
             sled::MutexLock lock(&mutex_);
             // std::unique_lock lock(mutex_);
@@ -902,7 +902,7 @@ private:
             return true;
         }
 
-        bool reject(std::exception_ptr e) noexcept
+        bool Reject(std::exception_ptr e) noexcept
         {
             sled::MutexLock lock(&mutex_);
             // std::lock_guard guard(mutex_);
@@ -923,21 +923,21 @@ private:
                 if (has_reject) {
                     try {
                         eggs::invoke(std::forward<decltype(f)>(f), e);
-                        n.resolve();
+                        n.Resolve();
                     } catch (...) {
-                        n.reject(std::current_exception());
+                        n.Reject(std::current_exception());
                     }
                 } else {
-                    n.reject(e);
+                    n.Reject(e);
                 }
             };
 
             auto resolve_h = [n = next, f = std::forward<ResolveF>(on_resolve)]() mutable {
                 try {
                     eggs::invoke(std::forward<decltype(f)>(f));
-                    n.resolve();
+                    n.Resolve();
                 } catch (...) {
-                    n.reject(std::current_exception());
+                    n.Reject(std::current_exception());
                 }
             };
 
@@ -954,21 +954,21 @@ private:
                 if (has_reject) {
                     try {
                         auto r = eggs::invoke(std::forward<decltype(f)>(f), e);
-                        n.resolve(std::move(r));
+                        n.Resolve(std::move(r));
                     } catch (...) {
-                        n.reject(std::current_exception());
+                        n.Reject(std::current_exception());
                     }
                 } else {
-                    n.reject(e);
+                    n.Reject(e);
                 }
             };
 
             auto resolve_h = [n = next, f = std::forward<ResolveF>(on_resolve)]() mutable {
                 try {
                     auto r = eggs::invoke(std::forward<decltype(f)>(f));
-                    n.resolve(std::move(r));
+                    n.Resolve(std::move(r));
                 } catch (...) {
-                    n.reject(std::current_exception());
+                    n.Reject(std::current_exception());
                 }
             };
 
