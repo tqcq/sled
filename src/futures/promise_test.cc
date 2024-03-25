@@ -1,5 +1,4 @@
 #include <gtest/gtest.h>
-#include <sled/futures/promise.h>
 
 TEST(Promise, Basic)
 {
