@@ -1,6 +1,7 @@
 #ifndef SLED_FUTURES_DETAIL_JUST_H
 #define SLED_FUTURES_DETAIL_JUST_H
 
+#include "traits.h"
 #include <memory>
 
 namespace sled {
@@ -18,6 +19,7 @@ struct JustOperation {
 
 template<typename T>
 struct JustSender {
+    using result_t = T;
     T value;
 
     template<typename R>

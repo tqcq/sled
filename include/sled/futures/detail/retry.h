@@ -96,6 +96,7 @@ struct RetryOperation {
 
 template<typename S>
 struct RetrySender {
+    using result_t = typename S::result_t;
     S sender;
     int retry_count;
 

@@ -18,8 +18,9 @@ struct ViaReceiver {
     {
         if (stopped) { return; }
         try {
-            auto func = std::bind(&R::SetValue, &receiver, std::forward<U>(val));
-            schedule(std::move(func));
+            // auto func = std::bind(&R::SetValue, &receiver, std::forward<U>(val));
+            // schedule(std::move(func));
+            schedule([this, val]() mutable { receiver.SetValue(std::move(val)); });
         } catch (...) {
             SetError(std::current_exception());
         }
@@ -50,6 +51,7 @@ struct ViaOperation {
 
 template<typename S, typename F>
 struct ViaSender {
+    using result_t = typename S::result_t;
     S sender;
     F schedule;
 
