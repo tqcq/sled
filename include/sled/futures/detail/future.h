@@ -55,7 +55,7 @@ struct FutureOperation {
 
 template<typename T>
 struct FutureSender {
-    using result_t = T;
+    using result_t  = T;
     using this_type = FutureSender<T>;
     std::shared_ptr<FutureState<T>> state;
 

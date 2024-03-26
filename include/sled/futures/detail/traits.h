@@ -38,7 +38,7 @@ struct move_on_copy {
 
     move_on_copy(const move_on_copy &other) : value(std::move(other.value)) {}
 
-    move_on_copy(move_on_copy &&) = delete;
+    move_on_copy(move_on_copy &&)                 = delete;
     move_on_copy &operator=(const move_on_copy &) = delete;
 
     mutable type value;

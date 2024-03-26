@@ -49,7 +49,7 @@ struct ThenOperation {
 
 template<typename S, typename F>
 struct ThenSender {
-    using result_t = invoke_result_t<F, typename decay_t<S>::result_t>;
+    using result_t  = invoke_result_t<F, typename decay_t<S>::result_t>;
     using this_type = ThenSender<S, F>;
     S sender;
     F func;

@@ -19,7 +19,7 @@ struct JustOperation {
 
 template<typename T>
 struct JustSender {
-    using result_t = T;
+    using result_t  = T;
     using this_type = JustSender<T>;
     T value;
 

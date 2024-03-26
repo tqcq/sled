@@ -66,7 +66,7 @@ struct OnOperation {
 
 template<typename S, typename F>
 struct OnSender {
-    using result_t = typename S::result_t;
+    using result_t  = typename S::result_t;
     using this_type = OnSender<S, F>;
     S sender;
     F schedule;

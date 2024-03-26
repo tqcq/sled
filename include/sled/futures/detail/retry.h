@@ -16,7 +16,7 @@ struct RetryState {
     sled::Mutex mutex;
     sled::ConditionVariable cv;
     int retry_count = 0;
-    State state = kPending;
+    State state     = kPending;
 };
 }// namespace
 
@@ -61,7 +61,7 @@ struct RetryReceiver {
         {
             sled::MutexLock lock(&state->mutex);
             if (stopped) { return; }
-            stopped = true;
+            stopped      = true;
             state->state = RetryState::kDone;
             state->cv.NotifyAll();
         }
@@ -80,7 +80,7 @@ struct RetryOperation {
         {
             sled::MutexLock lock(&state->mutex);
             state->retry_count = retry_count;
-            state->state = RetryState::kPending;
+            state->state       = RetryState::kPending;
         }
         do {
             op.Start();
@@ -96,7 +96,7 @@ struct RetryOperation {
 
 template<typename S>
 struct RetrySender {
-    using result_t = typename S::result_t;
+    using result_t  = typename S::result_t;
     using this_type = RetrySender<S>;
     S sender;
     int retry_count;
@@ -105,7 +105,7 @@ struct RetrySender {
     RetryOperation<S, RetryReceiver<R>> Connect(R receiver)
     {
         auto state = std::make_shared<RetryState>();
-        auto op = sender.Connect(RetryReceiver<R>{state, receiver});
+        auto op    = sender.Connect(RetryReceiver<R>{state, receiver});
         return {retry_count, state, op};
     }
 

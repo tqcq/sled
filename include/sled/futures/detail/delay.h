@@ -46,7 +46,7 @@ struct DelayOperation {
 
 template<typename S>
 struct DelaySender {
-    using result_t = typename S::result_t;
+    using result_t  = typename S::result_t;
     using this_type = DelaySender<S>;
     S sender;
     sled::TimeDelta delta;

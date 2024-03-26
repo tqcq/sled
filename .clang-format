@@ -1,12 +1,12 @@
 # Generated from CLion C/C++ Code Style settings
 BinPackParameters: false
+BinPackArguments: false
 BasedOnStyle: LLVM
 AccessModifierOffset: -4
 AlignAfterOpenBracket: Align
 AlignArrayOfStructures: Left
 AlignConsecutiveAssignments: Consecutive
-AlignConsecutiveAssignments: None
-AlignOperands: BreakBeforeBinaryOperators
+AlignOperands: Align
 AllowAllArgumentsOnNextLine: false
 AllowAllConstructorInitializersOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
@@ -33,6 +33,7 @@ BraceWrapping:
   IndentBraces: false
   SplitEmptyFunction: false
   SplitEmptyRecord: true
+AlwaysBreakBeforeMultilineStrings: true
 BreakBeforeBinaryOperators: All
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: BeforeColon
