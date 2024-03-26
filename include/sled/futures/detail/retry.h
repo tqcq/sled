@@ -97,6 +97,7 @@ struct RetryOperation {
 template<typename S>
 struct RetrySender {
     using result_t = typename S::result_t;
+    using this_type = RetrySender<S>;
     S sender;
     int retry_count;
 
@@ -107,6 +108,12 @@ struct RetrySender {
         auto op = sender.Connect(RetryReceiver<R>{state, receiver});
         return {retry_count, state, op};
     }
+
+    template<typename Lazy>
+    friend ContinueResultT<this_type, Lazy> operator|(this_type sender, Lazy lazy)
+    {
+        return lazy.Continue(sender);
+    }
 };
 
 template<typename S>
@@ -114,6 +121,22 @@ RetrySender<S>
 Retry(S sender, int retry_count)
 {
     return {sender, retry_count};
+}
+
+struct RetryLazy {
+    int retry_count;
+
+    template<typename S>
+    RetrySender<S> Continue(S sender) const
+    {
+        return {sender, retry_count};
+    }
+};
+
+inline RetryLazy
+Retry(int retry_count)
+{
+    return {retry_count};
 }
 
 }// namespace detail

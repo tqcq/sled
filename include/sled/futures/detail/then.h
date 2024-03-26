@@ -50,6 +50,7 @@ struct ThenOperation {
 template<typename S, typename F>
 struct ThenSender {
     using result_t = invoke_result_t<F, typename decay_t<S>::result_t>;
+    using this_type = ThenSender<S, F>;
     S sender;
     F func;
 
@@ -58,6 +59,12 @@ struct ThenSender {
     {
         return {sender.Connect(ThenReceiver<R, F>{receiver, func})};
     }
+
+    template<typename Lazy>
+    friend ContinueResultT<this_type, Lazy> operator|(this_type sender, Lazy lazy)
+    {
+        return lazy.Continue(sender);
+    }
 };
 
 template<typename S, typename F>
@@ -65,6 +72,24 @@ ThenSender<S, F>
 Then(S &&sender, F &&func)
 {
     return {std::forward<S>(sender), std::forward<F>(func)};
+}
+
+template<typename F>
+struct ThenLazy {
+    F func;
+
+    template<typename S>
+    ThenSender<S, F> Continue(S sender) const
+    {
+        return {sender, func};
+    }
+};
+
+template<typename F>
+ThenLazy<F>
+Then(F &&func)
+{
+    return {func};
 }
 
 }// namespace detail

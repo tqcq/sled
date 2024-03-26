@@ -47,6 +47,7 @@ struct DelayOperation {
 template<typename S>
 struct DelaySender {
     using result_t = typename S::result_t;
+    using this_type = DelaySender<S>;
     S sender;
     sled::TimeDelta delta;
 
@@ -55,6 +56,12 @@ struct DelaySender {
     {
         return {sender.Connect(DelayReceiver<R>{receiver, delta})};
     }
+
+    template<typename Lazy>
+    friend ContinueResultT<this_type, Lazy> operator|(this_type sender, Lazy lazy)
+    {
+        return lazy.Continue(sender);
+    }
 };
 
 template<typename S>
@@ -62,6 +69,22 @@ DelaySender<S>
 Delay(S sender, sled::TimeDelta const &delta)
 {
     return {sender, delta};
+}
+
+struct DelayLazy {
+    sled::TimeDelta delta;
+
+    template<typename S>
+    DelaySender<S> Continue(S sender) const
+    {
+        return {sender, delta};
+    }
+};
+
+inline DelayLazy
+Delay(sled::TimeDelta const &delta)
+{
+    return {delta};
 }
 
 }// namespace detail

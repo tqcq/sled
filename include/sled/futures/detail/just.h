@@ -12,7 +12,7 @@ struct JustOperation {
     T value;
     R receiver;
 
-    void Start() { receiver.SetValue(std::move(value)); }
+    void Start() { receiver.SetValue(std::forward<T>(value)); }
 
     void Stop() { receiver.SetStopped(); }
 };
@@ -20,12 +20,19 @@ struct JustOperation {
 template<typename T>
 struct JustSender {
     using result_t = T;
+    using this_type = JustSender<T>;
     T value;
 
     template<typename R>
     JustOperation<T, R> Connect(R receiver)
     {
         return {std::forward<T>(value), receiver};
+    }
+
+    template<typename Lazy>
+    friend ContinueResultT<this_type, Lazy> operator|(this_type sender, Lazy lazy)
+    {
+        return lazy.Continue(sender);
     }
 };
 
