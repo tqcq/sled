@@ -13,12 +13,12 @@ struct ThenReceiver {
     F func;
     bool stopped = false;
 
-    template<typename U>
+    template<typename U, typename Ret = invoke_result_t<F, U>>
     void SetValue(U &&val)
     {
         if (stopped) { return; }
         try {
-            receiver.SetValue(func(std::forward<U>(val)));
+            receiver.SetValue(std::forward<Ret>(func(std::forward<U>(val))));
         } catch (...) {
             SetError(std::current_exception());
         }
@@ -49,7 +49,7 @@ struct ThenOperation {
 
 template<typename S, typename F>
 struct ThenSender {
-    using result_t = invoke_result_t<F, typename S::result_t>;
+    using result_t = invoke_result_t<F, typename decay_t<S>::result_t>;
     S sender;
     F func;
 
@@ -62,9 +62,9 @@ struct ThenSender {
 
 template<typename S, typename F>
 ThenSender<S, F>
-Then(S sender, F &&func)
+Then(S &&sender, F &&func)
 {
-    return {sender, std::forward<F>(func)};
+    return {std::forward<S>(sender), std::forward<F>(func)};
 }
 
 }// namespace detail

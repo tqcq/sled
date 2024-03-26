@@ -25,15 +25,15 @@ struct JustSender {
     template<typename R>
     JustOperation<T, R> Connect(R receiver)
     {
-        return {value, receiver};
+        return {std::forward<T>(value), receiver};
     }
 };
 
 template<typename T>
 JustSender<T>
-Just(T value)
+Just(T &&value)
 {
-    return {value};
+    return {std::forward<T>(value)};
 }
 
 }// namespace detail

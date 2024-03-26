@@ -18,6 +18,9 @@ using ConnectResultT = typename ConnectResult<S, R>::type;
 template<typename F, typename... Args>
 using invoke_result_t = eggs::invoke_result_t<F, Args...>;
 
+template<typename T>
+using decay_t = typename std::decay<T>::type;
+
 }// namespace detail
 }// namespace sled
 #endif// SLED_FUTURES_DETAIL_TRAITS_H
