@@ -2200,11 +2200,11 @@ private:
         //FIXME: @tqcq cast_pointer
         spec_.flags_ = HASH_FLAG;
         spec_.type_  = 'x';
-#if (sizeof(uintptr_t) < sizeof(void *))
+        // #if (sizeof(uintptr_t) < sizeof(void *))
         writer_.write_int(reinterpret_cast<uint64_t>(p), spec_);
-#else
-        writer_.write_int(reinterpret_cast<uintptr_t>(p), spec_);
-#endif
+        // #else
+        //         writer_.write_int(reinterpret_cast<uintptr_t>(p), spec_);
+        // #endif
     }
 
     // workaround MSVC two-phase lookup issue
@@ -2596,9 +2596,10 @@ make_type(FMT_GEN15(FMT_ARG_TYPE_DEFAULT))
     inline void func(arg_type arg) { func(arg, fmt::ArgList()); }                                                      \
     FMT_WRAP1(func, arg_type, 1)                                                                                       \
     FMT_WRAP1(func, arg_type, 2)                                                                                       \
-    FMT_WRAP1(func, arg_type, 3) FMT_WRAP1(func, arg_type, 4) FMT_WRAP1(func, arg_type, 5)                             \
-        FMT_WRAP1(func, arg_type, 6) FMT_WRAP1(func, arg_type, 7) FMT_WRAP1(func, arg_type, 8)                         \
-            FMT_WRAP1(func, arg_type, 9) FMT_WRAP1(func, arg_type, 10)
+    FMT_WRAP1(func, arg_type, 3)                                                                                       \
+    FMT_WRAP1(func, arg_type, 4) FMT_WRAP1(func, arg_type, 5) FMT_WRAP1(func, arg_type, 6)                             \
+        FMT_WRAP1(func, arg_type, 7) FMT_WRAP1(func, arg_type, 8) FMT_WRAP1(func, arg_type, 9)                         \
+            FMT_WRAP1(func, arg_type, 10)
 
 #define FMT_CTOR(ctor, func, arg0_type, arg1_type, n)                                                                  \
     template<FMT_GEN(n, FMT_MAKE_TEMPLATE_ARG)>                                                                        \
