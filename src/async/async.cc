@@ -30,7 +30,8 @@ FiberScheduler::schedule(async::task_run_handle t)
 {
     static ThreadPool thread_pool;
     auto move_on_copy = sled::MakeMoveOnCopy(t);
-    thread_pool.PostTask([move_on_copy] { move_on_copy.value.run_with_wait_handler(SleepWaitHandler); });
+    // thread_pool.PostTask([move_on_copy] { move_on_copy.value.run_with_wait_handler(SleepWaitHandler); });
+    thread_pool.submit([move_on_copy] { move_on_copy.value.run_with_wait_handler(SleepWaitHandler); });
 }
 
 }// namespace sled

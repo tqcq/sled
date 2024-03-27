@@ -1,4 +1,5 @@
 #include "sled/log/log.h"
+#include "sled/synchronization/mutex.h"
 #include "sled/time_utils.h"
 #include <atomic>
 #include <ctime>
@@ -60,7 +61,7 @@ class ScopedAtomicWaiter {
 public:
     ScopedAtomicWaiter(std::atomic_bool &flag) : flag_(flag)
     {
-        bool old = flag_.load();
+        bool old = true;
         while (!flag_.compare_exchange_weak(old, false)) { continue; }
     }
 
@@ -79,7 +80,7 @@ GetCurrentUTCTime()
     // int64_t now = tp.tv_sec * kNumNanosecsPerSec + tp.tv_nsec;
     // std::time_t t = tp.tv_sec;
     const int64_t now = TimeUTCNanos();
-    std::time_t t = now / kNumNanosecsPerSec;
+    std::time_t t     = now / kNumNanosecsPerSec;
 #else
     std::time_t t = std::time(nullptr);
 #endif
@@ -103,18 +104,40 @@ SetLogLevel(LogLevel level)
     g_log_level = level;
 }
 
+static std::atomic<uint32_t> g_current_id(0);
+static std::atomic<uint32_t> g_request_id(0);
+
+struct Waiter {
+    Waiter(uint32_t id, std::atomic<uint32_t> &current_id) : id_(id), current_id_(current_id) {}
+
+    ~Waiter() { current_id_.fetch_add(1); }
+
+    uint32_t id() { return id_; }
+
+    void wait()
+    {
+        while (id_ > current_id_.load()) {}
+    }
+
+private:
+    uint32_t id_;
+    std::atomic<uint32_t> &current_id_;
+};
+
 void
 Log(LogLevel level, const char *tag, const char *fmt, const char *file_name, int line, const char *func_name, ...)
 {
     if (level < g_log_level) { return; }
 
-    static std::atomic_bool allow(true);
-    ScopedAtomicWaiter waiter(allow);
-    int len = file_name ? strlen(file_name) : 0;
+    auto utc_time  = GetCurrentUTCTime();
+    auto level_str = ToShortString(level);
+    int len        = file_name ? strlen(file_name) : 0;
     while (len > 0 && file_name[len - 1] != '/') { len--; }
 
-    auto msg = fmt::format("{} {} {} {}:{}@{}: {}", GetCurrentUTCTime(), ToShortString(level), tag, file_name + len,
-                           line, func_name, fmt);
+    auto msg = fmt::format("{} {} {} {}:{}@{}: {}", utc_time, level_str, tag, file_name + len, line, func_name, fmt);
+
+    Waiter waiter(g_request_id.fetch_add(1), g_current_id);
+    waiter.wait();
     std::cout << GetConsoleColorPrefix(level) << msg << GetConsoleColorSuffix() << std::endl;
 }
 
