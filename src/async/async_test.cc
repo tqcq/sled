@@ -17,15 +17,11 @@ TEST(Async, task)
 TEST(Async, parallel_for)
 {
     const int count = 1000;
-    std::vector<std::atomic<bool>> values(count);
-    // std::vector<bool> values(count);
-    // sled::WaitGroup wg(count);
+    std::vector<int> values(count);
     async::parallel_for(async::irange(0, count), [&values](int x) {
         EXPECT_FALSE(values[x]);
         values[x] = true;
-        // wg.Done();
     });
-    // wg.Wait();
     for (int i = 0; i < count; i++) { EXPECT_TRUE(values[i]) << i; }
 }
 
