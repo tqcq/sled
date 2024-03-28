@@ -3,18 +3,28 @@
 
 namespace sled {
 class FiberScheduler;
+
 }
 
 namespace async {
 sled::FiberScheduler &default_scheduler();
-}
+class task_base;
 
+namespace detail {
+void wait_for_task(task_base *wait_task);
+}
+}// namespace async
+
+#define LIBASYNC_CUSTON_EVENT
 #define LIBASYNC_CUSTOM_DEFAULT_SCHEDULER
 #include <async++.h>
 
 namespace sled {
+void SleepWaitHandler(async::task_wait_handle t);
+
 class FiberScheduler {
 public:
+    FiberScheduler();
     void schedule(async::task_run_handle t);
 };
 

@@ -28,3 +28,12 @@ TEST(Async, parallel_for)
     // wg.Wait();
     for (int i = 0; i < count; i++) { EXPECT_TRUE(values[i]) << i; }
 }
+
+TEST(Async, parallel_reduce)
+{
+    auto r = async::parallel_reduce(async::irange(1, 5), 0, [](int x, int y) {
+        LOGD("", "{},{}", x, y);
+        return x + y;
+    });
+    LOGD("", "{}", r);
+}

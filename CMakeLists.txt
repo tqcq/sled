@@ -141,6 +141,9 @@ if(SLED_BUILD_TESTS)
     src/system/thread_pool_test.cc
     src/rx_test.cc
     src/uri_test.cc)
+    if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        target_compile_options(sled_tests PRIVATE -Wthread-safety)
+    endif()
     target_link_libraries(sled_tests PRIVATE sled GTest::gtest GTest::gtest_main)
     add_test(NAME sled_tests COMMAND sled_tests)
 endif(SLED_BUILD_TESTS)

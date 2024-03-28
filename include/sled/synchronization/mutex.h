@@ -22,7 +22,7 @@ namespace internal {
 template<typename T>
 struct HasLockAndUnlock {
     template<typename U,
-             decltype(std::declval<U>().Lock()) * = nullptr,
+             decltype(std::declval<U>().Lock())   * = nullptr,
              decltype(std::declval<U>().Unlock()) * = nullptr>
     static int Test(int);
 
@@ -33,31 +33,32 @@ struct HasLockAndUnlock {
 };
 }// namespace internal
 
-using Mutex = marl::mutex;
+// using Mutex = marl::mutex;
 
-// class Mutex final {
-// public:
-//     Mutex() = default;
-//     Mutex(const Mutex &) = delete;
-//     Mutex &operator=(const Mutex &) = delete;
-//
-//     inline void Lock() { impl_.lock(); };
-//
-//     inline bool TryLock() { return impl_.try_lock(); }
-//
-//     inline void AssertHeld() {}
-//
-//     inline void Unlock() { impl_.unlock(); }
-//
-// private:
-//     std::mutex impl_;
-//     friend class ConditionVariable;
-// };
-
-class RecursiveMutex final {
+class SLED_LOCKABLE Mutex final {
 public:
-    RecursiveMutex() = default;
-    RecursiveMutex(const RecursiveMutex &) = delete;
+    Mutex()                         = default;
+    Mutex(const Mutex &)            = delete;
+    Mutex &operator=(const Mutex &) = delete;
+
+    inline void Lock() SLED_EXCLUSIVE_LOCK_FUNCTION(impl_) { impl_.lock(); };
+
+    inline bool TryLock() SLED_EXCLUSIVE_TRYLOCK_FUNCTION(true) { return impl_.try_lock(); }
+
+    inline void AssertHeld() SLED_ASSERT_EXCLUSIVE_LOCK(impl_) {}
+
+    inline void Unlock() SLED_UNLOCK_FUNCTION(impl_) { impl_.unlock(); }
+
+private:
+    marl::mutex impl_;
+    friend class ConditionVariable;
+    friend class MutexLock;
+};
+
+class SLED_LOCKABLE RecursiveMutex final {
+public:
+    RecursiveMutex()                                  = default;
+    RecursiveMutex(const RecursiveMutex &)            = delete;
     RecursiveMutex &operator=(const RecursiveMutex &) = delete;
 
     inline void Lock() SLED_SHARED_LOCK_FUNCTION() { impl_.lock(); }
@@ -72,17 +73,14 @@ private:
     std::recursive_mutex impl_;
 };
 
-class RecursiveMutexLock final {
+class SLED_SCOPED_CAPABILITY RecursiveMutexLock final {
 public:
-    RecursiveMutexLock(const RecursiveMutexLock &) = delete;
+    RecursiveMutexLock(const RecursiveMutexLock &)            = delete;
     RecursiveMutexLock &operator=(const RecursiveMutexLock &) = delete;
 
-    explicit RecursiveMutexLock(RecursiveMutex *mutex) SLED_EXCLUSIVE_LOCK_FUNCTION(mutex) : mutex_(mutex)
-    {
-        mutex->Lock();
-    }
+    explicit RecursiveMutexLock(RecursiveMutex *mutex) SLED_ACQUIRE_SHARED(mutex) : mutex_(mutex) { mutex->Lock(); }
 
-    ~RecursiveMutexLock() SLED_UNLOCK_FUNCTION() { mutex_->Unlock(); }
+    ~RecursiveMutexLock() SLED_RELEASE_SHARED(mutex_) { mutex_->Unlock(); }
 
 private:
     RecursiveMutex *mutex_;
@@ -101,13 +99,13 @@ private:
 //     friend class ConditionVariable;
 // };
 //
-class MutexLock final {
+class SLED_SCOPED_CAPABILITY MutexLock final {
 public:
-    MutexLock(Mutex *mutex) SLED_EXCLUSIVE_LOCK_FUNCTION(mutex) : lock_(*mutex) {}
+    MutexLock(Mutex *mutex) SLED_ACQUIRE(mutex) : lock_(mutex->impl_) {}
 
-    ~MutexLock() SLED_UNLOCK_FUNCTION() = default;
+    ~MutexLock() SLED_RELEASE() = default;
 
-    MutexLock(const MutexLock &) = delete;
+    MutexLock(const MutexLock &)            = delete;
     MutexLock &operator=(const MutexLock &) = delete;
 
 private:
