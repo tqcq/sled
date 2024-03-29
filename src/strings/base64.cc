@@ -71,7 +71,7 @@ Base64::Encode(const uint8_t *ptr, size_t len)
     while (write_idx < encoded_length) { result[write_idx++] = '='; }
 
     // return ss.str();
-    return std::move(result);
+    return result;
 }
 
 StatusOr<std::string>
