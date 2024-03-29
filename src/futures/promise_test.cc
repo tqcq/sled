@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <sled/futures/promise.h>
 
 TEST(Promise, Basic)
 {
@@ -21,7 +22,7 @@ TEST(Promise, Basic)
 
 TEST(Future, Basic)
 {
-    auto p = sled::Promise<int>();
+    auto p      = sled::Promise<int>();
     auto future = p.GetFuture()
                       .Then([](int v) {
                           EXPECT_EQ(v, 1);

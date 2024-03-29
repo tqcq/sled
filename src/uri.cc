@@ -9,8 +9,10 @@ URI::ParseURI(const std::string &uri_str)
     URI uri;
     // TODO: decode before
     auto start_pos = uri_str.find_first_not_of(" ");
-    auto end_pos = uri_str.find(':');
+    auto end_pos   = uri_str.find(':');
 
     return std::move(uri);
 }
+
+URI::URI(const std::string &uri_str) { *this = ParseURI(uri_str); }
 }// namespace sled

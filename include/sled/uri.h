@@ -26,6 +26,9 @@ public:
     // http://xxx.com/index.html
     static URI ParseURIReference(const std::string &uri_str);
 
+    URI() = default;
+    URI(const std::string &uri_str);
+
     // setter getter
     __SLED_URI_GETTER_AND_SETTER(std::string, scheme)
     __SLED_URI_GETTER_AND_SETTER(std::string, username)
