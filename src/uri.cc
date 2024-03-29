@@ -532,7 +532,7 @@ URI::href() const
 {
     std::stringstream ss;
     if (!scheme().empty()) { ss << scheme() << ":"; }
-    if (!user_info.empty()) { ss << user_info() << "@"; }
+    if (!user_info().empty()) { ss << user_info() << "@"; }
     if (!authority().empty()) { ss << authority(); }
     ss << path();
     ss << "?" << query_string();

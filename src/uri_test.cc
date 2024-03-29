@@ -7,7 +7,7 @@ TEST(URI, Absolute)
     EXPECT_EQ(uri.scheme(), "http");
     EXPECT_EQ(uri.host(), "example.com");
     EXPECT_EQ(uri.port(), 1234);
-    EXPECT_EQ(uri.path(), "dir1/dir2/file");
+    EXPECT_EQ(uri.path(), "/dir1/dir2/file");
     EXPECT_EQ(uri.query().size(), 1);
     EXPECT_EQ(uri.query()["a"], "1");
     EXPECT_EQ(uri.anchor(), "anchor");

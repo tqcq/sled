@@ -8,14 +8,14 @@ class FiberScheduler;
 
 namespace async {
 sled::FiberScheduler &default_scheduler();
-class task_base;
 
 namespace detail {
+class task_base;
 void wait_for_task(task_base *wait_task);
-}
+}// namespace detail
 }// namespace async
 
-#define LIBASYNC_CUSTON_EVENT
+#define LIBASYNC_CUSTOM_WAIT_FOR_TASK
 #define LIBASYNC_CUSTOM_DEFAULT_SCHEDULER
 #include <async++.h>
 

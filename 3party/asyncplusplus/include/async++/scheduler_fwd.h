@@ -63,10 +63,15 @@ typedef ref_count_ptr<task_base> task_ptr;
 template<typename Sched>
 void schedule_task(Sched &sched, task_ptr t);
 
+void generic_wait_for_task(task_base *wait_task);
 // Wait for the given task to finish. This will call the wait handler currently
 // active for this thread, which causes the thread to sleep by default.
 #ifndef LIBASYNC_CUSTOM_WAIT_FOR_TASK
-LIBASYNC_EXPORT void wait_for_task(task_base *wait_task);
+inline void
+wait_for_task(task_base *wait_task)
+{
+    generic_wait_for_task(wait_task);
+}
 #endif
 
 // Forward-declaration for data used by threadpool_scheduler
