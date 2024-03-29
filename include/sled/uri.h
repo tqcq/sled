@@ -42,6 +42,11 @@ public:
     __SLED_URI_GETTER_AND_SETTER(ParamMap, query)
     __SLED_URI_GETTER_AND_SETTER(std::string, anchor)
 
+    std::string href() const;
+    std::string authority() const;
+    std::string user_info() const;
+    std::string query_string() const;
+
 private:
     std::string scheme_;
     std::string content_;

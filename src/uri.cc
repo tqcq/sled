@@ -2,6 +2,7 @@
 #include "sled/strings/utils.h"
 #include <cctype>
 #include <map>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -510,14 +511,14 @@ URI
 URI::ParseURI(const std::string &uri_str)
 {
     URI uri;
-    detail::uri uri_impl(uri_str.c_str());
+    detail::uri uri_impl(uri_str.c_str(), detail::uri::scheme_category::Hierarchical);
     uri.set_scheme(uri_impl.get_scheme());
-    uri.set_content(uri_impl.get_content());
+    // uri.set_content(uri_impl.get_content());
     uri.set_username(uri_impl.get_username());
     uri.set_password(uri_impl.get_password());
     uri.set_host(uri_impl.get_host());
     uri.set_port(uri_impl.get_port());
-    uri.set_path(uri_impl.get_path());
+    uri.set_path(std::string("/") + uri_impl.get_path());
     uri.set_query(uri_impl.get_query_dictionary());
     uri.set_anchor(uri_impl.get_fragment());
 
@@ -525,4 +526,48 @@ URI::ParseURI(const std::string &uri_str)
 }
 
 URI::URI(const std::string &uri_str) { *this = ParseURI(uri_str); }
+
+std::string
+URI::href() const
+{
+    std::stringstream ss;
+    if (!scheme().empty()) { ss << scheme() << ":"; }
+    if (!user_info.empty()) { ss << user_info() << "@"; }
+    if (!authority().empty()) { ss << authority(); }
+    ss << path();
+    ss << "?" << query_string();
+    ss << "#" << anchor();
+    return ss.str();
+}
+
+std::string
+URI::authority() const
+{
+    if (port() == 0) {
+        return host();
+    } else {
+        return host() + ":" + std::to_string(port());
+    }
+}
+
+std::string
+URI::user_info() const
+{
+    if (password().empty()) { return username(); }
+    if (username().empty()) { return ":" + password(); }
+    return username() + ":" + password();
+}
+
+std::string
+URI::query_string() const
+{
+    std::stringstream ss;
+    for (auto item : query()) {
+        std::string key   = item.first;
+        std::string value = item.second;
+        if (key.empty()) { return value; }
+        ss << key + "=" + value;
+    }
+    return ss.str();
+}
 }// namespace sled
