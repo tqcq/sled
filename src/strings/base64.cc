@@ -40,10 +40,11 @@ Base64::Encode(const uint8_t *ptr, size_t len)
 
 {
     // std::stringstream ss;
-    std::string result(EncodedLength(len), 0);
+    auto encoded_length = EncodedLength(len);
+    std::string result(encoded_length, 0);
     int write_idx = 0;
 
-    int value = 0;
+    int value      = 0;
     int value_bits = 0;
     while (len > 0) {
         value = (value << 8) + *ptr;
@@ -67,7 +68,7 @@ Base64::Encode(const uint8_t *ptr, size_t len)
         // ss << kBase64Chars[((value << 8) >> (value_bits + 2)) & 0x3F];
     }
     // while (ss.str().size() % 4) { ss << '='; }
-    while (write_idx % 4) { result[write_idx++] = '='; }
+    while (write_idx < encoded_length) { result[write_idx++] = '='; }
 
     // return ss.str();
     return std::move(result);
@@ -84,9 +85,9 @@ Base64::Decode(const uint8_t *ptr, size_t len)
     int write_idx = 0;
     std::string data(DecodedLength((char *) ptr, len), 0);
     // std::stringstream ss;
-    int value = 0;
+    int value      = 0;
     int value_bits = 0;
-    int index = 0;
+    int index      = 0;
     for (int i = 0; i < len; i++) {
         char c = ptr[i];
         if (-1 != kInvBase64Chars[c]) {
