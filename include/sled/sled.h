@@ -2,7 +2,10 @@
 #ifndef SLED_SLED_H
 #define SLED_SLED_H
 
+namespace async {}
+
 // thrid_party
+#include "async/async.h"
 #include "inja.hpp"
 #include "rx.h"
 
