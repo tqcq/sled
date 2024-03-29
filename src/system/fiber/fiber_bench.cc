@@ -3,12 +3,11 @@
 #include <sled/system/fiber/wait_group.h>
 
 static void
-SingleQueue(benchmark::State &state)
+FiberSingleQueue(benchmark::State &state)
 {
     for (auto _ : state) {
         state.PauseTiming();
-        sled::Scheduler scheduler(
-            sled::Scheduler::Config().setWorkerThreadCount(0));
+        sled::Scheduler scheduler(sled::Scheduler::Config().setWorkerThreadCount(0));
         scheduler.bind();
         defer(scheduler.unbind());
         const int num_tasks = state.range(0);
@@ -29,7 +28,7 @@ SingleQueue(benchmark::State &state)
 }
 
 static void
-MultiQueue(benchmark::State &state)
+FiberMultiQueue(benchmark::State &state)
 {
 
     for (auto _ : state) {
@@ -55,5 +54,5 @@ MultiQueue(benchmark::State &state)
     }
 }
 
-BENCHMARK(MultiQueue)->RangeMultiplier(10)->Range(10, 10000);
-BENCHMARK(SingleQueue)->RangeMultiplier(10)->Range(10, 10000);
+BENCHMARK(FiberSingleQueue)->RangeMultiplier(10)->Range(10, 10000);
+BENCHMARK(FiberMultiQueue)->RangeMultiplier(10)->Range(10, 10000);
