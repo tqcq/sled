@@ -85,4 +85,7 @@ namespace async {}
 #include "sled/system_time.h"
 #include "sled/time_utils.h"
 #include "sled/variant.h"
+
+// testing
+#include "sled/testing/test.h"
 #endif//  SLED_SLED_H

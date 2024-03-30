@@ -1,23 +1,22 @@
-#include <gtest/gtest.h>
 #include <sled/filesystem/path.h>
 
-TEST(Path, TestCurrent)
+TEST_SUITE("Path")
 {
-    sled::Path path = sled::Path::Current();
-    std::string str = path.ToString();
-    EXPECT_FALSE(str.empty());
-}
+    TEST_CASE("Current Directory")
+    {
+        sled::Path path = sled::Path::Current();
+        CHECK_FALSE(path.ToString().empty());
+    }
 
-TEST(Path, TestHome)
-{
-    sled::Path path = sled::Path::Home();
-    std::string str = path.ToString();
-    EXPECT_FALSE(str.empty());
-}
+    TEST_CASE("Home")
+    {
+        sled::Path path = sled::Path::Home();
+        CHECK_FALSE(path.ToString().empty());
+    }
 
-TEST(Path, TestTempDir)
-{
-    sled::Path path = sled::Path::TempDir();
-    std::string str = path.ToString();
-    EXPECT_FALSE(str.empty());
+    TEST_CASE("Temparory Directory")
+    {
+        sled::Path path = sled::Path::TempDir();
+        CHECK_FALSE(path.ToString().empty());
+    }
 }

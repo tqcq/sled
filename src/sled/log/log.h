@@ -105,8 +105,8 @@ void Log(LogLevel level, const char *tag, const char *fmt, const char *file_name
 #define LOGE_IF(cond, tag, fmt, ...) SLOG_IF(cond, sled::LogLevel::kError, tag, fmt, __VA_ARGS__)
 #define LOGF_IF(cond, tag, fmt, ...) SLOG_IF(cond, sled::LogLevel::kFatal, tag, fmt, __VA_ARGS__)
 
-#define CHECK(cond, fmt, ...) SLOG_ASSERT(cond, "DCHECK", fmt, ##__VA_ARGS__)
-#define DCHECK(cond, fmt, ...) SLOG_ASSERT(cond, "DCHECK", fmt, ##__VA_ARGS__)
+#define SLED_CHECK(cond, fmt, ...) SLOG_ASSERT(cond, "DCHECK", fmt, ##__VA_ARGS__)
+#define SLED_DCHECK(cond, fmt, ...) SLOG_ASSERT(cond, "DCHECK", fmt, ##__VA_ARGS__)
 
 #define LOGV(tag, fmt, ...) SLOG(sled::LogLevel::kTrace, tag, fmt, ##__VA_ARGS__)
 #define LOGD(tag, fmt, ...) SLOG(sled::LogLevel::kDebug, tag, fmt, ##__VA_ARGS__)

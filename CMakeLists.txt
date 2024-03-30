@@ -17,6 +17,7 @@ set(BUILD_STATIC ON)
 set(BUILD_RTTR_DYNAMIC OFF)
 set(BUILD_UNIT_TESTS OFF)
 set(BUILD_EXAMPLES OFF)
+add_library(test_main STATIC src/sled/testing/test_main.cc)
 add_library(sled STATIC "")
 
 add_subdirectory(3party/gperftools EXCLUDE_FROM_ALL)
@@ -42,6 +43,7 @@ endif()
 # add_subdirectory(3party/eigen EXCLUDE_FROM_ALL)
 target_include_directories(sled PUBLIC src/ 3party/eigen 3party/inja
                                        3party/rxcpp)
+target_include_directories(test_main PUBLIC src/)
 target_sources(
   sled
   PRIVATE src/sled/async/async.cc
@@ -68,6 +70,7 @@ target_sources(
           src/sled/system/thread_pool.cc
           src/sled/task_queue/pending_task_safety_flag.cc
           src/sled/task_queue/task_queue_base.cc
+          src/sled/testing/test.cc
           src/sled/timer/task_queue_timeout.cc
           src/sled/timer/timer.cc
           src/sled/units/time_delta.cc
@@ -122,9 +125,6 @@ function(sled_add_test)
   cmake_parse_arguments("${prefix}" "${options}" "${one_value_keywords}"
                         "${multi_value_keywords}" ${ARGN})
 
-  message(WARNING "SLED_TEST_NAME: ${SLED_TEST_NAME}")
-  message(WARNING "SLED_TEST_SRCS: ${SLED_TEST_SRCS}")
-  message(WARNING "SLED_TEST_LIBS: ${SLED_TEST_LIBS}")
   add_executable(${SLED_TEST_NAME} ${SLED_TEST_SRCS})
 
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -134,28 +134,30 @@ function(sled_add_test)
 
     target_link_options(${SLED_TEST_NAME} PRIVATE ${EXTRA_FLAGS})
   endif()
+  if(MSVC)
+    target_compile_options(${SLED_TEST_NAME} PRIVATE /FI"sled/testing/test.h")
+  else()
+    target_compile_options(${SLED_TEST_NAME} PRIVATE -include
+                                                     sled/testing/test.h)
+  endif()
   target_include_directories(${SLED_TEST_NAME} PRIVATE ${SLED_TEST_INC_DIRS})
-  target_link_libraries(${SLED_TEST_NAME} PRIVATE ${SLED_TEST_LIBS}
-                                                  GTest::gtest)
+  target_link_libraries(${SLED_TEST_NAME} PRIVATE ${SLED_TEST_LIBS})
   add_test(NAME ${SLED_TEST_NAME} COMMAND ${SLED_TEST_NAME})
 endfunction()
 
 if(SLED_BUILD_TESTS)
-  include(FetchContent)
-  FetchContent_Declare(
-    googletest
-    URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
-  )
-  FetchContent_MakeAvailable(googletest)
+  # include(FetchContent) FetchContent_Declare( googletest URL
+  # https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+  # ) FetchContent_MakeAvailable(googletest)
 
   sled_add_test(
     NAME
     sled_all_tests
     SRCS
+    src/sled/debugging/demangle_test.cc
     src/sled/async/async_test.cc
     src/sled/any_test.cc
     src/sled/filesystem/path_test.cc
-    src/sled/futures/detail/just_test.cc
     src/sled/log/fmt_test.cc
     src/sled/synchronization/sequence_checker_test.cc
     src/sled/cleanup_test.cc
@@ -169,7 +171,7 @@ if(SLED_BUILD_TESTS)
     src/sled/uri_test.cc
     LIBS
     sled
-    GTest::gtest_main)
+    test_main)
 
   sled_add_test(NAME sled_symbolize_test SRCS
                 src/sled/debugging/symbolize_test.cc LIBS sled)

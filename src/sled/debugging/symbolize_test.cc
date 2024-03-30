@@ -1,14 +1,19 @@
-#include <gtest/gtest.h>
 #include <sled/debugging/symbolize.h>
 #include <sled/make_unique.h>
 
 void
-TestFunc1()
+TrivialFunc()
+{}
+
+static void
+StaticFunc()
 {}
 
 class Class {
 public:
     Class() {}
+
+    static void StaticFunc() {}
 
     void MemberFunc1() {}
 
@@ -58,20 +63,29 @@ void_cast(TRet (TClass::*mem_func)(Args...))
     return void_casted;
 }
 
-TEST(Symbolize, base)
+TEST_CASE("Trivial Function")
 {
-    char buf[1024];
-    EXPECT_STREQ("TestFunc1()", TrySymbolize(void_cast(TestFunc1)));
-    EXPECT_STREQ("Class::MemberFunc1()", TrySymbolize(void_cast(&Class::MemberFunc1)));
-    EXPECT_STREQ("Class::MemberFunc2()", TrySymbolize(void_cast(&Class::MemberFunc2)));
-    EXPECT_STREQ("Class::MemberFunc3()", TrySymbolize(void_cast(&Class::MemberFunc3)));
-    EXPECT_STREQ("TrySymbolizeWithLimit()", TrySymbolize(void_cast(&TrySymbolizeWithLimit)));
+    CHECK_EQ(doctest::String("TrivialFunc()"), TrySymbolize(void_cast(TrivialFunc)));
+    CHECK_EQ(doctest::String("TrySymbolizeWithLimit()"), TrySymbolize(void_cast(&TrySymbolizeWithLimit)));
+}
+
+TEST_CASE("Static Function") { CHECK_EQ(doctest::String("StaticFunc()"), TrySymbolize(void_cast(StaticFunc))); }
+
+TEST_CASE("Member Function")
+{
+    CHECK_EQ(doctest::String("Class::MemberFunc1()"), TrySymbolize(void_cast(&Class::MemberFunc1)));
+    CHECK_EQ(doctest::String("Class::MemberFunc2()"), TrySymbolize(void_cast(&Class::MemberFunc2)));
+    CHECK_EQ(doctest::String("Class::MemberFunc3()"), TrySymbolize(void_cast(&Class::MemberFunc3)));
+}
+
+TEST_CASE("Static Member Function")
+{
+    CHECK_EQ(doctest::String("Class::StaticFunc()"), TrySymbolize(void_cast(&Class::StaticFunc)));
 }
 
 int
 main(int argc, char *argv[])
 {
     sled::InitializeSymbolizer(argv[0]);
-    testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+    return doctest::Context(argc, argv).run();
 }

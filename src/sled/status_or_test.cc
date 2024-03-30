@@ -1,23 +1,25 @@
-#include <gtest/gtest.h>
 #include <sled/log/log.h>
 #include <sled/status_or.h>
 
-TEST(StatusOr, TestStatusOr)
+TEST_SUITE("StatusOr")
 {
-    sled::StatusOr<int> so;
-    EXPECT_FALSE(so.ok());
-    so = sled::StatusOr<int>(1);
-    EXPECT_TRUE(so.ok());
-    EXPECT_EQ(so.value(), 1);
-    EXPECT_EQ(so.status().code(), sled::StatusCode::kOk);
-}
+    TEST_CASE("StatusOr")
+    {
+        sled::StatusOr<int> so;
+        CHECK_FALSE(so.ok());
+        so = sled::StatusOr<int>(1);
+        CHECK(so.ok());
+        CHECK_EQ(so.value(), 1);
+        CHECK_EQ(so.status().code(), sled::StatusCode::kOk);
+    }
 
-TEST(StatusOr, make_status_or)
-{
-    auto from_raw_str = sled::MakeStatusOr("hello");
-    auto from_string  = sled::MakeStatusOr(std::string("world"));
-    EXPECT_TRUE(from_raw_str.ok());
-    EXPECT_TRUE(from_string.ok());
-    EXPECT_EQ(from_raw_str.value(), "hello");
-    EXPECT_EQ(from_string.value(), "world");
+    TEST_CASE("MakeStatusOr")
+    {
+        auto from_raw_str = sled::MakeStatusOr("hello");
+        auto from_string  = sled::MakeStatusOr(std::string("world"));
+        CHECK(from_raw_str.ok());
+        CHECK(from_string.ok());
+        CHECK_EQ(from_raw_str.value(), "hello");
+        CHECK_EQ(from_string.value(), "world");
+    }
 }

@@ -1,4 +1,3 @@
-#include <gtest/gtest.h>
 #include <random>
 #include <sled/system/thread_pool.h>
 
@@ -38,28 +37,26 @@ multiply_return(const int a, const int b)
     return res;
 }
 
-class ThreadPoolTest : public ::testing::Test {
-public:
-    void SetUp() override { tp = new sled::ThreadPool(); }
-
-    void TearDown() override { delete tp; }
-
-    sled::ThreadPool *tp;
-};
-
-TEST_F(ThreadPoolTest, Output)
+TEST_CASE("ThreadPool")
 {
-    for (int i = 0; i < 100; ++i) {
-        int out;
-        tp->submit(multiply_output, std::ref(out), i, i).get();
-        EXPECT_EQ(out, i * i);
-    }
-}
+    sled::ThreadPool *tp = new sled::ThreadPool();
+    REQUIRE_NE(tp, nullptr);
 
-TEST_F(ThreadPoolTest, Return)
-{
-    for (int i = 0; i < 100; ++i) {
-        auto f = tp->submit(multiply_return, i, i);
-        EXPECT_EQ(f.get(), i * i);
+    SUBCASE("Output")
+    {
+        for (int i = 0; i < 100; ++i) {
+            int out;
+            tp->submit(multiply_output, std::ref(out), i, i).get();
+            CHECK_EQ(out, i * i);
+        }
     }
+    SUBCASE("Return")
+    {
+        for (int i = 0; i < 100; ++i) {
+            auto f = tp->submit(multiply_return, i, i);
+            CHECK_EQ(f.get(), i * i);
+        }
+    }
+
+    delete tp;
 }

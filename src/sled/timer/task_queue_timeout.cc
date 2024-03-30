@@ -23,7 +23,7 @@ TaskQueueTimeoutFactory::TaskQueueTimeout::Start(DurationMs duration_ms, Timeout
     SLED_DCHECK_RUN_ON(&parent_.thread_checker_);
     ASSERT(timeout_expiration_ == std::numeric_limits<TimeMs>::max(), "");
     timeout_expiration_ = parent_.get_time_() + duration_ms;
-    timeout_id_ = timeout_id;
+    timeout_id_         = timeout_id;
 
     if (timeout_expiration_ >= posted_task_expiration_) { return; }
     if (posted_task_expiration_ != std::numeric_limits<TimeMs>::max()) {
@@ -35,7 +35,7 @@ TaskQueueTimeoutFactory::TaskQueueTimeout::Start(DurationMs duration_ms, Timeout
     }
 
     posted_task_expiration_ = timeout_expiration_;
-    auto safety_flag = safety_flag_;
+    auto safety_flag        = safety_flag_;
 
     parent_.task_queue_.PostDelayedTaskWithPrecision(
         precision_,
@@ -43,16 +43,16 @@ TaskQueueTimeoutFactory::TaskQueueTimeout::Start(DurationMs duration_ms, Timeout
                  [timeout_id, this]() {
                      LOGV("timer", "Timeout expired: {}", timeout_id);
                      SLED_DCHECK_RUN_ON(&parent_.thread_checker_);
-                     DCHECK(posted_task_expiration_ != std::numeric_limits<TimeMs>::max(), "");
+                     SLED_DCHECK(posted_task_expiration_ != std::numeric_limits<TimeMs>::max(), "");
                      posted_task_expiration_ = std::numeric_limits<TimeMs>::max();
 
                      if (timeout_expiration_ == std::numeric_limits<TimeMs>::max()) {
                          // cancelled timer
                          // do nothing
                      } else {
-                         const TimeMs now = parent_.get_time_();
+                         const TimeMs now           = parent_.get_time_();
                          const DurationMs remaining = timeout_expiration_ - now;
-                         bool is_expired = timeout_expiration_ <= now;
+                         bool is_expired            = timeout_expiration_ <= now;
 
                          timeout_expiration_ = std::numeric_limits<TimeMs>::max();
 

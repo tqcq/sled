@@ -45,7 +45,7 @@ public:
 };
 
 #define SLED_RUN_ON(x) THREAD_ANNOTATION_ATTRIBUTE__(exclusive_locks_required(x))
-#define SLED_DCHECK_RUN_ON(x) DCHECK((x)->IsCurrent(), (x)->ExpectationToString())
+#define SLED_DCHECK_RUN_ON(x) SLED_DCHECK((x)->IsCurrent(), (x)->ExpectationToString())
 
 }// namespace sled
 
