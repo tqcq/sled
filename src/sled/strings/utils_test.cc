@@ -3,20 +3,16 @@
 
 TEST(ToLower, Char)
 {
-    EXPECT_EQ(sled::ToLower('A'), 'a');
-    EXPECT_EQ(sled::ToLower('Z'), 'z');
-    EXPECT_EQ(sled::ToLower('a'), 'a');
-    EXPECT_EQ(sled::ToLower('z'), 'z');
+    for (char c = 'A'; c <= 'Z'; ++c) { EXPECT_EQ(sled::ToLower(c), c + 32) << c; }
+    for (char c = 'a'; c <= 'z'; ++c) { EXPECT_EQ(sled::ToLower(c), c) << c; }
     EXPECT_EQ(sled::ToLower(' '), ' ');
     EXPECT_EQ(sled::ToLower('\0'), '\0');
 }
 
 TEST(ToUpper, Char)
 {
-    EXPECT_EQ(sled::ToUpper('A'), 'A');
-    EXPECT_EQ(sled::ToUpper('Z'), 'Z');
-    EXPECT_EQ(sled::ToUpper('a'), 'A');
-    EXPECT_EQ(sled::ToUpper('z'), 'Z');
+    for (char c = 'A'; c <= 'Z'; ++c) { EXPECT_EQ(sled::ToUpper(c), c) << c; }
+    for (char c = 'a'; c <= 'z'; ++c) { EXPECT_EQ(sled::ToUpper(c), c - 32) << c; }
     EXPECT_EQ(sled::ToUpper(' '), ' ');
     EXPECT_EQ(sled::ToUpper('\0'), '\0');
 }
