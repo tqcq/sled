@@ -42,7 +42,7 @@
 #ifndef DOCTEST_LIBRARY_INCLUDED
 #define DOCTEST_LIBRARY_INCLUDED
 #ifndef SLED_TESTING_TEST_H
-#error "This file should not be included directly. Include the top-level header instead.
+#error "This file should not be included directly. Include the top-level header instead."
 #endif // SLED_TESTING_TEST_H
 
 // =================================================================================================
