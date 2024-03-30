@@ -40,7 +40,14 @@ jobs:
       - name: configure
         run: |
           mkdir build && cd build
-          cmake .. -DCMAKE_BUILD_TYPE=${{matrix.build_type}}
+          cmake .. -DCMAKE_BUILD_TYPE=${{matrix.build_type}} -DSLED_BUILD_TESTS=ON -DSLED_BUILD_BENCHMARK=ON
       - name: build
         run: |
           cmake --build build -j `nproc`
+      - name: test
+        run: |
+          cd build
+          ctest --output-on-failure -j`nproc`
+      - name: benchmark
+        run: |
+          ./build/sled_benchmark
