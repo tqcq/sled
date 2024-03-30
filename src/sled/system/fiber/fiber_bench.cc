@@ -1,4 +1,3 @@
-#include <benchmark/benchmark.h>
 #include <sled/system/fiber/scheduler.h>
 #include <sled/system/fiber/wait_group.h>
 

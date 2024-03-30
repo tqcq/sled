@@ -18,6 +18,10 @@ set(BUILD_RTTR_DYNAMIC OFF)
 set(BUILD_UNIT_TESTS OFF)
 set(BUILD_EXAMPLES OFF)
 add_library(test_main STATIC src/sled/testing/test_main.cc)
+add_library(benchmark_main STATIC src/sled/testing/benchmark_main.cc)
+target_include_directories(test_main PUBLIC src/)
+target_include_directories(benchmark_main PUBLIC src/)
+
 add_library(sled STATIC "")
 
 add_subdirectory(3party/gperftools EXCLUDE_FROM_ALL)
@@ -43,7 +47,6 @@ endif()
 # add_subdirectory(3party/eigen EXCLUDE_FROM_ALL)
 target_include_directories(sled PUBLIC src/ 3party/eigen 3party/inja
                                        3party/rxcpp)
-target_include_directories(test_main PUBLIC src/)
 target_sources(
   sled
   PRIVATE src/sled/async/async.cc
@@ -71,6 +74,7 @@ target_sources(
           src/sled/task_queue/pending_task_safety_flag.cc
           src/sled/task_queue/task_queue_base.cc
           src/sled/testing/test.cc
+          src/sled/testing/benchmark.cc
           src/sled/timer/task_queue_timeout.cc
           src/sled/timer/timer.cc
           src/sled/units/time_delta.cc
@@ -104,17 +108,19 @@ target_link_libraries(
 set_target_properties(sled PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 if(SLED_BUILD_BENCHMARK)
-  if(NOT TARGET benchmark)
-    find_package(benchmark REQUIRED)
-  endif()
+  # if(NOT TARGET benchmark) find_package(mbenchmark REQUIRED) endif()
 
   add_executable(
     sled_benchmark
-    src/sled/random_bench.cc src/sled/strings/base64_bench.cc
-    src/sled/system/fiber/fiber_bench.cc src/sled/system/thread_pool_bench.cc
+    src/sled/random_bench.cc
+    src/sled/strings/base64_bench.cc
+    # src/sled/system/fiber/fiber_bench.cc
+    src/sled/system/thread_bench.cc
+    src/sled/system/thread_pool_bench.cc
     src/sled/system_time_bench.cc)
-  target_link_libraries(sled_benchmark PRIVATE sled benchmark::benchmark
-                                               benchmark::benchmark_main)
+  target_link_libraries(sled_benchmark PRIVATE sled benchmark_main)
+  target_compile_options(sled_benchmark PRIVATE -include
+                                                sled/testing/benchmark.h)
 endif(SLED_BUILD_BENCHMARK)
 
 function(sled_add_test)

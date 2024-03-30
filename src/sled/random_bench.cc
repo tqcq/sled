@@ -1,56 +1,47 @@
-#include <benchmark/benchmark.h>
 #include <sled/random.h>
+#include <sled/testing/benchmark.h>
 
-class RandomFixture : public benchmark::Fixture {
-    void SetUp(::benchmark::State &state) { rand_ = new sled::Random(1314); }
+PICOBENCH([](picobench::state &s) {
+    sled::Random rand(s.user_data());
+    for (auto _ : s) { bool b = rand.Rand<bool>(); }
+}).label("Random bool");
 
-    void TearDown(::benchmark::State &state) { delete rand_; }
+PICOBENCH([](picobench::state &s) {
+    sled::Random rand(s.user_data());
+    for (auto _ : s) { int32_t i = rand.Rand<int8_t>(); }
+}).label("Random int8_t");
 
-protected:
-    sled::Random *rand_;
-};
+PICOBENCH([](picobench::state &s) {
+    sled::Random rand(s.user_data());
+    for (auto _ : s) { int32_t i = rand.Rand(-1000, 1000); }
+}).label("Random int32_t");
 
-BENCHMARK_F(RandomFixture, bool)(benchmark::State &state)
-{
-    for (auto _ : state) { bool b = rand_->Rand<bool>(); }
-}
+PICOBENCH([](picobench::state &s) {
+    sled::Random rand(s.user_data());
+    for (auto _ : s) { uint32_t i = rand.Rand<uint32_t>(); }
+}).label("Random uint32_t");
 
-BENCHMARK_F(RandomFixture, int32_t)(benchmark::State &state)
-{
-    for (auto _ : state) { int32_t i = rand_->Rand<int8_t>(); }
-}
+PICOBENCH([](picobench::state &s) {
+    sled::Random rand(s.user_data());
+    for (auto _ : s) { uint32_t i = rand.Rand(0u, 1000u); }
+}).label("Random uint32_t range");
 
-BENCHMARK_F(RandomFixture, int32_t_range)(benchmark::State &state)
-{
-    for (auto _ : state) { int32_t i = rand_->Rand(-1000, 1000); }
-}
+PICOBENCH([](picobench::state &s) {
+    sled::Random rand(s.user_data());
+    for (auto _ : s) { double d = rand.Gaussian(0, 1); }
+}).label("Gaussian(0, 1)");
 
-BENCHMARK_F(RandomFixture, uint32_t)(benchmark::State &state)
-{
-    for (auto _ : state) { uint32_t i = rand_->Rand<uint32_t>(); }
-}
+PICOBENCH([](picobench::state &s) {
+    sled::Random rand(s.user_data());
+    for (auto _ : s) { double d = rand.Exponential(1); }
+}).label("Exponential(1)");
 
-BENCHMARK_F(RandomFixture, uint32_t_range)(benchmark::State &state)
-{
-    for (auto _ : state) { uint32_t i = rand_->Rand(0u, 1000u); }
-}
+PICOBENCH([](picobench::state &s) {
+    sled::Random rand(s.user_data());
+    for (auto _ : s) { float f = rand.Rand<float>(); }
+}).label("Random float");
 
-BENCHMARK_F(RandomFixture, Gaussian)(benchmark::State &state)
-{
-    for (auto _ : state) { double d = rand_->Gaussian(0, 1); }
-}
-
-BENCHMARK_F(RandomFixture, Exponential)(benchmark::State &state)
-{
-    for (auto _ : state) { double d = rand_->Exponential(1); }
-}
-
-BENCHMARK_F(RandomFixture, float)(benchmark::State &state)
-{
-    for (auto _ : state) { float f = rand_->Rand<float>(); }
-}
-
-BENCHMARK_F(RandomFixture, double)(benchmark::State &state)
-{
-    for (auto _ : state) { double d = rand_->Rand<double>(); }
-}
+PICOBENCH([](picobench::state &s) {
+    sled::Random rand(s.user_data());
+    for (auto _ : s) { double d = rand.Rand<double>(); }
+}).label("Random double");

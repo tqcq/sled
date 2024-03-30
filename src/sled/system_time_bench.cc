@@ -1,10 +1,10 @@
-#include <benchmark/benchmark.h>
 #include <sled/system_time.h>
+#include <sled/testing/benchmark.h>
 
 static void
-SystemTimeNanos(benchmark::State &state)
+SystemTimeNanos(picobench::state &state)
 {
     for (auto _ : state) { (void) sled::SystemTimeNanos(); }
 }
 
-BENCHMARK(SystemTimeNanos);
+PICOBENCH(SystemTimeNanos);

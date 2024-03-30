@@ -1,14 +1,15 @@
-#include <benchmark/benchmark.h>
 #include <sled/random.h>
 #include <sled/strings/base64.h>
+#include <sled/testing/benchmark.h>
 #include <sstream>
 
 static std::string
 RandomString(size_t length)
 {
-    static const char chars[] = "0123456789"
-                                "abcdefghijklmnopqrstuvwxyz"
-                                "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    static const char chars[]
+        = "0123456789"
+          "abcdefghijklmnopqrstuvwxyz"
+          "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     std::stringstream ss;
     sled::Random rand(1314);
     while (length--) { ss << chars[rand.Rand(sizeof(chars))]; }
@@ -16,27 +17,27 @@ RandomString(size_t length)
 }
 
 static void
-Base64Encode(benchmark::State &state)
+Base64Encode(picobench::state &state)
 {
     for (auto _ : state) {
-        state.PauseTiming();
-        std::string input = RandomString(state.range(0));
-        state.ResumeTiming();
+        state.pause_timer();
+        std::string input = RandomString(10000);
+        state.resume_timer();
         (void) sled::Base64::Encode(input);
     }
 }
 
 static void
-Base64Decode(benchmark::State &state)
+Base64Decode(picobench::state &state)
 {
     for (auto _ : state) {
-        state.PauseTiming();
-        std::string input = RandomString(state.range(0));
+        state.pause_timer();
+        std::string input        = RandomString(10000);
         std::string base64_input = sled::Base64::Encode(input);
-        state.ResumeTiming();
+        state.resume_timer();
         (void) sled::Base64::Decode(base64_input);
     }
 }
 
-BENCHMARK(Base64Encode)->RangeMultiplier(100)->Range(10, 100000);
-BENCHMARK(Base64Decode)->RangeMultiplier(100)->Range(10, 100000);
+PICOBENCH(Base64Encode);
+PICOBENCH(Base64Decode);
