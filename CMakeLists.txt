@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD_EXTENSIONS OFF)
 option(SLED_BUILD_BENCHMARK "Build benchmark" OFF)
 option(SLED_BUILD_TESTS "Build tests" OFF)
 option(SLED_BUILD_FUZZ "Build fuzzer test" OFF)
-option(SLED_LOCATION_PATH "" "sled/src/system/location.cc")
+option(SLED_LOCATION_PATH "" "sled/src/sled/system/location.cc")
 
 set(BUILD_STATIC ON)
 set(BUILD_RTTR_DYNAMIC OFF)
@@ -40,43 +40,43 @@ if(SLED_LOCATION_PATH)
     sled PRIVATE __SLED_LOCATION_PATH="${SLED_LOCATION_PATH}")
 endif()
 # add_subdirectory(3party/eigen EXCLUDE_FROM_ALL)
-target_include_directories(sled PUBLIC include 3party/eigen 3party/inja
+target_include_directories(sled PUBLIC src/ 3party/eigen 3party/inja
                                        3party/rxcpp)
 target_sources(
   sled
-  PRIVATE src/async/async.cc
-          src/filesystem/path.cc
-          src/log/log.cc
-          src/network/async_resolver.cc
-          src/network/ip_address.cc
-          src/network/null_socket_server.cc
-          src/network/physical_socket_server.cc
-          src/network/socket_address.cc
-          src/network/socket_server.cc
-          src/profiling/profiling.cc
-          src/strings/base64.cc
-          src/strings/utils.cc
-          src/synchronization/event.cc
-          src/synchronization/mutex.cc
-          src/synchronization/sequence_checker.cc
-          src/synchronization/thread_local.cc
-          src/system/location.cc
-          src/system/pid.cc
-          src/system/thread.cc
-          src/system/thread_pool.cc
-          src/task_queue/pending_task_safety_flag.cc
-          src/task_queue/task_queue_base.cc
-          src/timer/task_queue_timeout.cc
-          src/timer/timer.cc
-          src/units/time_delta.cc
-          src/units/timestamp.cc
-          src/operations_chain.cc
-          src/random.cc
-          src/sigslot.cc
-          src/status.cc
-          src/system_time.cc
-          src/time_utils.cc
-          src/uri.cc)
+  PRIVATE src/sled/async/async.cc
+          src/sled/filesystem/path.cc
+          src/sled/log/log.cc
+          src/sled/network/async_resolver.cc
+          src/sled/network/ip_address.cc
+          src/sled/network/null_socket_server.cc
+          src/sled/network/physical_socket_server.cc
+          src/sled/network/socket_address.cc
+          src/sled/network/socket_server.cc
+          src/sled/profiling/profiling.cc
+          src/sled/strings/base64.cc
+          src/sled/strings/utils.cc
+          src/sled/synchronization/event.cc
+          src/sled/synchronization/mutex.cc
+          src/sled/synchronization/sequence_checker.cc
+          src/sled/synchronization/thread_local.cc
+          src/sled/system/location.cc
+          src/sled/system/pid.cc
+          src/sled/system/thread.cc
+          src/sled/system/thread_pool.cc
+          src/sled/task_queue/pending_task_safety_flag.cc
+          src/sled/task_queue/task_queue_base.cc
+          src/sled/timer/task_queue_timeout.cc
+          src/sled/timer/timer.cc
+          src/sled/units/time_delta.cc
+          src/sled/units/timestamp.cc
+          src/sled/operations_chain.cc
+          src/sled/random.cc
+          src/sled/sigslot.cc
+          src/sled/status.cc
+          src/sled/system_time.cc
+          src/sled/time_utils.cc
+          src/sled/uri.cc)
 # set(BUILD_RTTR_DYNAMIC OFF) set(BUILD_UNIT_TESTS OFF)
 # set(BUILD_WITH_STATIC_RUNTIME_LIBS ON) set(BUILD_WITH_DOCUMENTATION OFF)
 # add_subdirectory(3party/rttr EXCLUDE_FROM_ALL)
@@ -105,9 +105,9 @@ if(SLED_BUILD_BENCHMARK)
 
   add_executable(
     sled_benchmark
-    src/random_bench.cc src/strings/base64_bench.cc
-    src/system/fiber/fiber_bench.cc src/system/thread_pool_bench.cc
-    src/system_time_bench.cc)
+    src/sled/random_bench.cc src/sled/strings/base64_bench.cc
+    src/sled/system/fiber/fiber_bench.cc src/sled/system/thread_pool_bench.cc
+    src/sled/system_time_bench.cc)
   target_link_libraries(sled_benchmark PRIVATE sled benchmark::benchmark
                                                benchmark::benchmark_main)
 endif(SLED_BUILD_BENCHMARK)
@@ -121,23 +121,23 @@ if(SLED_BUILD_TESTS)
   FetchContent_MakeAvailable(googletest)
   add_executable(
     sled_tests
-    # src/exec/just_test.cc
-    src/async/async_test.cc
-    src/any_test.cc
-    src/filesystem/path_test.cc
-    # src/futures/promise_test.cc
-    src/futures/detail/just_test.cc
-    src/log/fmt_test.cc
-    # src/profiling/profiling_test.cc
-    src/strings/base64_test.cc
-    src/synchronization/sequence_checker_test.cc
-    src/cleanup_test.cc
-    src/status_test.cc
-    src/status_or_test.cc
-    src/system/fiber/fiber_test.cc
-    src/system/thread_pool_test.cc
-    src/rx_test.cc
-    src/uri_test.cc)
+    # src/sled/exec/just_test.cc
+    src/sled/async/async_test.cc
+    src/sled/any_test.cc
+    src/sled/filesystem/path_test.cc
+    # src/sled/futures/promise_test.cc
+    src/sled/futures/detail/just_test.cc
+    src/sled/log/fmt_test.cc
+    # src/sled/profiling/profiling_test.cc
+    src/sled/strings/base64_test.cc
+    src/sled/synchronization/sequence_checker_test.cc
+    src/sled/cleanup_test.cc
+    src/sled/status_test.cc
+    src/sled/status_or_test.cc
+    src/sled/system/fiber/fiber_test.cc
+    src/sled/system/thread_pool_test.cc
+    src/sled/rx_test.cc
+    src/sled/uri_test.cc)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set(EXTRA_FLAGS -Wthread-safety -g -fsanitize=address
                     -fno-omit-frame-pointer -fno-optimize-sibling-calls)
@@ -160,5 +160,5 @@ if(SLED_BUILD_FUZZ)
                         -fsanitize-coverage=trace-cmp)
   endmacro()
 
-  add_fuzz_test(base64_fuzz src/strings/base64_fuzz.cc)
+  add_fuzz_test(base64_fuzz src/sled/strings/base64_fuzz.cc)
 endif(SLED_BUILD_FUZZ)
