@@ -45,6 +45,7 @@ target_include_directories(sled PUBLIC src/ 3party/eigen 3party/inja
 target_sources(
   sled
   PRIVATE src/sled/async/async.cc
+          src/sled/debugging/demangle.cc
           src/sled/debugging/symbolize.cc
           src/sled/filesystem/path.cc
           src/sled/log/log.cc
