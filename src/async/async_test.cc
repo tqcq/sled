@@ -27,9 +27,5 @@ TEST(Async, parallel_for)
 
 TEST(Async, parallel_reduce)
 {
-    auto r = async::parallel_reduce(async::irange(1, 5), 0, [](int x, int y) {
-        LOGD("", "{},{}", x, y);
-        return x + y;
-    });
-    LOGD("", "{}", r);
+    auto r = async::parallel_reduce(async::irange(1, 5), 0, [](int x, int y) { return x + y; });
 }
