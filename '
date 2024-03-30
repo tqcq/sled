@@ -74,11 +74,7 @@ StrSplit(const std::string &str, const std::string &delim, bool skip_empty)
         }
     }
 
-    if (start < str.size()) {
-        result.emplace_back(str.substr(start));
-    } else if (!skip_empty && !str.empty() && delim.find(str.back()) != std::string::npos) {
-        result.emplace_back("");
-    }
+    if (start < str.size()) { result.emplace_back(str.substr(start)); }
     return result;
 }
 

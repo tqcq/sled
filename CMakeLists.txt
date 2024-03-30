@@ -45,6 +45,7 @@ target_include_directories(sled PUBLIC src/ 3party/eigen 3party/inja
 target_sources(
   sled
   PRIVATE src/sled/async/async.cc
+          src/sled/debugging/symbolize.cc
           src/sled/filesystem/path.cc
           src/sled/log/log.cc
           src/sled/network/async_resolver.cc
@@ -112,6 +113,32 @@ if(SLED_BUILD_BENCHMARK)
                                                benchmark::benchmark_main)
 endif(SLED_BUILD_BENCHMARK)
 
+function(sled_add_test)
+  set(prefix SLED_TEST)
+  # set(options INC_DIRS LIBS)
+  set(one_value_keywords NAME)
+  set(multi_value_keywords SRCS INC_DIRS LIBS)
+  cmake_parse_arguments("${prefix}" "${options}" "${one_value_keywords}"
+                        "${multi_value_keywords}" ${ARGN})
+
+  message(WARNING "SLED_TEST_NAME: ${SLED_TEST_NAME}")
+  message(WARNING "SLED_TEST_SRCS: ${SLED_TEST_SRCS}")
+  message(WARNING "SLED_TEST_LIBS: ${SLED_TEST_LIBS}")
+  add_executable(${SLED_TEST_NAME} ${SLED_TEST_SRCS})
+
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(EXTRA_FLAGS -Wthread-safety -g -fsanitize=address
+                    -fno-omit-frame-pointer -fno-optimize-sibling-calls)
+    target_compile_options(${SLED_TEST_NAME} PRIVATE ${EXTRA_FLAGS})
+
+    target_link_options(${SLED_TEST_NAME} PRIVATE ${EXTRA_FLAGS})
+  endif()
+  target_include_directories(${SLED_TEST_NAME} PRIVATE ${SLED_TEST_INC_DIRS})
+  target_link_libraries(${SLED_TEST_NAME} PRIVATE ${SLED_TEST_LIBS}
+                                                  GTest::gtest)
+  add_test(NAME ${SLED_TEST_NAME} COMMAND ${SLED_TEST_NAME})
+endfunction()
+
 if(SLED_BUILD_TESTS)
   include(FetchContent)
   FetchContent_Declare(
@@ -119,17 +146,16 @@ if(SLED_BUILD_TESTS)
     URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
   )
   FetchContent_MakeAvailable(googletest)
-  add_executable(
-    sled_tests
-    # src/sled/exec/just_test.cc
+
+  sled_add_test(
+    NAME
+    sled_base_test
+    SRCS
     src/sled/async/async_test.cc
     src/sled/any_test.cc
     src/sled/filesystem/path_test.cc
-    # src/sled/futures/promise_test.cc
     src/sled/futures/detail/just_test.cc
     src/sled/log/fmt_test.cc
-    # src/sled/profiling/profiling_test.cc
-    src/sled/strings/base64_test.cc
     src/sled/synchronization/sequence_checker_test.cc
     src/sled/cleanup_test.cc
     src/sled/status_test.cc
@@ -137,16 +163,23 @@ if(SLED_BUILD_TESTS)
     src/sled/system/fiber/fiber_test.cc
     src/sled/system/thread_pool_test.cc
     src/sled/rx_test.cc
-    src/sled/uri_test.cc)
-  if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(EXTRA_FLAGS -Wthread-safety -g -fsanitize=address
-                    -fno-omit-frame-pointer -fno-optimize-sibling-calls)
-    target_compile_options(sled_tests PRIVATE ${EXTRA_FLAGS})
+    src/sled/uri_test.cc
+    LIBS
+    sled
+    GTest::gtest_main)
 
-    target_link_options(sled_tests PRIVATE ${EXTRA_FLAGS})
-  endif()
-  target_link_libraries(sled_tests PRIVATE sled GTest::gtest GTest::gtest_main)
-  add_test(NAME sled_tests COMMAND sled_tests)
+  sled_add_test(
+    NAME
+    sled_strings_test
+    SRCS
+    src/sled/strings/utils_test.cc
+    src/sled/strings/base64_test.cc
+    LIBS
+    sled
+    GTest::gtest_main)
+
+  sled_add_test(NAME sled_symbolize_test SRCS
+                src/sled/debugging/symbolize_test.cc LIBS sled)
 endif(SLED_BUILD_TESTS)
 
 if(SLED_BUILD_FUZZ)
