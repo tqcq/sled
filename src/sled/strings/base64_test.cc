@@ -31,6 +31,7 @@ TEST_SUITE("Base64")
         CHECK_EQ("aGVsbG8gd29ybGQK", sled::Base64::Encode("hello world\n"));
         CHECK_EQ("U2VuZCByZWluZm9yY2VtZW50cwo=", sled::Base64::Encode("Send reinforcements\n"));
         CHECK_EQ("", sled::Base64::Encode(""));
+        CHECK_EQ(sled::Base64::Encode(""), "");
         CHECK_EQ("IA==", sled::Base64::Encode(" "));
         CHECK_EQ("AA==", sled::Base64::Encode(std::string("\0", 1)));
         CHECK_EQ("AAA=", sled::Base64::Encode(std::string("\0\0", 2)));

@@ -39,5 +39,5 @@ Base64Decode(picobench::state &state)
     }
 }
 
-PICOBENCH(Base64Encode);
 PICOBENCH(Base64Decode);
+PICOBENCH(Base64Encode);

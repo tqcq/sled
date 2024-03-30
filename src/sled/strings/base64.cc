@@ -5,9 +5,14 @@
 #include <fmt/format.h>
 #include <sstream>
 #include <string.h>
+extern "C" {
+#include "sled/strings/base64_decode.inc"
+#include "sled/strings/base64_encode.inc"
+}
 
 namespace sled {
-const char kBase64Chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+static constexpr int kBufferSize = 4096;
+const char kBase64Chars[]        = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 std::array<int, 1 << (8 * sizeof(char))> kInvBase64Chars;
 // static int kInvBase64Chars[(1 << sizeof(char))];
 static OnceFlag once_flag;
@@ -39,6 +44,30 @@ std::string
 Base64::Encode(const uint8_t *ptr, size_t len)
 
 {
+    if (len == 0) { return std::string(); }
+    std::string result((len + 2) / 3 * 4, '0');
+    size_t write_idx = 0;
+
+    base64_encodestate state;
+    base64_init_encodestate(&state);
+
+    // char code[kBufferSize];
+    int plainlength = 0;
+    int codelength  = 0;
+    char *code      = const_cast<char *>(result.data()) + write_idx;
+    do {
+        plainlength = std::min(kBufferSize, static_cast<int>(len));
+        codelength  = base64_encode_block(reinterpret_cast<const char *>(ptr), plainlength, code, &state);
+        code += codelength;
+        len -= plainlength;
+        ptr += plainlength;
+    } while (len > 0 && plainlength > 0);
+
+    codelength = base64_encode_blockend(code, &state);
+
+    return result;
+
+    /*
     // std::stringstream ss;
     auto encoded_length = EncodedLength(len);
     std::string result(encoded_length, 0);
@@ -58,11 +87,10 @@ Base64::Encode(const uint8_t *ptr, size_t len)
         --len;
     }
 
-    /**
-     * value_bits      
-     * 2           ->  4  -> (8 - value_bits - 2)
-     * 4           ->  2  -> (8 - value_bits - 2)
-     **/
+    // value_bits
+    // 2           ->  4  -> (8 - value_bits - 2)
+    // 4           ->  2  -> (8 - value_bits - 2)
+    //
     if (value_bits > 0) {
         result[write_idx++] = kBase64Chars[(value << (6 - value_bits)) & 0x3F];
         // ss << kBase64Chars[((value << 8) >> (value_bits + 2)) & 0x3F];
@@ -72,11 +100,33 @@ Base64::Encode(const uint8_t *ptr, size_t len)
 
     // return ss.str();
     return result;
+    */
 }
 
 StatusOr<std::string>
 Base64::Decode(const uint8_t *ptr, size_t len)
 {
+    if (len == 0) { return std::string(); }
+
+    base64_decodestate state;
+    base64_init_decodestate(&state);
+
+    std::stringstream ss;
+    char plaintext[kBufferSize];
+    int codelength  = 0;
+    int plainlength = 0;
+    do {
+        codelength  = std::min(kBufferSize, static_cast<int>(len));
+        plainlength = base64_decode_block(reinterpret_cast<const char *>(ptr), codelength, plaintext, &state);
+        ss.write(plaintext, plainlength);
+
+        ptr += codelength;
+        len -= codelength;
+    } while (len > 0 && codelength > 0);
+
+    return ss.str();
+    /*
+
     CallOnce(once_flag, [&] {
         std::fill(kInvBase64Chars.begin(), kInvBase64Chars.end(), -1);
         for (int i = 0; kBase64Chars[i]; i++) { kInvBase64Chars[kBase64Chars[i]] = i; }
@@ -112,6 +162,7 @@ Base64::Decode(const uint8_t *ptr, size_t len)
     while (write_idx < data.size()) data.pop_back();
 
     return make_status_or<std::string>(data);
+    */
 }
 
 }// namespace sled
