@@ -98,9 +98,9 @@ endif()
 
 target_link_libraries(
   sled
-  PUBLIC rpc_core fmt marl Async++
+  PUBLIC dl rpc_core fmt marl Async++
          # protobuf::libprotobuf ${WHOLE_ARCHIVE_WRAPPER_START}
-         tcmalloc_and_profiler_static
+         # tcmalloc_and_profiler_static
   # ${WHOLE_ARCHIVE_WRAPPER_END}
 )
 
