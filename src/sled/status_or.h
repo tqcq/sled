@@ -7,6 +7,7 @@
 #pragma once
 #ifndef SLED_STATUS_OR_H
 #define SLED_STATUS_OR_H
+#include "sled/lang/attributes.h"
 #include "sled/optional.h"
 #include "sled/status.h"
 #include <stdexcept>
@@ -22,7 +23,7 @@ public:
 
     StatusOr() : StatusOr(MakeDefaultStatus()) {}
 
-    StatusOr(StatusOr const &) = default;
+    StatusOr(StatusOr const &)            = default;
     StatusOr &operator=(StatusOr const &) = default;
 
     StatusOr(StatusOr &&other) : status_(std::move(other.status_)), value_(std::move(other.value_))
@@ -32,8 +33,8 @@ public:
 
     StatusOr &operator=(StatusOr &&other)
     {
-        status_ = std::move(other.status_);
-        value_ = std::move(other.value_);
+        status_       = std::move(other.status_);
+        value_        = std::move(other.value_);
         other.status_ = MakeDefaultStatus();
         return *this;
     }
@@ -57,7 +58,7 @@ public:
     StatusOr &operator=(U &&rhs)
     {
         status_ = Status();
-        value_ = std::forward<U>(rhs);
+        value_  = std::forward<U>(rhs);
         return *this;
     }
 
@@ -160,19 +161,32 @@ operator!=(StatusOr<T> const &a, StatusOr<T> const &b)
 }
 
 template<typename T>
-StatusOr<T>
+SLED_DEPRECATED StatusOr<T>
 make_status_or(T rhs)
 {
     return StatusOr<T>(std::move(rhs));
 }
 
 template<typename T>
-StatusOr<T>
+SLED_DEPRECATED StatusOr<T>
 make_status_or(StatusCode code, std::string message = "", ErrorInfo info = {})
 {
     return StatusOr<T>(Status(code, std::move(message)));
 }
 
+template<typename T>
+StatusOr<T>
+MakeStatusOr(T rhs)
+{
+    return StatusOr<T>(std::move(rhs));
+}
+
+template<typename T>
+StatusOr<T>
+MakeStatusOr(StatusCode code, std::string message = "", ErrorInfo info = {})
+{
+    return StatusOr<T>(Status(code, std::move(message)));
+}
 }// namespace sled
 
 #endif// SLED_STATUS_OR_H

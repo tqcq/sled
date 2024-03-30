@@ -150,7 +150,7 @@ if(SLED_BUILD_TESTS)
 
   sled_add_test(
     NAME
-    sled_base_test
+    sled_all_tests
     SRCS
     src/sled/async/async_test.cc
     src/sled/any_test.cc
@@ -161,20 +161,12 @@ if(SLED_BUILD_TESTS)
     src/sled/cleanup_test.cc
     src/sled/status_test.cc
     src/sled/status_or_test.cc
+    src/sled/strings/utils_test.cc
+    src/sled/strings/base64_test.cc
     src/sled/system/fiber/fiber_test.cc
     src/sled/system/thread_pool_test.cc
     src/sled/rx_test.cc
     src/sled/uri_test.cc
-    LIBS
-    sled
-    GTest::gtest_main)
-
-  sled_add_test(
-    NAME
-    sled_strings_test
-    SRCS
-    src/sled/strings/utils_test.cc
-    src/sled/strings/base64_test.cc
     LIBS
     sled
     GTest::gtest_main)

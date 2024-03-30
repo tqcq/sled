@@ -14,8 +14,8 @@ TEST(StatusOr, TestStatusOr)
 
 TEST(StatusOr, make_status_or)
 {
-    auto from_raw_str = sled::make_status_or("hello");
-    auto from_string = sled::make_status_or(std::string("world"));
+    auto from_raw_str = sled::MakeStatusOr("hello");
+    auto from_string  = sled::MakeStatusOr(std::string("world"));
     EXPECT_TRUE(from_raw_str.ok());
     EXPECT_TRUE(from_string.ok());
     EXPECT_EQ(from_raw_str.value(), "hello");
