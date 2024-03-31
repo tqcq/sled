@@ -69,7 +69,7 @@ jobs:
     - name: arm-gnu-toolchain
       run: |
         sudo apt-get update -y
-        sudo apt-get install -y g++-arm-linux-gnueabi
+        sudo apt-get install -y cmake make g++-arm-linux-gnueabi
 
     - name: build
       run: |
@@ -122,7 +122,7 @@ jobs:
     - name: arm-gnu-toolchain
       run: |
         sudo apt-get update -y
-        sudo apt-get install -y g++-arm-linux-gnueabihf
+        sudo apt-get install -y cmake make g++-arm-linux-gnueabihf
 
     - name: build
       run: |
