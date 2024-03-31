@@ -211,8 +211,10 @@ public:
     PICOBENCH_INLINE
     void pause_timer()
     {
-        auto duration = high_res_clock::now() - _start;
-        _duration_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count();
+        if (!_pause) {
+            auto duration = high_res_clock::now() - _start;
+            _duration_ns += std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count();
+        }
         _pause = true;
     }
 

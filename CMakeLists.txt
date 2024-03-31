@@ -117,7 +117,8 @@ if(SLED_BUILD_BENCHMARK)
     # src/sled/system/fiber/fiber_bench.cc
     src/sled/system/thread_bench.cc
     src/sled/system/thread_pool_bench.cc
-    src/sled/system_time_bench.cc)
+    src/sled/system_time_bench.cc
+    src/sled/uri_bench.cc)
   target_link_libraries(sled_benchmark PRIVATE sled benchmark_main)
   target_compile_options(sled_benchmark PRIVATE -include
                                                 sled/testing/benchmark.h)
@@ -152,6 +153,7 @@ function(sled_add_test)
 endfunction()
 
 if(SLED_BUILD_TESTS)
+  enable_testing()
   # include(FetchContent) FetchContent_Declare( googletest URL
   # https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
   # ) FetchContent_MakeAvailable(googletest)
