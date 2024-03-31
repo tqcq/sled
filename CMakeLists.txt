@@ -24,6 +24,7 @@ target_include_directories(benchmark_main PUBLIC src/)
 
 add_library(sled STATIC "")
 
+add_subdirectory(3party/minilua EXCLUDE_FROM_ALL)
 add_subdirectory(3party/gperftools EXCLUDE_FROM_ALL)
 add_subdirectory(3party/asyncplusplus EXCLUDE_FROM_ALL)
 # add_subdirectory(3party/cppuprofile EXCLUDE_FROM_ALL)
@@ -88,19 +89,18 @@ target_sources(
           src/sled/uri.cc)
 # set(BUILD_RTTR_DYNAMIC OFF) set(BUILD_UNIT_TESTS OFF)
 # set(BUILD_WITH_STATIC_RUNTIME_LIBS ON) set(BUILD_WITH_DOCUMENTATION OFF)
-# add_subdirectory(3party/rttr EXCLUDE_FROM_ALL)
-include(CheckCCompilerFlag)
-check_c_compiler_flag("-Wl,--whole-archive" SUPPORT_COMPILE_WHOLE_ARCHIVE)
-if(SUPPORT_COMPILE_WHOLE_ARCHIVE)
-  set(WHOLE_ARCHIVE_WRAPPER_START "-Wl,--whole-archive")
-  set(WHOLE_ARCHIVE_WRAPPER_END "-Wl,--no-whole-archive")
-endif()
+# add_subdirectory(3party/rttr EXCLUDE_FROM_ALL) include(CheckCCompilerFlag)
+# check_c_compiler_flag("-Wl,--whole-archive" SUPPORT_COMPILE_WHOLE_ARCHIVE)
+# if(SUPPORT_COMPILE_WHOLE_ARCHIVE) set(WHOLE_ARCHIVE_WRAPPER_START
+# "-Wl,--whole-archive") set(WHOLE_ARCHIVE_WRAPPER_END "-Wl,--no-whole-archive")
+# endif()
 
 target_link_libraries(
   sled
-  PUBLIC dl rpc_core fmt marl Async++
-         # protobuf::libprotobuf ${WHOLE_ARCHIVE_WRAPPER_START}
-         # tcmalloc_and_profiler_static
+  PUBLIC rpc_core fmt marl Async++ minilua
+  PRIVATE dl 
+  # protobuf::libprotobuf ${WHOLE_ARCHIVE_WRAPPER_START}
+  # tcmalloc_and_profiler_static
   # ${WHOLE_ARCHIVE_WRAPPER_END}
 )
 
@@ -148,7 +148,7 @@ function(sled_add_test)
                                                      sled/testing/test.h)
   endif()
   target_include_directories(${SLED_TEST_NAME} PRIVATE ${SLED_TEST_INC_DIRS})
-  target_link_libraries(${SLED_TEST_NAME} PRIVATE ${SLED_TEST_LIBS})
+  target_link_libraries(${SLED_TEST_NAME} PRIVATE ${SLED_TEST_LIBS} sled)
   add_test(NAME ${SLED_TEST_NAME} COMMAND ${SLED_TEST_NAME})
 endfunction()
 
@@ -178,11 +178,11 @@ if(SLED_BUILD_TESTS)
     src/sled/rx_test.cc
     src/sled/uri_test.cc
     LIBS
-    sled
     test_main)
 
   sled_add_test(NAME sled_symbolize_test SRCS
-                src/sled/debugging/symbolize_test.cc LIBS sled)
+                src/sled/debugging/symbolize_test.cc)
+    sled_add_test(NAME sled_lua_test SRCS tests/lua_test.cc LIBS test_main)
 endif(SLED_BUILD_TESTS)
 
 if(SLED_BUILD_FUZZ)
