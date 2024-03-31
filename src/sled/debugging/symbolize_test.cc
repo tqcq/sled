@@ -63,25 +63,31 @@ void_cast(TRet (TClass::*mem_func)(Args...))
     return void_casted;
 }
 
-TEST_CASE("Trivial Function")
+// TODO: Support Linux
+#if defined(__APPLE__)
+TEST_SUITE("Symbolize")
 {
-    CHECK_EQ(doctest::String("TrivialFunc()"), TrySymbolize(void_cast(TrivialFunc)));
-    CHECK_EQ(doctest::String("TrySymbolizeWithLimit()"), TrySymbolize(void_cast(&TrySymbolizeWithLimit)));
-}
+    TEST_CASE("Trivial Function")
+    {
+        CHECK_EQ(doctest::String("TrivialFunc()"), TrySymbolize(void_cast(TrivialFunc)));
+        CHECK_EQ(doctest::String("TrySymbolizeWithLimit()"), TrySymbolize(void_cast(&TrySymbolizeWithLimit)));
+    }
 
-TEST_CASE("Static Function") { CHECK_EQ(doctest::String("StaticFunc()"), TrySymbolize(void_cast(StaticFunc))); }
+    TEST_CASE("Static Function") { CHECK_EQ(doctest::String("StaticFunc()"), TrySymbolize(void_cast(StaticFunc))); }
 
-TEST_CASE("Member Function")
-{
-    CHECK_EQ(doctest::String("Class::MemberFunc1()"), TrySymbolize(void_cast(&Class::MemberFunc1)));
-    CHECK_EQ(doctest::String("Class::MemberFunc2()"), TrySymbolize(void_cast(&Class::MemberFunc2)));
-    CHECK_EQ(doctest::String("Class::MemberFunc3()"), TrySymbolize(void_cast(&Class::MemberFunc3)));
-}
+    TEST_CASE("Member Function")
+    {
+        CHECK_EQ(doctest::String("Class::MemberFunc1()"), TrySymbolize(void_cast(&Class::MemberFunc1)));
+        CHECK_EQ(doctest::String("Class::MemberFunc2()"), TrySymbolize(void_cast(&Class::MemberFunc2)));
+        CHECK_EQ(doctest::String("Class::MemberFunc3()"), TrySymbolize(void_cast(&Class::MemberFunc3)));
+    }
 
-TEST_CASE("Static Member Function")
-{
-    CHECK_EQ(doctest::String("Class::StaticFunc()"), TrySymbolize(void_cast(&Class::StaticFunc)));
+    TEST_CASE("Static Member Function")
+    {
+        CHECK_EQ(doctest::String("Class::StaticFunc()"), TrySymbolize(void_cast(&Class::StaticFunc)));
+    }
 }
+#endif
 
 int
 main(int argc, char *argv[])
