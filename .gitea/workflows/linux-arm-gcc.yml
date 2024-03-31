@@ -43,8 +43,8 @@ jobs:
     - name: install-qemu-build-deps
       if: steps.cache-qemu.outputs.cache-hit != 'true'
       run: |
-        sudo apt-get update
-        sudo apt-get install autoconf automake autotools-dev ninja-build
+        sudo apt-get update -y
+        sudo apt-get install -y autoconf automake autotools-dev ninja-build
     - name: checkout-qemu
       if: steps.cache-qemu.outputs.cache-hit != 'true'
       uses: actions/checkout@v4
@@ -62,8 +62,8 @@ jobs:
 
     - name: arm-gnu-toolchain
       run: |
-        sudo apt-get update
-        sudo apt-get install g++-arm-linux-gnueabi
+        sudo apt-get update -y
+        sudo apt-get install -y g++-arm-linux-gnueabi
 
     - name: build
       run: |
@@ -90,8 +90,8 @@ jobs:
     - name: install-qemu-build-deps
       if: steps.cache-qemu.outputs.cache-hit != 'true'
       run: |
-        sudo apt-get update
-        sudo apt-get install autoconf automake autotools-dev ninja-build
+        sudo apt-get update -y
+        sudo apt-get install -y autoconf automake autotools-dev ninja-build
     - name: checkout-qemu
       if: steps.cache-qemu.outputs.cache-hit != 'true'
       uses: actions/checkout@v4
@@ -109,8 +109,8 @@ jobs:
 
     - name: arm-gnu-toolchain
       run: |
-        sudo apt-get update
-        sudo apt-get install g++-arm-linux-gnueabihf
+        sudo apt-get update -y
+        sudo apt-get install -y g++-arm-linux-gnueabihf
 
     - name: build
       run: |

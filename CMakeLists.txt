@@ -98,10 +98,9 @@ target_sources(
 target_link_libraries(
   sled
   PUBLIC rpc_core fmt marl Async++ minilua
-  PRIVATE dl 
+  PRIVATE dl
   # protobuf::libprotobuf ${WHOLE_ARCHIVE_WRAPPER_START}
-  # tcmalloc_and_profiler_static
-  # ${WHOLE_ARCHIVE_WRAPPER_END}
+  # tcmalloc_and_profiler_static ${WHOLE_ARCHIVE_WRAPPER_END}
 )
 
 # set fPIC
@@ -126,7 +125,7 @@ endif(SLED_BUILD_BENCHMARK)
 
 function(sled_add_test)
   set(prefix SLED_TEST)
-  # set(options INC_DIRS LIBS)
+  set(options NO_MAIN)
   set(one_value_keywords NAME)
   set(multi_value_keywords SRCS INC_DIRS LIBS)
   cmake_parse_arguments("${prefix}" "${options}" "${one_value_keywords}"
@@ -148,7 +147,9 @@ function(sled_add_test)
                                                      sled/testing/test.h)
   endif()
   target_include_directories(${SLED_TEST_NAME} PRIVATE ${SLED_TEST_INC_DIRS})
-  target_link_libraries(${SLED_TEST_NAME} PRIVATE ${SLED_TEST_LIBS} sled)
+  target_link_libraries(
+    ${SLED_TEST_NAME} PRIVATE ${SLED_TEST_LIBS} sled $<$<BOOL: NOT
+                              ${SLED_TEST_NO_MAIN}>:test_main>)
   add_test(NAME ${SLED_TEST_NAME} COMMAND ${SLED_TEST_NAME})
 endfunction()
 
@@ -176,13 +177,13 @@ if(SLED_BUILD_TESTS)
     src/sled/system/fiber/fiber_test.cc
     src/sled/system/thread_pool_test.cc
     src/sled/rx_test.cc
-    src/sled/uri_test.cc
-    LIBS
-    test_main)
+    src/sled/uri_test.cc)
 
   sled_add_test(NAME sled_symbolize_test SRCS
-                src/sled/debugging/symbolize_test.cc)
-    sled_add_test(NAME sled_lua_test SRCS tests/lua_test.cc LIBS test_main)
+                src/sled/debugging/symbolize_test.cc NO_MAIN)
+  sled_add_test(NAME sled_lua_test SRCS tests/lua_test.cc)
+  sled_add_test(NAME sled_move_on_copy_test SRCS
+                src/sled/utility/move_on_copy_test.cc)
 endif(SLED_BUILD_TESTS)
 
 if(SLED_BUILD_FUZZ)

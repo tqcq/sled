@@ -25,7 +25,8 @@ template<typename T>
 auto
 MakeMoveOnCopy(T &&value) -> MoveOnCopy<T>
 {
-    return {std::move<T>(value)};
+    return {std::move(value)};
 }
+
 }// namespace sled
 #endif//  SLED_UTILITY_MOVE_ON_COPY_H

@@ -62,6 +62,9 @@ namespace async {}
 #include "sled/timer/timeout.h"
 #include "sled/timer/timer.h"
 
+// utility
+#include "sled/utility/move_on_copy.h"
+
 // other
 #include "sled/any.h"
 #include "sled/apply.h"
@@ -91,4 +94,5 @@ namespace async {}
 
 // testing
 #include "sled/testing/test.h"
+// debugging
 #endif//  SLED_SLED_H
