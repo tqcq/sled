@@ -1,4 +1,5 @@
 #include <random>
+#include <sled/synchronization/event.h>
 #include <sled/system/thread_pool.h>
 
 std::random_device rd;
@@ -37,26 +38,47 @@ multiply_return(const int a, const int b)
     return res;
 }
 
-TEST_CASE("ThreadPool")
+TEST_SUITE("ThreadPool")
 {
-    sled::ThreadPool *tp = new sled::ThreadPool();
-    REQUIRE_NE(tp, nullptr);
-
-    SUBCASE("Output")
+    TEST_CASE("submit")
     {
-        for (int i = 0; i < 100; ++i) {
-            int out;
-            tp->submit(multiply_output, std::ref(out), i, i).get();
-            CHECK_EQ(out, i * i);
+        sled::ThreadPool *tp = new sled::ThreadPool();
+        REQUIRE_NE(tp, nullptr);
+
+        SUBCASE("Output")
+        {
+            for (int i = 0; i < 100; ++i) {
+                int out;
+                tp->submit(multiply_output, std::ref(out), i, i).get();
+                CHECK_EQ(out, i * i);
+            }
         }
+        SUBCASE("Return")
+        {
+            for (int i = 0; i < 100; ++i) {
+                auto f = tp->submit(multiply_return, i, i);
+                CHECK_EQ(f.get(), i * i);
+            }
+        }
+
+        delete tp;
     }
-    SUBCASE("Return")
+    TEST_CASE("PostTask")
     {
-        for (int i = 0; i < 100; ++i) {
-            auto f = tp->submit(multiply_return, i, i);
-            CHECK_EQ(f.get(), i * i);
-        }
+        sled::ThreadPool *tp = new sled::ThreadPool();
+        sled::Event waiter;
+        tp->PostTask([&]() { waiter.Set(); });
+        CHECK(waiter.Wait(sled::TimeDelta::Seconds(1)));
+        delete tp;
     }
 
-    delete tp;
+    TEST_CASE("PostDelayedTask")
+    {
+        sled::ThreadPool *tp = new sled::ThreadPool();
+        sled::Event waiter;
+        tp->PostDelayedTask([&]() { waiter.Set(); }, sled::TimeDelta::Millis(100));
+        CHECK_FALSE(waiter.Wait(sled::TimeDelta::Millis(50)));
+        CHECK(waiter.Wait(sled::TimeDelta::Millis(150)));
+        delete tp;
+    }
 }

@@ -18,7 +18,7 @@ public:
     static constexpr TimeDelta kForever = ConditionVariable::kForever;
     Event();
     Event(bool manual_reset, bool initially_signaled);
-    Event(const Event &) = delete;
+    Event(const Event &)            = delete;
     Event &operator=(const Event &) = delete;
     ~Event();
 
