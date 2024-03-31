@@ -22,19 +22,13 @@ public:
 
     sled::RefCountReleaseStatus DecRef()
     {
-        int ref_count_after_subtract =
-            ref_count_.fetch_sub(1, std::memory_order_acq_rel) - 1;
+        int ref_count_after_subtract = ref_count_.fetch_sub(1, std::memory_order_acq_rel) - 1;
 
-        if (ref_count_after_subtract == 0) {
-            return sled::RefCountReleaseStatus::kDroppedLastRef;
-        }
+        if (ref_count_after_subtract == 0) { return sled::RefCountReleaseStatus::kDroppedLastRef; }
         return sled::RefCountReleaseStatus::kOtherRefsRemained;
     }
 
-    bool HasOneRef() const
-    {
-        return ref_count_.load(std::memory_order_acquire) == 1;
-    }
+    bool HasOneRef() const { return ref_count_.load(std::memory_order_acquire) == 1; }
 
 private:
     std::atomic<int> ref_count_;

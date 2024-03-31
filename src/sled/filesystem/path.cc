@@ -9,6 +9,13 @@
 #define PATH_MAX_SZ PATH_MAX
 #endif
 
+#if defined(_WIN32)
+#include <direct.h>
+#define getcwd _getcwd
+#else
+#include <unistd.h>
+#endif
+
 namespace sled {
 Path
 Path::Current()

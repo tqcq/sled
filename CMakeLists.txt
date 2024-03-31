@@ -185,14 +185,15 @@ endif(SLED_BUILD_TESTS)
 
 if(SLED_BUILD_FUZZ)
 
-  macro(add_fuzz_test name sources)
+  function(add_fuzz_test name sources)
     add_executable(${name} ${sources})
     target_link_libraries(${name} PRIVATE sled)
     target_compile_options(${name} PRIVATE -g -O1 -fsanitize=fuzzer,address
                                            -fsanitize-coverage=trace-cmp)
     target_link_options(${name} PRIVATE -fsanitize=fuzzer,address
                         -fsanitize-coverage=trace-cmp)
-  endmacro()
+  endfunction()
 
   add_fuzz_test(base64_fuzz src/sled/strings/base64_fuzz.cc)
+  add_fuzz_test(uri_fuzz src/sled/uri_fuzz.cc)
 endif(SLED_BUILD_FUZZ)

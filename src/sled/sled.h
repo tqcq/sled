@@ -86,6 +86,9 @@ namespace async {}
 #include "sled/time_utils.h"
 #include "sled/variant.h"
 
+// uri
+#include "sled/uri.h"
+
 // testing
 #include "sled/testing/test.h"
 #endif//  SLED_SLED_H

@@ -116,6 +116,8 @@ void Log(LogLevel level, const char *tag, const char *fmt, const char *file_name
 #define LOGF(tag, fmt, ...) SLOG(sled::LogLevel::kFatal, tag, fmt, ##__VA_ARGS__)
 
 #define ASSERT(cond, fmt, ...) SLOG_ASSERT(cond, "ASSERT", fmt, ##__VA_ARGS__)
+#define SLED_ASSERT(cond, fmt, ...) SLOG_ASSERT(cond, "ASSERT", fmt, ##__VA_ARGS__)
+#define SLED_DASSERT(cond, fmt, ...) SLOG_ASSERT(cond, "ASSERT", fmt, ##__VA_ARGS__)
 
 #define __LOG_EVERY_N(n, level, tag, fmt, ...)                                                                         \
     do {                                                                                                               \
