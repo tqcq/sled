@@ -148,8 +148,7 @@ function(sled_add_test)
   endif()
   target_include_directories(${SLED_TEST_NAME} PRIVATE ${SLED_TEST_INC_DIRS})
   target_link_libraries(
-    ${SLED_TEST_NAME} PRIVATE ${SLED_TEST_LIBS} sled $<$<BOOL: NOT
-                              ${SLED_TEST_NO_MAIN}>:test_main>)
+    ${SLED_TEST_NAME} PRIVATE ${SLED_TEST_LIBS} sled $<IF:$<BOOL:${SLED_NO_MAIN}>,,test_main>)
   add_test(NAME ${SLED_TEST_NAME} COMMAND ${SLED_TEST_NAME})
 endfunction()
 
