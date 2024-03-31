@@ -66,6 +66,13 @@ jobs:
         make -j$(nproc)
         make install
 
+    - name: set-qemu-cache
+      uses: actions/cache/save@v3
+      if: steps.cache-qemu.outputs.cache-hit != 'true'
+      with:
+        key: qemu-arm-install-20220502-2
+        path: qemu-install
+
     - name: arm-gnu-toolchain
       run: |
         sudo apt-get update -y
@@ -118,6 +125,13 @@ jobs:
         ./configure --prefix=$GITHUB_WORKSPACE/qemu-install --target-list=arm-linux-user --disable-system
         make -j$(nproc)
         make install
+
+    - name: set-qemu-cache
+      uses: actions/cache/save@v3
+      if: steps.cache-qemu.outputs.cache-hit != 'true'
+      with:
+        key: qemu-arm-install-20220502-2
+        path: qemu-install
 
     - name: arm-gnu-toolchain
       run: |
