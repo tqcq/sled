@@ -10,6 +10,7 @@ namespace sled {
 namespace {
 
 static std::string
+SLED_NO_INSTRUMENT_FUNCTION
 GetSymbolString(const std::string &backtrace_line)
 {
     // Example Backtrace lines:
@@ -40,10 +41,12 @@ GetSymbolString(const std::string &backtrace_line)
 }// namespace
 
 void
+SLED_NO_INSTRUMENT_FUNCTION
 InitializeSymbolizer(const char *argv0)
 {}
 
 bool
+SLED_NO_INSTRUMENT_FUNCTION
 Symbolize(const void *pc, char *out, int out_size)
 {
     if (out_size <= 0 || pc == nullptr) {

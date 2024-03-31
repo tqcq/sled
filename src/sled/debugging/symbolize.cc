@@ -1,4 +1,5 @@
 #include "sled/debugging/symbolize.h"
+#include "sled/lang/attributes.h"
 
 #ifdef _WIN32
 void
