@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(
   sled
-  VERSION 0.1.0
+  VERSION 0.1.1
   LANGUAGES C CXX)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -148,7 +148,8 @@ function(sled_add_test)
   endif()
   target_include_directories(${SLED_TEST_NAME} PRIVATE ${SLED_TEST_INC_DIRS})
   target_link_libraries(
-    ${SLED_TEST_NAME} PRIVATE ${SLED_TEST_LIBS} sled $<IF:$<BOOL:${SLED_NO_MAIN}>,,test_main>)
+    ${SLED_TEST_NAME} PRIVATE ${SLED_TEST_LIBS} sled
+                              $<IF:$<BOOL:${SLED_NO_MAIN}>,,test_main>)
   add_test(NAME ${SLED_TEST_NAME} COMMAND ${SLED_TEST_NAME})
 endfunction()
 
