@@ -19,12 +19,12 @@ template<typename T, typename U>
 struct BufferCompat {
     using RawU = typename std::remove_const<U>::type;
 
-    static constexpr bool value = !std::is_volatile<U>::value
-        && ((std::is_integral<T>::value && sizeof(T) == 1)
-                ? (std::is_integral<U>::value && sizeof(U) == 1)
-                : (std::is_same<T, RawU>::value)
+    static constexpr bool value
+        = !std::is_volatile<U>::value
+          && ((std::is_integral<T>::value && sizeof(T) == 1) ? (std::is_integral<U>::value && sizeof(U) == 1)
+                                                             : (std::is_same<T, RawU>::value)
 
-        );
+          );
 };
 }// namespace internal
 
@@ -34,18 +34,15 @@ class BufferT {
     static_assert(!std::is_const<T>::value, "T may not be const");
 
 public:
-    using value_type = T;
+    using value_type     = T;
     using const_iterator = const T *;
 
     BufferT() : size_(0), capacity_(0), data_(nullptr) { IsConsistent(); }
 
-    BufferT(const BufferT &) = delete;
+    BufferT(const BufferT &)            = delete;
     BufferT &operator=(const BufferT &) = delete;
 
-    BufferT(BufferT &&buf)
-        : size_(buf.size()),
-          capacity_(buf.capacity()),
-          data_(std::move(buf.data_))
+    BufferT(BufferT &&buf) : size_(buf.size()), capacity_(buf.capacity()), data_(std::move(buf.data_))
     {
         IsConsistent();
     }
@@ -60,41 +57,30 @@ public:
         IsConsistent();
     }
 
-    template<typename U,
-             typename std::enable_if<internal::BufferCompat<T, U>::value>::type
-                 * = nullptr>
+    template<typename U, typename std::enable_if<internal::BufferCompat<T, U>::value>::type * = nullptr>
     BufferT(const U *data, size_t size) : BufferT(data, size, size)
     {}
 
-    template<typename U,
-             typename std::enable_if<internal::BufferCompat<T, U>::value>::type
-                 * = nullptr>
+    template<typename U, typename std::enable_if<internal::BufferCompat<T, U>::value>::type * = nullptr>
     BufferT(U *data, size_t size, size_t capacity) : BufferT(size, capacity)
     {
         static_assert(sizeof(T) == sizeof(U), "");
         if (size > 0) { std::memcpy(data_.get(), data, size * sizeof(U)); }
     }
 
-    template<typename U,
-             size_t N,
-             typename std::enable_if<internal::BufferCompat<T, U>::value>::type
-                 * = nullptr>
+    template<typename U, size_t N, typename std::enable_if<internal::BufferCompat<T, U>::value>::type * = nullptr>
     BufferT(U (&array)[N]) : BufferT(array, N)
     {}
 
     ~BufferT() {}
 
-    template<typename U,
-             typename std::enable_if<internal::BufferCompat<T, U>::value>::type
-                 * = nullptr>
+    template<typename U = T, typename std::enable_if<internal::BufferCompat<T, U>::value>::type * = nullptr>
     const U *data() const
     {
         return reinterpret_cast<const U *>(data_.get());
     }
 
-    template<typename U,
-             typename std::enable_if<internal::BufferCompat<T, U>::value>::type
-                 * = nullptr>
+    template<typename U = T, typename std::enable_if<internal::BufferCompat<T, U>::value>::type * = nullptr>
     U *data()
     {
         return reinterpret_cast<U *>(data_.get());
@@ -108,7 +94,7 @@ public:
 
     BufferT &operator=(BufferT &&buf)
     {
-        size_ = buf.size_;
+        size_     = buf.size_;
         capacity_ = buf.capacity_;
         using std::swap;
         swap(data_, buf.data_);
@@ -120,10 +106,7 @@ public:
     bool operator==(const BufferT &buf) const
     {
         if (size_ != buf.size_) { return false; }
-        if (std::is_integral<T>::value) {
-            return std::memcmp(data_.get(), buf.data_.get(), size_ * sizeof(T))
-                == 0;
-        }
+        if (std::is_integral<T>::value) { return std::memcmp(data_.get(), buf.data_.get(), size_ * sizeof(T)) == 0; }
         for (size_t i = 0; i < size_; i++) {
             if (data_[i] != buf.data_[i]) { return false; }
         }
@@ -148,32 +131,23 @@ public:
 
     const T *cend() const { return data() + size(); }
 
-    template<typename U,
-             typename std::enable_if<internal::BufferCompat<T, U>::value>::type
-                 * = nullptr>
+    template<typename U, typename std::enable_if<internal::BufferCompat<T, U>::value>::type * = nullptr>
     void SetData(const U *data, size_t size)
     {
         const size_t old_size = size_;
-        size_ = 0;
+        size_                 = 0;
         AppentData(data, size);
-        if (ZeroOnFree && size_ < old_size) {
-            ZeroTrailingData(old_size - size_);
-        }
+        if (ZeroOnFree && size_ < old_size) { ZeroTrailingData(old_size - size_); }
     }
 
-    template<typename U,
-             size_t N,
-             typename std::enable_if<internal::BufferCompat<T, U>::value>::type
-                 * = nullptr>
+    template<typename U, size_t N, typename std::enable_if<internal::BufferCompat<T, U>::value>::type * = nullptr>
     void SetData(const U (&array)[N])
     {
         SetData(array, N);
     }
 
-    template<typename U,
-             typename std::enable_if<internal::BufferCompat<T, U>::value>::type
-                 * = nullptr>
-    void AppentData(const U *data, size_t size)
+    template<typename U, typename std::enable_if<internal::BufferCompat<T, U>::value>::type * = nullptr>
+    void AppendData(const U *data, size_t size)
     {
         if (size == 0) { return; }
 
@@ -184,10 +158,7 @@ public:
         size_ = new_size;
     }
 
-    template<typename U,
-             size_t N,
-             typename std::enable_if<internal::BufferCompat<T, U>::value>::type
-                 * = nullptr>
+    template<typename U, size_t N, typename std::enable_if<internal::BufferCompat<T, U>::value>::type * = nullptr>
     void AppendData(const U (&array)[N])
     {
         AppendData(array, N);
@@ -201,9 +172,7 @@ public:
     //     AppendData(w.data(), w.size());
     // }
 
-    template<typename U,
-             typename std::enable_if<internal::BufferCompat<T, U>::value>::type
-                 * = nullptr>
+    template<typename U, typename std::enable_if<internal::BufferCompat<T, U>::value>::type * = nullptr>
     void AppendData(const U &item)
     {
         AppendData(&item, 1);
@@ -214,15 +183,10 @@ public:
         const size_t old_size = size_;
         EnsureCapacityWithHeadroom(size, true);
         size_ = size;
-        if (ZeroOnFree && size_ < old_size) {
-            ZeroTrailingData(old_size - size_);
-        }
+        if (ZeroOnFree && size_ < old_size) { ZeroTrailingData(old_size - size_); }
     }
 
-    void EnsureCapacity(size_t capacity)
-    {
-        EnsureCapacityWithHeadroom(capacity, false);
-    }
+    void EnsureCapacity(size_t capacity) { EnsureCapacityWithHeadroom(capacity, false); }
 
     void Clear() { size_ = 0; }
 
@@ -239,28 +203,21 @@ private:
     {
         if (capacity <= capacity_) { return; }
 
-        const size_t new_capacity = extra_headroom
-            ? std::max(capacity, capacity_ + capacity_ / 2)
-            : capacity;
+        const size_t new_capacity = extra_headroom ? std::max(capacity, capacity_ + capacity_ / 2) : capacity;
         std::unique_ptr<T[]> new_data(new T[new_capacity]);
-        if (data_ != nullptr) {
-            std::memcpy(new_data.get(), data_.get(), size_ * sizeof(T));
-        }
+        if (data_ != nullptr) { std::memcpy(new_data.get(), data_.get(), size_ * sizeof(T)); }
 
-        data_ = std::move(new_data);
+        data_     = std::move(new_data);
         capacity_ = new_capacity;
     }
 
     void ZeroTrailingData(size_t count) {}
 
-    bool IsConsistent() const
-    {
-        return (data_ || capacity_ == 0) && capacity_ >= size_;
-    }
+    bool IsConsistent() const { return (data_ || capacity_ == 0) && capacity_ >= size_; }
 
     void OnMovedFrom()
     {
-        size_ = 0;
+        size_     = 0;
         capacity_ = 0;
     }
 

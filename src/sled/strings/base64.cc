@@ -1,4 +1,5 @@
 #include "sled/strings/base64.h"
+#include "sled/buffer.h"
 #include "sled/log/log.h"
 #include "sled/synchronization/call_once.h"
 #include <array>
@@ -108,24 +109,36 @@ Base64::Decode(const uint8_t *ptr, size_t len)
 {
     if (len == 0) { return std::string(); }
 
+    // FIXME: 修复快速解码在arm平台错误问题
+    /*
     base64_decodestate state;
     base64_init_decodestate(&state);
 
-    std::stringstream ss;
+    sled::BufferT<char> buffer;
+
     char plaintext[kBufferSize];
     int codelength  = 0;
     int plainlength = 0;
     do {
-        codelength  = std::min(kBufferSize, static_cast<int>(len));
-        plainlength = base64_decode_block(reinterpret_cast<const char *>(ptr), codelength, plaintext, &state);
-        ss.write(plaintext, plainlength);
+        codelength = std::min(kBufferSize, static_cast<int>(len));
+        // 如果长度不足4，需要填充=
+        if (codelength < 4) {
+            sled::BufferT<char> temp(reinterpret_cast<const char *>(ptr), codelength);
+            while (temp.size() % 4) { temp.AppendData('='); }
+            plainlength = base64_decode_block(temp.data(), temp.size(), plaintext, &state);
+        } else {
+            // 如果长度不足4，则将这部分留到下一次处理
+            codelength -= codelength % 4;
+            plainlength = base64_decode_block(reinterpret_cast<const char *>(ptr), codelength, plaintext, &state);
+        }
+        buffer.AppendData(static_cast<const char *>(plaintext), plainlength);
 
         ptr += codelength;
         len -= codelength;
     } while (len > 0 && codelength > 0);
 
-    return ss.str();
-    /*
+    return std::string(buffer.data(), buffer.data() + buffer.size());
+    */
 
     CallOnce(once_flag, [&] {
         std::fill(kInvBase64Chars.begin(), kInvBase64Chars.end(), -1);
@@ -161,8 +174,7 @@ Base64::Decode(const uint8_t *ptr, size_t len)
     }
     while (write_idx < data.size()) data.pop_back();
 
-    return make_status_or<std::string>(data);
-    */
+    return MakeStatusOr<std::string>(data);
 }
 
 }// namespace sled
