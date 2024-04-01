@@ -24,13 +24,13 @@ on:
 concurrency:
   group: linux-mips64-gcc-${{ github.ref }}
   cancel-in-progress: true
-permissions: [read]
+permissions: read-all
 jobs:
   linux-gcc-mips64el:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        build_type: ["Debug", "Release"]
+        build_type: [Debug, Release]
     steps:
       - uses: actions/checkout@v4
         with:
