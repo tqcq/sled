@@ -40,8 +40,8 @@ jobs:
       - name: install-qemu-build-deps
         if: steps.cache-qemu.outputs.cache-hit != 'true'
         run: |
-          sudo apt-get update
-          sudo apt-get install autoconf automake autotools-dev ninja-build
+          sudo apt-get update -y
+          sudo apt-get install -y autoconf automake autotools-dev ninja-build
       - name: checkout-qemu
         if: steps.cache-qemu.outputs.cache-hit != 'true'
         run: |
@@ -64,8 +64,8 @@ jobs:
           make install
       - name: aarch64-gnu-toolchain
         run: |
-          sudo apt-get update
-          sudo apt-get install cmake make g++-aarch64-linux-gnu
+          sudo apt-get update -y
+          sudo apt-get install -y cmake make g++-aarch64-linux-gnu
       - name: build
         run: |
           mkdir build && cd build
@@ -89,8 +89,8 @@ jobs:
       - name: install-qemu-build-deps
         if: steps.cache-qemu.outputs.cache-hit != 'true'
         run: |
-          sudo apt-get update
-          sudo apt-get install autoconf automake autotools-dev ninja-build
+          sudo apt-get update -y
+          sudo apt-get install -y autoconf automake autotools-dev ninja-build
       - name: checkout-qemu
         if: steps.cache-qemu.outputs.cache-hit != 'true'
         run: |
@@ -113,8 +113,8 @@ jobs:
           make install
       - name: aarch64-gnu-toolchain
         run: |
-          sudo apt-get update
-          sudo apt-get install cmake make g++-aarch64-linux-gnu
+          sudo apt-get update -y
+          sudo apt-get install -y cmake make g++-aarch64-linux-gnu
       - name: build
         run: |
           mkdir build && cd build
@@ -138,8 +138,8 @@ jobs:
       - name: install-qemu-build-deps
         if: steps.cache-qemu.outputs.cache-hit != 'true'
         run: |
-          sudo apt-get update
-          sudo apt-get install autoconf automake autotools-dev ninja-build
+          sudo apt-get update -y
+          sudo apt-get install -y autoconf automake autotools-dev ninja-build
       - name: checkout-qemu
         if: steps.cache-qemu.outputs.cache-hit != 'true'
         run: |
@@ -162,8 +162,8 @@ jobs:
           make install
       - name: aarch64-gnu-toolchain
         run: |
-          sudo apt-get update
-          sudo apt-get install cmake make g++-aarch64-linux-gnu
+          sudo apt-get update -y
+          sudo apt-get install -y cmake make g++-aarch64-linux-gnu
       - name: build
         run: |
           mkdir build && cd build
