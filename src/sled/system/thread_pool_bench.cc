@@ -13,4 +13,5 @@ ThreadPoolBench(picobench::state &state)
 }
 
 // BENCHMARK(ThreadPoolBench)->RangeMultiplier(10)->Range(10, 10000);
+PICOBENCH_SUITE("TheadPool");
 PICOBENCH(ThreadPoolBench);

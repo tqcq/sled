@@ -34,4 +34,5 @@ ParseURI(picobench::state &s)
     }
 }
 
+PICOBENCH_SUITE("URI");
 PICOBENCH(ParseURI);

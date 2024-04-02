@@ -146,46 +146,90 @@ private:
     marl::ConditionVariable cv_;
 };
 
-// class ConditionVariable final {
-// public:
-//     static constexpr TimeDelta kForever = TimeDelta::PlusInfinity();
-//     ConditionVariable() = default;
-//     ConditionVariable(const ConditionVariable &) = delete;
-//     ConditionVariable &operator=(const ConditionVariable &) = delete;
-//
-//     template<typename Predicate>
-//     inline bool Wait(LockGuard<Mutex> &guard, Predicate pred)
-//     {
-//         std::unique_lock<std::mutex> lock(guard.mutex_->impl_, std::adopt_lock);
-//         cv_.wait(lock, pred);
-//         return true;
-//     }
-//
-//     template<typename Predicate>
-//     inline bool
-//     WaitFor(LockGuard<Mutex> &guard, TimeDelta timeout, Predicate pred)
-//     {
-//         std::unique_lock<std::mutex> lock(guard.mutex_->impl_, std::adopt_lock);
-//         if (timeout == kForever) {
-//             cv_.wait(lock, pred);
-//             return true;
-//         } else {
-//             return cv_.wait_for(lock, std::chrono::milliseconds(timeout.ms()),
-//                                 pred);
-//         }
-//     }
-//
-//     // template<typename Predicate>
-//     // bool WaitUntil(Mutex *mutex, TimeDelta timeout, Predicate pred)
-//     // {}
-//
-//     inline void NotifyOne() { cv_.notify_one(); }
-//
-//     inline void NotifyAll() { cv_.notify_all(); }
-//
-// private:
-//     std::condition_variable cv_;
-// };
+class SCOPED_CAPABILITY SharedMutex final {
+public:
+    enum class Mode {
+        kReaderPriority,
+        kWriterPriority,
+    };
+
+    inline SharedMutex(Mode mode = SharedMutex::Mode::kWriterPriority) : mode_(mode) {}
+
+    inline void Lock() SLED_EXCLUSIVE_LOCK_FUNCTION()
+    {
+        wait_w_count_.fetch_add(1);
+
+        sled::MutexLock lock(&mutex_);
+        if (Mode::kReaderPriority == mode_) {
+            // 读取优先，必须在没有任何读取的消费者的情况下才能持有锁
+            cv_.Wait(lock, [this] { return r_count_ == 0 && w_count_ == 0 && wait_r_count_.load() == 0; });
+            w_count_++;
+        } else {
+            // 写入优先，只要没有持有读锁的消费者，就可以加锁
+            cv_.Wait(lock, [this] { return r_count_ == 0 && w_count_ == 0; });
+            w_count_++;
+            cv_.Wait(lock, [this] { return r_count_ == 0; });
+        }
+        wait_w_count_.fetch_sub(1);
+    }
+
+    inline void Unlock() SLED_UNLOCK_FUNCTION()
+    {
+        sled::MutexLock lock(&mutex_);
+        w_count_--;
+        if (w_count_ == 0) { cv_.NotifyAll(); }
+    }
+
+    inline void LockShared() SLED_SHARED_LOCK_FUNCTION()
+    {
+        wait_r_count_.fetch_add(1);
+        sled::MutexLock lock(&mutex_);
+        if (Mode::kReaderPriority == mode_) {
+            cv_.Wait(lock, [this] { return w_count_ == 0; });
+            r_count_++;
+        } else {
+            cv_.Wait(lock, [this] { return w_count_ == 0 && wait_w_count_.load() == 0; });
+            r_count_++;
+        }
+        wait_r_count_.fetch_sub(1);
+    }
+
+    inline void UnlockShared() SLED_UNLOCK_FUNCTION()
+    {
+        sled::MutexLock lock(&mutex_);
+        r_count_--;
+        if (r_count_ == 0) { cv_.NotifyAll(); }
+    }
+
+private:
+    const Mode mode_;
+    sled::Mutex mutex_;
+    sled::ConditionVariable cv_;
+    int r_count_{0};
+    int w_count_{0};
+    std::atomic<int> wait_r_count_{0};
+    std::atomic<int> wait_w_count_{0};
+};
+
+class SharedMutexReadLock final {
+public:
+    explicit SharedMutexReadLock(SharedMutex *mutex) : mutex_(mutex) { mutex_->LockShared(); }
+
+    ~SharedMutexReadLock() { mutex_->UnlockShared(); }
+
+private:
+    SharedMutex *mutex_;
+};
+
+class SharedMutexWriteLock final {
+public:
+    explicit SharedMutexWriteLock(SharedMutex *mutex) : mutex_(mutex) { mutex_->Lock(); }
+
+    ~SharedMutexWriteLock() { mutex_->Unlock(); }
+
+private:
+    SharedMutex *mutex_;
+};
 
 }// namespace sled
 

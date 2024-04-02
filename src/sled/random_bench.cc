@@ -1,5 +1,6 @@
 #include <sled/random.h>
 #include <sled/testing/benchmark.h>
+PICOBENCH_SUITE("Random");
 
 PICOBENCH([](picobench::state &s) {
     sled::Random rand(s.user_data());

@@ -94,20 +94,19 @@
 // If signalx is single threaded the user must ensure that disconnect, connect
 // or signal is not happening concurrently or data race may occur.
 
-#pragma once
 #ifndef SLED_SIGSLOT_H
 #define SLED_SIGSLOT_H
+#pragma once
 
+#include "sled/synchronization/mutex.h"
 #include <cstring>
 #include <list>
 #include <set>
 
 // On our copy of sigslot.h, we set single threading as default.
-#define SIGSLOT_DEFAULT_MT_POLICY single_threaded
+#define SIGSLOT_DEFAULT_MT_POLICY multi_threaded_local
 
-#if defined(SIGSLOT_PURE_ISO)                                                  \
-    || (!defined(WEBRTC_WIN) && !defined(__GNUG__)                             \
-        && !defined(SIGSLOT_USE_POSIX_THREADS))
+#if defined(SIGSLOT_PURE_ISO) || (!defined(WEBRTC_WIN) && !defined(__GNUG__) && !defined(SIGSLOT_USE_POSIX_THREADS))
 #define _SIGSLOT_SINGLE_THREADED
 #elif defined(WEBRTC_WIN)
 #define _SIGSLOT_HAS_WIN32_THREADS
@@ -167,10 +166,7 @@ class multi_threaded_local {
 public:
     multi_threaded_local() { InitializeCriticalSection(&m_critsec); }
 
-    multi_threaded_local(const multi_threaded_local &)
-    {
-        InitializeCriticalSection(&m_critsec);
-    }
+    multi_threaded_local(const multi_threaded_local &) { InitializeCriticalSection(&m_critsec); }
 
     ~multi_threaded_local() { DeleteCriticalSection(&m_critsec); }
 
@@ -187,31 +183,51 @@ private:
 // The multi threading policies only get compiled in if they are enabled.
 class multi_threaded_global {
 public:
-    void lock() { pthread_mutex_lock(get_mutex()); }
+    void lock()
+    {
+        get_mutex()->Lock();
+        // pthread_mutex_lock(get_mutex());
+    }
 
-    void unlock() { pthread_mutex_unlock(get_mutex()); }
+    void unlock()
+    {
+        get_mutex()->Unlock();
+        // pthread_mutex_unlock(get_mutex());
+    }
 
 private:
-    static pthread_mutex_t *get_mutex();
+    static sled::RecursiveMutex *get_mutex();
+    // static sled::Mutex *get_mutex();
+    // static pthread_mutex_t *get_mutex();
 };
 
 class multi_threaded_local {
 public:
-    multi_threaded_local() { pthread_mutex_init(&m_mutex, nullptr); }
+    // multi_threaded_local() { pthread_mutex_init(&m_mutex, nullptr); }
+    //
+    // multi_threaded_local(const multi_threaded_local &)
+    // {
+    //     pthread_mutex_init(&m_mutex, nullptr);
+    // }
+    //
+    // ~multi_threaded_local() { pthread_mutex_destroy(&m_mutex); }
 
-    multi_threaded_local(const multi_threaded_local &)
+    void lock()
     {
-        pthread_mutex_init(&m_mutex, nullptr);
+        mutex_.Lock();
+        // pthread_mutex_lock(&m_mutex);
     }
 
-    ~multi_threaded_local() { pthread_mutex_destroy(&m_mutex); }
-
-    void lock() { pthread_mutex_lock(&m_mutex); }
-
-    void unlock() { pthread_mutex_unlock(&m_mutex); }
+    void unlock()
+    {
+        mutex_.Unlock();
+        // pthread_mutex_unlock(&m_mutex);
+    }
 
 private:
-    pthread_mutex_t m_mutex;
+    sled::RecursiveMutex mutex_;
+    // sled::Mutex mutex_;
+    // pthread_mutex_t m_mutex;
 };
 #endif// _SIGSLOT_HAS_POSIX_THREADS
 
@@ -229,10 +245,8 @@ class _signal_base_interface;
 
 class has_slots_interface {
 private:
-    typedef void (*signal_connect_t)(has_slots_interface *self,
-                                     _signal_base_interface *sender);
-    typedef void (*signal_disconnect_t)(has_slots_interface *self,
-                                        _signal_base_interface *sender);
+    typedef void (*signal_connect_t)(has_slots_interface *self, _signal_base_interface *sender);
+    typedef void (*signal_disconnect_t)(has_slots_interface *self, _signal_base_interface *sender);
     typedef void (*disconnect_all_t)(has_slots_interface *self);
 
     const signal_connect_t m_signal_connect;
@@ -240,9 +254,7 @@ private:
     const disconnect_all_t m_disconnect_all;
 
 protected:
-    has_slots_interface(signal_connect_t conn,
-                        signal_disconnect_t disc,
-                        disconnect_all_t disc_all)
+    has_slots_interface(signal_connect_t conn, signal_disconnect_t disc, disconnect_all_t disc_all)
         : m_signal_connect(conn),
           m_signal_disconnect(disc),
           m_disconnect_all(disc_all)
@@ -253,23 +265,16 @@ protected:
     virtual ~has_slots_interface() {}
 
 public:
-    void signal_connect(_signal_base_interface *sender)
-    {
-        m_signal_connect(this, sender);
-    }
+    void signal_connect(_signal_base_interface *sender) { m_signal_connect(this, sender); }
 
-    void signal_disconnect(_signal_base_interface *sender)
-    {
-        m_signal_disconnect(this, sender);
-    }
+    void signal_disconnect(_signal_base_interface *sender) { m_signal_disconnect(this, sender); }
 
     void disconnect_all() { m_disconnect_all(this); }
 };
 
 class _signal_base_interface {
 private:
-    typedef void (*slot_disconnect_t)(_signal_base_interface *self,
-                                      has_slots_interface *pslot);
+    typedef void (*slot_disconnect_t)(_signal_base_interface *self, has_slots_interface *pslot);
     typedef void (*slot_duplicate_t)(_signal_base_interface *self,
                                      const has_slots_interface *poldslot,
                                      has_slots_interface *pnewslot);
@@ -286,13 +291,9 @@ protected:
     ~_signal_base_interface() {}
 
 public:
-    void slot_disconnect(has_slots_interface *pslot)
-    {
-        m_slot_disconnect(this, pslot);
-    }
+    void slot_disconnect(has_slots_interface *pslot) { m_slot_disconnect(this, pslot); }
 
-    void slot_duplicate(const has_slots_interface *poldslot,
-                        has_slots_interface *pnewslot)
+    void slot_duplicate(const has_slots_interface *poldslot, has_slots_interface *pnewslot)
     {
         m_slot_duplicate(this, poldslot, pnewslot);
     }
@@ -323,15 +324,14 @@ public:
     _opaque_connection(DestT *pd, void (DestT::*pm)(Args...)) : pdest(pd)
     {
         typedef void (DestT::*pm_t)(Args...);
-        static_assert(sizeof(pm_t) <= sizeof(pmethod),
-                      "Size of slot function pointer too large.");
+        static_assert(sizeof(pm_t) <= sizeof(pmethod), "Size of slot function pointer too large.");
 
         std::memcpy(pmethod, &pm, sizeof(pm_t));
 
         typedef void (*em_t)(const _opaque_connection *self, Args...);
         union_caster<em_t, emit_t> caster2;
         caster2.from = &_opaque_connection::emitter<DestT, Args...>;
-        pemit = caster2.to;
+        pemit        = caster2.to;
     }
 
     has_slots_interface *getdest() const { return pdest; }
@@ -339,7 +339,7 @@ public:
     _opaque_connection duplicate(has_slots_interface *newtarget) const
     {
         _opaque_connection res = *this;
-        res.pdest = newtarget;
+        res.pdest              = newtarget;
         return res;
     }
 
@@ -360,8 +360,7 @@ private:
     {
         typedef void (DestT::*pm_t)(Args...);
         pm_t pm;
-        static_assert(sizeof(pm_t) <= sizeof(pmethod),
-                      "Size of slot function pointer too large.");
+        static_assert(sizeof(pm_t) <= sizeof(pmethod), "Size of slot function pointer too large.");
         std::memcpy(&pm, self->pmethod, sizeof(pm_t));
         (static_cast<DestT *>(self->pdest)->*(pm))(args...);
     }
@@ -373,8 +372,7 @@ protected:
     typedef std::list<_opaque_connection> connections_list;
 
     _signal_base()
-        : _signal_base_interface(&_signal_base::do_slot_disconnect,
-                                 &_signal_base::do_slot_duplicate),
+        : _signal_base_interface(&_signal_base::do_slot_disconnect, &_signal_base::do_slot_duplicate),
           m_current_iterator(m_connected_slots.end())
     {}
 
@@ -385,8 +383,7 @@ private:
 
 public:
     _signal_base(const _signal_base &o)
-        : _signal_base_interface(&_signal_base::do_slot_disconnect,
-                                 &_signal_base::do_slot_duplicate),
+        : _signal_base_interface(&_signal_base::do_slot_disconnect, &_signal_base::do_slot_duplicate),
           m_current_iterator(m_connected_slots.end())
     {
         lock_block<mt_policy> lock(this);
@@ -409,8 +406,7 @@ public:
         while (!m_connected_slots.empty()) {
             has_slots_interface *pdest = m_connected_slots.front().getdest();
             m_connected_slots.pop_front();
-            pdest->signal_disconnect(
-                static_cast<_signal_base_interface *>(this));
+            pdest->signal_disconnect(static_cast<_signal_base_interface *>(this));
         }
         // If disconnect_all is called while the signal is firing, advance the
         // current slot iterator to the end to avoid an invalidated iterator from
@@ -422,7 +418,7 @@ public:
     bool connected(has_slots_interface *pclass)
     {
         lock_block<mt_policy> lock(this);
-        connections_list::const_iterator it = m_connected_slots.begin();
+        connections_list::const_iterator it    = m_connected_slots.begin();
         connections_list::const_iterator itEnd = m_connected_slots.end();
         while (it != itEnd) {
             if (it->getdest() == pclass) return true;
@@ -435,7 +431,7 @@ public:
     void disconnect(has_slots_interface *pclass)
     {
         lock_block<mt_policy> lock(this);
-        connections_list::iterator it = m_connected_slots.begin();
+        connections_list::iterator it    = m_connected_slots.begin();
         connections_list::iterator itEnd = m_connected_slots.end();
 
         while (it != itEnd) {
@@ -447,8 +443,7 @@ public:
                 } else {
                     m_connected_slots.erase(it);
                 }
-                pclass->signal_disconnect(
-                    static_cast<_signal_base_interface *>(this));
+                pclass->signal_disconnect(static_cast<_signal_base_interface *>(this));
                 return;
             }
             ++it;
@@ -456,12 +451,11 @@ public:
     }
 
 private:
-    static void do_slot_disconnect(_signal_base_interface *p,
-                                   has_slots_interface *pslot)
+    static void do_slot_disconnect(_signal_base_interface *p, has_slots_interface *pslot)
     {
         _signal_base *const self = static_cast<_signal_base *>(p);
         lock_block<mt_policy> lock(self);
-        connections_list::iterator it = self->m_connected_slots.begin();
+        connections_list::iterator it    = self->m_connected_slots.begin();
         connections_list::iterator itEnd = self->m_connected_slots.end();
 
         while (it != itEnd) {
@@ -472,8 +466,7 @@ private:
                 // If we're currently using this iterator because the signal is firing,
                 // advance it to avoid it being invalidated.
                 if (self->m_current_iterator == it) {
-                    self->m_current_iterator =
-                        self->m_connected_slots.erase(it);
+                    self->m_current_iterator = self->m_connected_slots.erase(it);
                 } else {
                     self->m_connected_slots.erase(it);
                 }
@@ -483,19 +476,16 @@ private:
         }
     }
 
-    static void do_slot_duplicate(_signal_base_interface *p,
-                                  const has_slots_interface *oldtarget,
-                                  has_slots_interface *newtarget)
+    static void
+    do_slot_duplicate(_signal_base_interface *p, const has_slots_interface *oldtarget, has_slots_interface *newtarget)
     {
         _signal_base *const self = static_cast<_signal_base *>(p);
         lock_block<mt_policy> lock(self);
-        connections_list::iterator it = self->m_connected_slots.begin();
+        connections_list::iterator it    = self->m_connected_slots.begin();
         connections_list::iterator itEnd = self->m_connected_slots.end();
 
         while (it != itEnd) {
-            if (it->getdest() == oldtarget) {
-                self->m_connected_slots.push_back(it->duplicate(newtarget));
-            }
+            if (it->getdest() == oldtarget) { self->m_connected_slots.push_back(it->duplicate(newtarget)); }
 
             ++it;
         }
@@ -540,16 +530,14 @@ public:
 private:
     has_slots &operator=(has_slots const &);
 
-    static void do_signal_connect(has_slots_interface *p,
-                                  _signal_base_interface *sender)
+    static void do_signal_connect(has_slots_interface *p, _signal_base_interface *sender)
     {
         has_slots *const self = static_cast<has_slots *>(p);
         lock_block<mt_policy> lock(self);
         self->m_senders.insert(sender);
     }
 
-    static void do_signal_disconnect(has_slots_interface *p,
-                                     _signal_base_interface *sender)
+    static void do_signal_disconnect(has_slots_interface *p, _signal_base_interface *sender)
     {
         has_slots *const self = static_cast<has_slots *>(p);
         lock_block<mt_policy> lock(self);
@@ -563,7 +551,7 @@ private:
         while (!self->m_senders.empty()) {
             std::set<_signal_base_interface *> senders;
             senders.swap(self->m_senders);
-            const_iterator it = senders.begin();
+            const_iterator it    = senders.begin();
             const_iterator itEnd = senders.end();
 
             while (it != itEnd) {
@@ -627,22 +615,13 @@ using signal0 = signal_with_thread_policy<mt_policy>;
 template<typename A1, typename mt_policy = SIGSLOT_DEFAULT_MT_POLICY>
 using signal1 = signal_with_thread_policy<mt_policy, A1>;
 
-template<typename A1,
-         typename A2,
-         typename mt_policy = SIGSLOT_DEFAULT_MT_POLICY>
+template<typename A1, typename A2, typename mt_policy = SIGSLOT_DEFAULT_MT_POLICY>
 using signal2 = signal_with_thread_policy<mt_policy, A1, A2>;
 
-template<typename A1,
-         typename A2,
-         typename A3,
-         typename mt_policy = SIGSLOT_DEFAULT_MT_POLICY>
+template<typename A1, typename A2, typename A3, typename mt_policy = SIGSLOT_DEFAULT_MT_POLICY>
 using signal3 = signal_with_thread_policy<mt_policy, A1, A2, A3>;
 
-template<typename A1,
-         typename A2,
-         typename A3,
-         typename A4,
-         typename mt_policy = SIGSLOT_DEFAULT_MT_POLICY>
+template<typename A1, typename A2, typename A3, typename A4, typename mt_policy = SIGSLOT_DEFAULT_MT_POLICY>
 using signal4 = signal_with_thread_policy<mt_policy, A1, A2, A3, A4>;
 
 template<typename A1,
@@ -670,8 +649,7 @@ template<typename A1,
          typename A6,
          typename A7,
          typename mt_policy = SIGSLOT_DEFAULT_MT_POLICY>
-using signal7 =
-    signal_with_thread_policy<mt_policy, A1, A2, A3, A4, A5, A6, A7>;
+using signal7 = signal_with_thread_policy<mt_policy, A1, A2, A3, A4, A5, A6, A7>;
 
 template<typename A1,
          typename A2,
@@ -682,9 +660,8 @@ template<typename A1,
          typename A7,
          typename A8,
          typename mt_policy = SIGSLOT_DEFAULT_MT_POLICY>
-using signal8 =
-    signal_with_thread_policy<mt_policy, A1, A2, A3, A4, A5, A6, A7, A8>;
+using signal8 = signal_with_thread_policy<mt_policy, A1, A2, A3, A4, A5, A6, A7, A8>;
 
 }// namespace sigslot
 
-#endif // SLED_SIGSLOT_H
+#endif// SLED_SIGSLOT_H

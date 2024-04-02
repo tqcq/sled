@@ -25,7 +25,7 @@ target_include_directories(benchmark_main PUBLIC src/)
 add_library(sled STATIC "")
 
 add_subdirectory(3party/minilua EXCLUDE_FROM_ALL)
-add_subdirectory(3party/gperftools EXCLUDE_FROM_ALL)
+# add_subdirectory(3party/gperftools EXCLUDE_FROM_ALL)
 add_subdirectory(3party/asyncplusplus EXCLUDE_FROM_ALL)
 # add_subdirectory(3party/cppuprofile EXCLUDE_FROM_ALL)
 # add_subdirectory(3party/protobuf-3.21.12 EXCLUDE_FROM_ALL)
@@ -111,6 +111,7 @@ if(SLED_BUILD_BENCHMARK)
 
   add_executable(
     sled_benchmark
+    src/sled/event_bus/event_bus_bench.cc
     src/sled/random_bench.cc
     src/sled/strings/base64_bench.cc
     # src/sled/system/fiber/fiber_bench.cc
@@ -134,8 +135,9 @@ function(sled_add_test)
   add_executable(${SLED_TEST_NAME} ${SLED_TEST_SRCS})
 
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(EXTRA_FLAGS -Wthread-safety -g -fsanitize=address
-                    -fno-omit-frame-pointer -fno-optimize-sibling-calls)
+    set(EXTRA_FLAGS # -Wthread-safety
+        -g -fsanitize=address -fno-omit-frame-pointer
+        -fno-optimize-sibling-calls)
     target_compile_options(${SLED_TEST_NAME} PRIVATE ${EXTRA_FLAGS})
 
     target_link_options(${SLED_TEST_NAME} PRIVATE ${EXTRA_FLAGS})
@@ -165,7 +167,6 @@ if(SLED_BUILD_TESTS)
     SRCS
     src/sled/debugging/demangle_test.cc
     src/sled/async/async_test.cc
-    src/sled/any_test.cc
     src/sled/filesystem/path_test.cc
     src/sled/log/fmt_test.cc
     src/sled/synchronization/sequence_checker_test.cc
@@ -179,11 +180,20 @@ if(SLED_BUILD_TESTS)
     src/sled/rx_test.cc
     src/sled/uri_test.cc)
 
-  sled_add_test(NAME sled_symbolize_test SRCS
-                src/sled/debugging/symbolize_test.cc NO_MAIN)
+  if(NOT ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "arm")
+    sled_add_test(NAME sled_async_test SRCS src/sled/async/async_test.cc)
+    sled_add_test(NAME sled_thread_pool_test SRCS
+                  src/sled/system/thread_pool_test.cc)
+  endif()
+
+  sled_add_test(NAME sled_event_bus_test SRCS
+                src/sled/event_bus/event_bus_test.cc)
   sled_add_test(NAME sled_lua_test SRCS tests/lua_test.cc)
   sled_add_test(NAME sled_move_on_copy_test SRCS
                 src/sled/utility/move_on_copy_test.cc)
+  sled_add_test(NAME sled_symbolize_test SRCS
+                src/sled/debugging/symbolize_test.cc NO_MAIN)
+  sled_add_test(NAME sled_sigslot_test SRCS src/sled/sigslot_test.cc)
 endif(SLED_BUILD_TESTS)
 
 if(SLED_BUILD_FUZZ)

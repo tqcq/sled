@@ -1,12 +1,11 @@
-
 ---
 name: linux-arm-gcc
 on:
   push:
     paths:
       - .gitea/workflows/linux-arm-gcc.yml
-      - 'toolchains/arm-linux-gnueabi.toolchain.cmake'
-      - 'toolchains/arm-linux-gnueabihf.toolchain.cmake'
+      - toolchains/arm-linux-gnueabi.toolchain.cmake
+      - toolchains/arm-linux-gnueabihf.toolchain.cmake
       - 3party/**
       - include/**
       - src/**
@@ -16,8 +15,8 @@ on:
   pull_request:
     paths:
       - .gitea/workflows/linux-arm-gcc.yml
-      - 'toolchains/arm-linux-gnueabi.toolchain.cmake'
-      - 'toolchains/arm-linux-gnueabihf.toolchain.cmake'
+      - toolchains/arm-linux-gnueabi.toolchain.cmake
+      - toolchains/arm-linux-gnueabihf.toolchain.cmake
       - 3party/**
       - include/**
       - src/**
@@ -27,125 +26,42 @@ on:
 concurrency:
   group: linux-arm-gcc-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
-  linux-gcc-arm:
-    runs-on: ubuntu-20.04
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: cache-qemu
-      id: cache-qemu
-      uses: actions/cache@v4
-      with:
-        path: qemu-install
-        key: qemu-arm-install-20220502-2
-    - name: install-qemu-build-deps
-      if: steps.cache-qemu.outputs.cache-hit != 'true'
-      run: |
-        sudo apt-get update -y
-        sudo apt-get install -y autoconf automake autotools-dev ninja-build
-    - name: checkout-qemu
-      if: steps.cache-qemu.outputs.cache-hit != 'true'
-      run: |
-          mkdir qemu && cd qemu
-          git init
-          git remote add origin https://gitlab.com/qemu-project/qemu.git
-          git fetch --depth=1 origin f5643914a9e8f79c606a76e6a9d7ea82a3fc3e65
-          git checkout f5643914a9e8f79c606a76e6a9d7ea82a3fc3e65
-      # uses: actions/checkout@v4
-      # with:
-      #   repository: qemu/qemu
-      #   path: qemu
-      #   ref: f5643914a9e8f79c606a76e6a9d7ea82a3fc3e65
-    - name: qemu
-      if: steps.cache-qemu.outputs.cache-hit != 'true'
-      run: |
-        cd qemu
-        ./configure --prefix=$GITHUB_WORKSPACE/qemu-install --target-list=arm-linux-user --disable-system
-        make -j$(nproc)
-        make install
-
-    - name: set-qemu-cache
-      uses: actions/cache/save@v3
-      if: steps.cache-qemu.outputs.cache-hit != 'true'
-      with:
-        key: qemu-arm-install-20220502-2
-        path: qemu-install
-
-    - name: arm-gnu-toolchain
-      run: |
-        sudo apt-get update -y
-        sudo apt-get install -y cmake make g++-arm-linux-gnueabi
-
-    - name: build
-      run: |
-        mkdir build && cd build
-        cmake -DCMAKE_TOOLCHAIN_FILE=../toolchains/arm-linux-gnueabi.toolchain.cmake -DSLED_BUILD_TESTS=ON -DSLED_BUILD_TESTS=ON ..
-        cmake --build . -j $(nproc)
-    - name: test
-      run: |
-        export PATH=$GITHUB_WORKSPACE/qemu-install/bin:$PATH
-        cd build
-        TESTS_EXECUTABLE_LOADER=qemu-arm TESTS_EXECUTABLE_LOADER_ARGUMENTS="-L;/usr/arm-linux-gnueabi" ctest --output-on-failure -j $(nproc)
-
+  # linux-gcc-arm:
+  #   runs-on: ubuntu-20.04
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: arm-gnu-toolchain
+  #       run: |
+  #         sudo apt-get update -y
+  #         sudo apt-get install -y cmake make g++-arm-linux-gnueabi qemu-user-binfmt
+  #     - name: build
+  #       run: |
+  #         mkdir build && cd build
+  #         cmake -DCMAKE_TOOLCHAIN_FILE=../toolchains/arm-linux-gnueabi.toolchain.cmake -DSLED_BUILD_TESTS=ON -DSLED_BUILD_TESTS=ON ..
+  #         cmake --build . -j $(nproc)
+  #     - name: test
+  #       run: |
+  #         cd build
+  #         ln -sf /usr/arm-linux-gnueabi/lib/ld-linux.so.3
+  #         export LD_LIBRARY_PATH=/usr/arm-linux-gnueabi/lib
+  #         qemu-arm ctest --output-on-failure -j$(nproc)
   linux-gcc-armhf:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v4
-
-    - name: cache-qemu
-      id: cache-qemu
-      uses: actions/cache@v4
-      with:
-        path: qemu-install
-        key: qemu-arm-install-20220502-2
-    - name: install-qemu-build-deps
-      if: steps.cache-qemu.outputs.cache-hit != 'true'
-      run: |
-        sudo apt-get update -y
-        sudo apt-get install -y autoconf automake autotools-dev ninja-build
-    - name: checkout-qemu
-      if: steps.cache-qemu.outputs.cache-hit != 'true'
-      run: |
-          mkdir qemu && cd qemu
-          git init
-          git remote add origin https://gitlab.com/qemu-project/qemu.git
-          git fetch --depth=1 origin f5643914a9e8f79c606a76e6a9d7ea82a3fc3e65
-          git checkout f5643914a9e8f79c606a76e6a9d7ea82a3fc3e65
-      # uses: actions/checkout@v4
-      # with:
-      #   repository: qemu/qemu
-      #   path: qemu
-      #   ref: f5643914a9e8f79c606a76e6a9d7ea82a3fc3e65
-    - name: qemu
-      if: steps.cache-qemu.outputs.cache-hit != 'true'
-      run: |
-        cd qemu
-        ./configure --prefix=$GITHUB_WORKSPACE/qemu-install --target-list=arm-linux-user --disable-system
-        make -j$(nproc)
-        make install
-
-    - name: set-qemu-cache
-      uses: actions/cache/save@v3
-      if: steps.cache-qemu.outputs.cache-hit != 'true'
-      with:
-        key: qemu-arm-install-20220502-2
-        path: qemu-install
-
-    - name: arm-gnu-toolchain
-      run: |
-        sudo apt-get update -y
-        sudo apt-get install -y cmake make g++-arm-linux-gnueabihf
-
-    - name: build
-      run: |
-        mkdir build && cd build
-        cmake -DCMAKE_TOOLCHAIN_FILE=../toolchains/arm-linux-gnueabihf.toolchain.cmake -DSLED_BUILD_TESTS=ON ..
-        cmake --build . -j $(nproc)
-    - name: test
-      run: |
-        export PATH=$GITHUB_WORKSPACE/qemu-install/bin:$PATH
-        cd build
-        TESTS_EXECUTABLE_LOADER=qemu-arm TESTS_EXECUTABLE_LOADER_ARGUMENTS="-L;/usr/arm-linux-gnueabihf" ctest --output-on-failure -j $(nproc)
-
+      - uses: actions/checkout@v4
+      - name: arm-gnu-toolchain
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y cmake make g++-arm-linux-gnueabihf qemu-user-binfmt
+      - name: build
+        run: |
+          mkdir build && cd build
+          cmake -DCMAKE_TOOLCHAIN_FILE=../toolchains/arm-linux-gnueabihf.toolchain.cmake -DSLED_BUILD_TESTS=ON ..
+          cmake --build . -j $(nproc)
+      - name: test
+        run: |-
+          cd build
+          ln -sf /usr/arm-linux-gnueabihf/lib/ld-linux-armhf.so.3 /lib/ld-linux-armhf.so.3
+          export LD_LIBRARY_PATH=/usr/arm-linux-gnueabihf/lib/
+          ctest --output-on-failure -j$(nproc)

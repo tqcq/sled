@@ -38,6 +38,6 @@ Base64Decode(picobench::state &state)
         (void) sled::Base64::Decode(base64_input);
     }
 }
-
+PICOBENCH_SUITE("Base64");
 PICOBENCH(Base64Decode);
 PICOBENCH(Base64Encode);

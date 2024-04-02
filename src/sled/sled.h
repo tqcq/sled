@@ -9,6 +9,9 @@ namespace async {}
 #include "inja.hpp"
 #include "rx.h"
 
+// event_bus
+#include "sled/event_bus/event_bus.h"
+
 // filesystem
 #include "sled/filesystem/path.h"
 #include "sled/filesystem/temporary_file.h"

@@ -41,7 +41,7 @@ TaskQueueTimeoutFactory::TaskQueueTimeout::Start(DurationMs duration_ms, Timeout
         precision_,
         SafeTask(safety_flag_,
                  [timeout_id, this]() {
-                     LOGV("timer", "Timeout expired: {}", timeout_id);
+                     LOGV("timer", "Timeout expired id={}", timeout_id);
                      SLED_DCHECK_RUN_ON(&parent_.thread_checker_);
                      SLED_DCHECK(posted_task_expiration_ != std::numeric_limits<TimeMs>::max(), "");
                      posted_task_expiration_ = std::numeric_limits<TimeMs>::max();

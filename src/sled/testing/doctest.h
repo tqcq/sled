@@ -57,6 +57,22 @@
 #define DOCTEST_TOSTR_IMPL(x) #x
 #define DOCTEST_TOSTR(x) DOCTEST_TOSTR_IMPL(x)
 
+#ifdef REQUIRE
+#undef REQUIRE
+#endif 
+
+#ifdef CHECK
+#undef CHECK
+#endif 
+
+#ifdef CHECK_EQ
+#undef CHECK_EQ
+#endif 
+
+#ifdef CHECK_NE
+#undef CHECK_NE
+#endif 
+
 #define DOCTEST_VERSION_STR                                                                        \
     DOCTEST_TOSTR(DOCTEST_VERSION_MAJOR) "."                                                       \
     DOCTEST_TOSTR(DOCTEST_VERSION_MINOR) "."                                                       \
