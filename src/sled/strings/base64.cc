@@ -167,8 +167,8 @@ Base64::Decode(const uint8_t *ptr, size_t len)
             break;
         } else {
             // invalid character
-            return make_status_or<std::string>(StatusCode::kInvalidArgument,
-                                               fmt::format("Invalid character [{}] at index [{}]", (char) c, index));
+            return MakeStatusOr<std::string>(StatusCode::kInvalidArgument,
+                                             fmt::format("Invalid character [{}] at index [{}]", (char) c, index));
         }
         ++index;
     }

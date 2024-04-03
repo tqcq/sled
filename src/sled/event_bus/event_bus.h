@@ -97,8 +97,11 @@ private:
 
 class EventBus {
 public:
-   template<typename mt_policy = sigslot::multi_threaded_local>
-   using Subscriber = sigslot::has_slots<mt_policy>;
+    using MultiThreadedLocal  = sigslot::multi_threaded_local;
+    using MultiThreadedGlobal = sigslot::multi_threaded_global;
+
+    template<typename mt_policy = MultiThreadedLocal>
+    using Subscriber = sigslot::has_slots<mt_policy>;
 
     EventBus() = default;
 

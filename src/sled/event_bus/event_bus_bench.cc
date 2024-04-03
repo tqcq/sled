@@ -13,7 +13,7 @@ struct AtomicEvent {
     std::atomic<int> &data;
 };
 
-struct Subscriber : public sled::EventBus::Subscriber {
+struct Subscriber : public sled::EventBus::Subscriber<> {
     void OnEvent(Event event) { (*event.data)++; }
 
     void OnAtomicnEvent(AtomicEvent event) { event.data.fetch_add(1); }

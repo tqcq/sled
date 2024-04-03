@@ -26,7 +26,7 @@ struct Event2 {
     std::string str;
 };
 
-struct Subscriber : public sled::EventBus::Subscriber {
+struct Subscriber : public sled::EventBus::Subscriber<> {
     void OnEvent1(Event1 event) { a += event.a; }
 
     void OnEvent2(Event2 event) { str += event.str; }
