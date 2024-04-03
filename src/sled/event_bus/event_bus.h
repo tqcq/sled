@@ -148,6 +148,8 @@ public:
         }
     }
 
+    EventBus *operator->() { return this; }
+
 private:
     sled::Mutex mutex_;
     std::unordered_map<std::type_index, std::function<void(EventBus *)>> cleanup_handlers_ GUARDED_BY(mutex_);

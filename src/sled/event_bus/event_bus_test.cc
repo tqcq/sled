@@ -89,7 +89,7 @@ TEST_SUITE("EventBus")
             std::atomic<int> &data;
         };
 
-        struct AotmicEventSubscriber : public sled::EventBus::Subscriber {
+        struct AotmicEventSubscriber : public sled::EventBus::Subscriber<> {
             virtual ~AotmicEventSubscriber() = default;
 
             void OnEvent(AtomicEvent event) { event.data.fetch_add(1); }
