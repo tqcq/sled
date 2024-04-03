@@ -97,10 +97,8 @@ private:
 
 class EventBus {
 public:
-    class Subscriber : public sigslot::has_slots<> {
-    public:
-        virtual ~Subscriber() = default;
-    };
+   template<typename mt_policy = sigslot::multi_threaded_local>
+   using Subscriber = sigslot::has_slots<mt_policy>;
 
     EventBus() = default;
 
@@ -120,7 +118,7 @@ public:
 
     // On<Event1> ([](const Event1 &){})
     template<typename Event, typename C>
-    typename std::enable_if<std::is_base_of<Subscriber, C>::value>::type
+    typename std::enable_if<std::is_base_of<sigslot::has_slots_interface, C>::value>::type
     Subscribe(C *instance, void (C::*method)(Event))
     {
         {
@@ -132,7 +130,7 @@ public:
     }
 
     template<typename Event, typename C>
-    typename std::enable_if<std::is_base_of<Subscriber, C>::value>::type Unsubscribe(C *instance)
+    typename std::enable_if<std::is_base_of<sigslot::has_slots_interface, C>::value>::type Unsubscribe(C *instance)
     {
         EventRegistry<Event>::Instance().Unsubscribe(this, instance);
         {
