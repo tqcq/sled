@@ -37,6 +37,21 @@ struct Subscriber : public sled::EventBus::Subscriber<> {
 
 TEST_SUITE("EventBus")
 {
+    TEST_CASE("RawType")
+    {
+        CHECK(std::is_same<int, sled::internal::RawType<int>>::value);
+        CHECK(std::is_same<int, sled::internal::RawType<const int>>::value);
+        CHECK(std::is_same<int, sled::internal::RawType<const int &>>::value);
+        CHECK(std::is_same<int, sled::internal::RawType<int &>>::value);
+        CHECK(std::is_same<int, sled::internal::RawType<int &&>>::value);
+
+        CHECK(std::is_same<int, sled::internal::RawType<volatile int>>::value);
+        CHECK(std::is_same<int, sled::internal::RawType<volatile const int>>::value);
+        CHECK(std::is_same<int, sled::internal::RawType<volatile const int &>>::value);
+        CHECK(std::is_same<int, sled::internal::RawType<volatile int &>>::value);
+        CHECK(std::is_same<int, sled::internal::RawType<volatile int &&>>::value);
+    }
+
     TEST_CASE("single thread")
     {
         sled::EventBus bus;
@@ -92,7 +107,13 @@ TEST_SUITE("EventBus")
         struct AotmicEventSubscriber : public sled::EventBus::Subscriber<> {
             virtual ~AotmicEventSubscriber() = default;
 
-            void OnEvent(AtomicEvent event) { event.data.fetch_add(1); }
+            void OnEvent(AtomicEvent event)
+            {
+                ++a;
+                event.data.fetch_add(1);
+            }
+
+            int a = 0;
         };
 
         std::atomic<int> value(0);
@@ -116,5 +137,31 @@ TEST_SUITE("EventBus")
 
         CHECK_EQ(invoke_count.load(), kPublishCount);
         CHECK_EQ(value.load(), kPublishCount * kSubscriberCount);
+    }
+
+    TEST_CASE("same type")
+    {
+        struct Event {
+            int a;
+        };
+
+        struct Subscriber : public sled::EventBus::Subscriber<> {
+            void OnEvent(Event event) { a += event.a; }
+
+            int a = 0;
+        };
+
+        sled::EventBus bus;
+        Subscriber subscriber1;
+        Subscriber subscriber2;
+        bus.Subscribe<Event>(&subscriber1, &Subscriber::OnEvent);
+        bus.Subscribe<Event>(&subscriber2, &Subscriber::OnEvent);
+        bus.Post(Event{1});
+        CHECK_EQ(subscriber1.a, 1);
+        CHECK_EQ(subscriber2.a, 1);
+        Event e{1};
+        bus.Post(e);
+        CHECK_EQ(subscriber1.a, 2);
+        CHECK_EQ(subscriber2.a, 2);
     }
 }

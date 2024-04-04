@@ -10,6 +10,11 @@ namespace sled {
 class EventBus;
 class Subscriber;
 
+namespace internal {
+template<typename Event>
+using RawType = typename std::remove_cv<typename std::remove_reference<Event>::type>::type;
+}
+
 namespace {
 
 template<typename Event>
@@ -36,7 +41,7 @@ public:
         sled::SharedMutexReadLock lock(&shared_mutex_);
         if (signals_.empty()) { return; }
         auto iter = signals_.find(bus);
-        if (iter != signals_.end()) { iter->second(event); }
+        if (iter != signals_.end()) { iter->second(std::forward<Event>(event)); }
     }
 
     template<typename C>
@@ -113,33 +118,36 @@ public:
     EventBus(const EventBus &)            = delete;
     EventBus &operator=(const EventBus &) = delete;
 
-    template<typename Event>
-    void Post(const Event &event)
+    template<typename Event, typename U = internal::RawType<Event>>
+    void Post(Event &&event)
     {
-        EventRegistry<Event>::Instance().Post(this, event);
+        EventRegistry<U>::Instance().Post(this, std::forward<Event>(event));
     }
 
     // On<Event1> ([](const Event1 &){})
-    template<typename Event, typename C>
+    template<typename Event, typename C, typename U = internal::RawType<Event>>
     typename std::enable_if<std::is_base_of<sigslot::has_slots_interface, C>::value>::type
     Subscribe(C *instance, void (C::*method)(Event))
     {
         {
             sled::MutexLock lock(&mutex_);
-            cleanup_handlers_[std::type_index(typeid(Event))] = EventRegistry<Event>::GetCleanupHandler();
+            auto iter = cleanup_handlers_.find(std::type_index(typeid(U)));
+            if (iter == cleanup_handlers_.end()) {
+                cleanup_handlers_[std::type_index(typeid(U))] = EventRegistry<U>::GetCleanupHandler();
+            }
         }
 
-        EventRegistry<Event>::Instance().Subscribe(this, instance, method);
+        EventRegistry<U>::Instance().Subscribe(this, instance, method);
     }
 
-    template<typename Event, typename C>
+    template<typename Event, typename C, typename U = internal::RawType<Event>>
     typename std::enable_if<std::is_base_of<sigslot::has_slots_interface, C>::value>::type Unsubscribe(C *instance)
     {
-        EventRegistry<Event>::Instance().Unsubscribe(this, instance);
+        EventRegistry<U>::Instance().Unsubscribe(this, instance);
         {
             sled::MutexLock lock(&mutex_);
-            if (EventRegistry<Event>::Instance().IsEmpty(this)) {
-                auto iter = cleanup_handlers_.find(std::type_index(typeid(Event)));
+            if (EventRegistry<U>::Instance().IsEmpty(this)) {
+                auto iter = cleanup_handlers_.find(std::type_index(typeid(U)));
                 if (iter != cleanup_handlers_.end()) {
                     iter->second(this);
                     cleanup_handlers_.erase(iter);
@@ -147,8 +155,6 @@ public:
             }
         }
     }
-
-    EventBus *operator->() { return this; }
 
 private:
     sled::Mutex mutex_;
