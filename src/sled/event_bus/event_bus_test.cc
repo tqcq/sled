@@ -37,7 +37,7 @@ struct Subscriber : public sled::EventBus::Subscriber<> {
 
 TEST_SUITE("EventBus")
 {
-    TEST_CASE("RawType")
+    TEST_CASE("RawType built-in type")
     {
         CHECK(std::is_same<int, sled::internal::RawType<int>>::value);
         CHECK(std::is_same<int, sled::internal::RawType<const int>>::value);
@@ -50,6 +50,23 @@ TEST_SUITE("EventBus")
         CHECK(std::is_same<int, sled::internal::RawType<volatile const int &>>::value);
         CHECK(std::is_same<int, sled::internal::RawType<volatile int &>>::value);
         CHECK(std::is_same<int, sled::internal::RawType<volatile int &&>>::value);
+    }
+
+    TEST_CASE("RawType user-defined type")
+    {
+        struct A {};
+
+        CHECK(std::is_same<A, sled::internal::RawType<A>>::value);
+        CHECK(std::is_same<A, sled::internal::RawType<const A>>::value);
+        CHECK(std::is_same<A, sled::internal::RawType<const A &>>::value);
+        CHECK(std::is_same<A, sled::internal::RawType<A &>>::value);
+        CHECK(std::is_same<A, sled::internal::RawType<A &&>>::value);
+
+        CHECK(std::is_same<A, sled::internal::RawType<volatile A>>::value);
+        CHECK(std::is_same<A, sled::internal::RawType<volatile const A>>::value);
+        CHECK(std::is_same<A, sled::internal::RawType<volatile const A &>>::value);
+        CHECK(std::is_same<A, sled::internal::RawType<volatile A &>>::value);
+        CHECK(std::is_same<A, sled::internal::RawType<volatile A &&>>::value);
     }
 
     TEST_CASE("single thread")
@@ -142,6 +159,8 @@ TEST_SUITE("EventBus")
     TEST_CASE("same type")
     {
         struct Event {
+            Event(int v) : a(v) {}
+
             int a;
         };
 
@@ -163,5 +182,8 @@ TEST_SUITE("EventBus")
         bus.Post(e);
         CHECK_EQ(subscriber1.a, 2);
         CHECK_EQ(subscriber2.a, 2);
+        bus.PostTo<Event>(1);
+        CHECK_EQ(subscriber1.a, 3);
+        CHECK_EQ(subscriber2.a, 3);
     }
 }

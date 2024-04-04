@@ -124,11 +124,19 @@ public:
         EventRegistry<U>::Instance().Post(this, std::forward<Event>(event));
     }
 
+    template<typename Event, typename From>
+    void PostTo(From &&value)
+    {
+        using U = internal::RawType<Event>;
+        EventRegistry<U>::Instance().Post(this, std::forward<From>(value));
+    }
+
     // On<Event1> ([](const Event1 &){})
-    template<typename Event, typename C, typename U = internal::RawType<Event>>
+    template<typename Event, typename C>
     typename std::enable_if<std::is_base_of<sigslot::has_slots_interface, C>::value>::type
     Subscribe(C *instance, void (C::*method)(Event))
     {
+        using U = internal::RawType<Event>;
         {
             sled::MutexLock lock(&mutex_);
             auto iter = cleanup_handlers_.find(std::type_index(typeid(U)));
@@ -140,9 +148,10 @@ public:
         EventRegistry<U>::Instance().Subscribe(this, instance, method);
     }
 
-    template<typename Event, typename C, typename U = internal::RawType<Event>>
+    template<typename Event, typename C>
     typename std::enable_if<std::is_base_of<sigslot::has_slots_interface, C>::value>::type Unsubscribe(C *instance)
     {
+        using U = internal::RawType<Event>;
         EventRegistry<U>::Instance().Unsubscribe(this, instance);
         {
             sled::MutexLock lock(&mutex_);
