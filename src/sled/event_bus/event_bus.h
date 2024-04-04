@@ -19,9 +19,6 @@ using EnableNotVolatile = typename std::enable_if<!std::is_volatile<T>::value>;
 // using RawType = typename std::remove_const<typename std::remove_reference<Event>::type>::type;
 void IncrementEvenetRegistryCount();
 int GetEventRegistryCount();
-}// namespace internal
-
-namespace {
 
 template<typename Event>
 class EventRegistry {
@@ -36,8 +33,8 @@ public:
 
     static EventRegistry &Instance()
     {
-        static EventRegistry instance_;
-        return instance_;
+        static EventRegistry registry;
+        return registry;
     }
 
     static std::function<void(EventBus *)> &GetCleanupHandler()
@@ -112,7 +109,7 @@ private:
     SubscriberTable signals_;
 };
 
-}// namespace
+}// namespace internal
 
 class EventBus {
 public:
@@ -138,14 +135,14 @@ public:
     void Post(Event &&event)
     {
         using U = typename internal::RawType<Event>;
-        EventRegistry<U>::Instance().Post(this, std::forward<Event>(event));
+        internal::EventRegistry<U>::Instance().Post(this, std::forward<Event>(event));
     }
 
     template<typename Event, typename From>
     void PostTo(From &&value)
     {
         using U = typename internal::RawType<Event>;
-        EventRegistry<U>::Instance().Post(this, std::forward<From>(value));
+        internal::EventRegistry<U>::Instance().Post(this, std::forward<From>(value));
     }
 
     // On<Event1> ([](const Event1 &){})
@@ -158,21 +155,21 @@ public:
             sled::MutexLock lock(&mutex_);
             auto iter = cleanup_handlers_.find(std::type_index(typeid(U)));
             if (iter == cleanup_handlers_.end()) {
-                cleanup_handlers_[std::type_index(typeid(U))] = EventRegistry<U>::GetCleanupHandler();
+                cleanup_handlers_[std::type_index(typeid(U))] = internal::EventRegistry<U>::GetCleanupHandler();
             }
         }
 
-        EventRegistry<U>::Instance().Subscribe(this, instance, method);
+        internal::EventRegistry<U>::Instance().Subscribe(this, instance, method);
     }
 
     template<typename Event, typename C>
     typename std::enable_if<std::is_base_of<sigslot::has_slots_interface, C>::value>::type Unsubscribe(C *instance)
     {
         using U = typename internal::RawType<Event>;
-        EventRegistry<U>::Instance().Unsubscribe(this, instance);
+        internal::EventRegistry<U>::Instance().Unsubscribe(this, instance);
         {
             sled::MutexLock lock(&mutex_);
-            if (EventRegistry<U>::Instance().IsEmpty(this)) {
+            if (internal::EventRegistry<U>::Instance().IsEmpty(this)) {
                 auto iter = cleanup_handlers_.find(std::type_index(typeid(U)));
                 if (iter != cleanup_handlers_.end()) {
                     iter->second(this);

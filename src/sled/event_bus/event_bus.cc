@@ -15,5 +15,6 @@ GetEventRegistryCount()
 {
     return g_event_registry_count.load(std::memory_order_acquire);
 }
+
 }// namespace internal
 }// namespace sled
