@@ -252,4 +252,22 @@ TEST_SUITE("EventBus")
         });
         CHECK_EQ(subscriber.counter.load(), 2);
     }
+
+    TEST_CASE("EventRegistryCount")
+    {
+        struct EventType1 {};
+
+        struct EventType2 {};
+
+        sled::EventBus bus;
+        int current_count = sled::EventBus::EventRegistryCount();
+        bus.Post(EventType1{});
+        CHECK_EQ(sled::EventBus::EventRegistryCount(), current_count + 1);
+
+        bus.Post(EventType1{});
+        CHECK_EQ(sled::EventBus::EventRegistryCount(), current_count + 1);
+
+        bus.Post(EventType2{});
+        CHECK_EQ(sled::EventBus::EventRegistryCount(), current_count + 2);
+    }
 }

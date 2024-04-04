@@ -50,9 +50,11 @@ target_include_directories(sled PUBLIC src/ 3party/eigen 3party/inja
                                        3party/rxcpp)
 target_sources(
   sled
-  PRIVATE src/sled/async/async.cc
+  PRIVATE 
+  src/sled/async/async.cc
           src/sled/debugging/demangle.cc
           src/sled/debugging/symbolize.cc
+          src/sled/event_bus/event_bus.cc
           src/sled/filesystem/path.cc
           src/sled/log/log.cc
           src/sled/network/async_resolver.cc
@@ -61,7 +63,11 @@ target_sources(
           src/sled/network/physical_socket_server.cc
           src/sled/network/socket_address.cc
           src/sled/network/socket_server.cc
+          src/sled/operations_chain.cc
           src/sled/profiling/profiling.cc
+          src/sled/random.cc
+          src/sled/sigslot.cc
+          src/sled/status.cc
           src/sled/strings/base64.cc
           src/sled/strings/utils.cc
           src/sled/synchronization/event.cc
@@ -72,21 +78,18 @@ target_sources(
           src/sled/system/pid.cc
           src/sled/system/thread.cc
           src/sled/system/thread_pool.cc
+          src/sled/system_time.cc
           src/sled/task_queue/pending_task_safety_flag.cc
           src/sled/task_queue/task_queue_base.cc
-          src/sled/testing/test.cc
           src/sled/testing/benchmark.cc
+          src/sled/testing/test.cc
           src/sled/timer/task_queue_timeout.cc
           src/sled/timer/timer.cc
+          src/sled/time_utils.cc
           src/sled/units/time_delta.cc
           src/sled/units/timestamp.cc
-          src/sled/operations_chain.cc
-          src/sled/random.cc
-          src/sled/sigslot.cc
-          src/sled/status.cc
-          src/sled/system_time.cc
-          src/sled/time_utils.cc
-          src/sled/uri.cc)
+          src/sled/uri.cc
+)
 # set(BUILD_RTTR_DYNAMIC OFF) set(BUILD_UNIT_TESTS OFF)
 # set(BUILD_WITH_STATIC_RUNTIME_LIBS ON) set(BUILD_WITH_DOCUMENTATION OFF)
 # add_subdirectory(3party/rttr EXCLUDE_FROM_ALL) include(CheckCCompilerFlag)

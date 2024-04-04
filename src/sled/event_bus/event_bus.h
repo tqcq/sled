@@ -17,6 +17,8 @@ using RawType = typename std::remove_cv<typename std::remove_reference<Event>::t
 template<typename T>
 using EnableNotVolatile = typename std::enable_if<!std::is_volatile<T>::value>;
 // using RawType = typename std::remove_const<typename std::remove_reference<Event>::type>::type;
+void IncrementEvenetRegistryCount();
+int GetEventRegistryCount();
 }// namespace internal
 
 namespace {
@@ -24,8 +26,13 @@ namespace {
 template<typename Event>
 class EventRegistry {
 public:
+    static_assert(!std::is_const<Event>::value, "Event type must be non-const");
+    static_assert(!std::is_volatile<Event>::value, "Event type must be non-volatile");
+    static_assert(!std::is_reference<Event>::value, "Event type must be non-reference");
     using Dispatcher      = sigslot::signal1<Event>;
     using SubscriberTable = std::unordered_map<EventBus *, Dispatcher>;
+
+    EventRegistry() { internal::IncrementEvenetRegistryCount(); }
 
     static EventRegistry &Instance()
     {
@@ -52,13 +59,16 @@ public:
     void Subscribe(EventBus *bus, C *instance, F &&method)
     {
         sled::SharedMutexWriteLock lock(&shared_mutex_);
-        auto iter = signals_.find(bus);
-        if (iter == signals_.end()) {
-            signals_.emplace(bus, Dispatcher());
-            iter = signals_.find(bus);
+        bool is_empty = signals_.empty();
+        {
+            auto iter = signals_.find(bus);
+            if (iter == signals_.end()) {
+                signals_.emplace(bus, Dispatcher());
+                iter = signals_.find(bus);
+            }
+            auto &dispatcher = iter->second;
+            dispatcher.connect(instance, method);
         }
-        auto &dispatcher = iter->second;
-        dispatcher.connect(instance, method);
     }
 
     template<typename C>
@@ -111,6 +121,8 @@ public:
 
     template<typename mt_policy = MultiThreadedLocal>
     using Subscriber = sigslot::has_slots<mt_policy>;
+
+    static int EventRegistryCount() { return internal::GetEventRegistryCount(); }
 
     EventBus() = default;
 
