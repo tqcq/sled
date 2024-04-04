@@ -1,3 +1,4 @@
+#include "sled/synchronization/event.h"
 #include <sled/event_bus/event_bus.h>
 #include <sled/log/log.h>
 #include <sled/system/fiber/wait_group.h>
@@ -193,7 +194,7 @@ TEST_SUITE("EventBus")
             int value;
         };
 
-        std::atomic<int> counter;
+        std::atomic<int> counter{0};
 
         struct SubscribeCounter : public sled::EventBus::Subscriber<> {
             SubscribeCounter(std::atomic<int> *counter) : counter_(counter) {}
@@ -220,8 +221,35 @@ TEST_SUITE("EventBus")
         bus.Post(const_cast<const Msg &>(msg));
         CHECK_EQ(counter.load(), 4);
 
+        auto lambda = [msg, &bus]() { bus.Post(msg); };
+        lambda();
+        CHECK_EQ(counter.load(), 5);
+
         // volatile Msg volatile_msg{1};
         // bus.Post(volatile_msg);
         // CHECK_EQ(counter.load(), 4);
+    }
+
+    TEST_CASE("disptcher new thread")
+    {
+        auto thread = sled::Thread::Create();
+        thread->Start();
+
+        struct CoutSubscriber : public sled::EventBus::Subscriber<> {
+            void OnEvent(Event1 event) { counter++; }
+
+            std::atomic<int> counter{0};
+        };
+
+        sled::EventBus bus;
+        CoutSubscriber subscriber;
+        bus.Subscribe<Event1>(&subscriber, &CoutSubscriber::OnEvent);
+        thread->BlockingCall([&] { bus.Post(Event1{1}); });
+        CHECK_EQ(subscriber.counter.load(), 1);
+        thread->BlockingCall([&] {
+            Event1 e{1};
+            thread->BlockingCall([e, &bus] { bus.Post(e); });
+        });
+        CHECK_EQ(subscriber.counter.load(), 2);
     }
 }
