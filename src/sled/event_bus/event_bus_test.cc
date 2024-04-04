@@ -186,4 +186,42 @@ TEST_SUITE("EventBus")
         CHECK_EQ(subscriber1.a, 3);
         CHECK_EQ(subscriber2.a, 3);
     }
+
+    TEST_CASE("msg convert test")
+    {
+        struct Msg {
+            int value;
+        };
+
+        std::atomic<int> counter;
+
+        struct SubscribeCounter : public sled::EventBus::Subscriber<> {
+            SubscribeCounter(std::atomic<int> *counter) : counter_(counter) {}
+
+            void OnEvent(Msg msg) { counter_->fetch_add(msg.value); }
+
+            std::atomic<int> *counter_;
+        };
+
+        SubscribeCounter subscriber{&counter};
+        sled::EventBus bus;
+        bus.Subscribe(&subscriber, &SubscribeCounter::OnEvent);
+
+        Msg msg{1};
+        bus.Post(msg);
+        CHECK_EQ(counter.load(), 1);
+
+        bus.Post(const_cast<const Msg &>(msg));
+        CHECK_EQ(counter.load(), 2);
+
+        bus.Post(std::move(msg));
+        CHECK_EQ(counter.load(), 3);
+
+        bus.Post(const_cast<const Msg &>(msg));
+        CHECK_EQ(counter.load(), 4);
+
+        // volatile Msg volatile_msg{1};
+        // bus.Post(volatile_msg);
+        // CHECK_EQ(counter.load(), 4);
+    }
 }

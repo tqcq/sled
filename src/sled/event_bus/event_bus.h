@@ -1,6 +1,7 @@
 #ifndef SLED_EVENT_BUS_EVENT_BUS_H
 #define SLED_EVENT_BUS_EVENT_BUS_H
 
+#include "sled/exec/detail/invoke_result.h"
 #include "sled/sigslot.h"
 #include "sled/synchronization/mutex.h"
 #include <typeindex>
@@ -13,7 +14,10 @@ class Subscriber;
 namespace internal {
 template<typename Event>
 using RawType = typename std::remove_cv<typename std::remove_reference<Event>::type>::type;
-}
+template<typename T>
+using EnableNotVolatile = typename std::enable_if<!std::is_volatile<T>::value>;
+// using RawType = typename std::remove_const<typename std::remove_reference<Event>::type>::type;
+}// namespace internal
 
 namespace {
 
@@ -36,16 +40,16 @@ public:
         return cleanup_handler;
     }
 
-    void Post(EventBus *bus, Event event)
+    void Post(EventBus *bus, const Event &event)
     {
         sled::SharedMutexReadLock lock(&shared_mutex_);
         if (signals_.empty()) { return; }
         auto iter = signals_.find(bus);
-        if (iter != signals_.end()) { iter->second(std::forward<Event>(event)); }
+        if (iter != signals_.end()) { iter->second(event); }
     }
 
-    template<typename C>
-    void Subscribe(EventBus *bus, C *instance, void (C::*method)(Event))
+    template<typename C, typename F>
+    void Subscribe(EventBus *bus, C *instance, F &&method)
     {
         sled::SharedMutexWriteLock lock(&shared_mutex_);
         auto iter = signals_.find(bus);
@@ -118,16 +122,17 @@ public:
     EventBus(const EventBus &)            = delete;
     EventBus &operator=(const EventBus &) = delete;
 
-    template<typename Event, typename U = internal::RawType<Event>>
+    template<typename Event>
     void Post(Event &&event)
     {
+        using U = typename internal::RawType<Event>;
         EventRegistry<U>::Instance().Post(this, std::forward<Event>(event));
     }
 
     template<typename Event, typename From>
     void PostTo(From &&value)
     {
-        using U = internal::RawType<Event>;
+        using U = typename internal::RawType<Event>;
         EventRegistry<U>::Instance().Post(this, std::forward<From>(value));
     }
 
@@ -136,7 +141,7 @@ public:
     typename std::enable_if<std::is_base_of<sigslot::has_slots_interface, C>::value>::type
     Subscribe(C *instance, void (C::*method)(Event))
     {
-        using U = internal::RawType<Event>;
+        using U = typename internal::RawType<Event>;
         {
             sled::MutexLock lock(&mutex_);
             auto iter = cleanup_handlers_.find(std::type_index(typeid(U)));
@@ -151,7 +156,7 @@ public:
     template<typename Event, typename C>
     typename std::enable_if<std::is_base_of<sigslot::has_slots_interface, C>::value>::type Unsubscribe(C *instance)
     {
-        using U = internal::RawType<Event>;
+        using U = typename internal::RawType<Event>;
         EventRegistry<U>::Instance().Unsubscribe(this, instance);
         {
             sled::MutexLock lock(&mutex_);
