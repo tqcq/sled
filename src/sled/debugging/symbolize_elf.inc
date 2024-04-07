@@ -16,7 +16,7 @@ InitializeSymbolizer(const char *argv0)
     if (g_elf) { return; }
     int self_fd = open(argv0, O_RDONLY);
     if (self_fd < 0) { return; }
-    LOGW(kTag, "open self({}) fd: {}", argv0, self_fd);
+    LOGW("Symbolize", "open self({}) fd: {}", argv0, self_fd);
     g_elf   = new elf::elf(elf::create_mmap_loader(self_fd));
     g_dwarf = new dwarf::dwarf(dwarf::elf::create_loader(*g_elf));
 }
