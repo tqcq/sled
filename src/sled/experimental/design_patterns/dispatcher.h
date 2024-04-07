@@ -18,7 +18,7 @@ public:
     struct Handler {
         virtual ~Handler()                    = default;
         virtual bool HandleMessage(const T &) = 0;
-        virtual bool OnMessage(const T &)     = 0;
+        virtual void OnMessage(const T &)     = 0;
     };
 
     virtual ~Dispatcher() = default;
