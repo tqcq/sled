@@ -7,6 +7,8 @@ project(
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD_EXTENSIONS OFF)
+# set(CMAKE_C_FLAGS "-gdwarf-3 -gstrict-dwarf") set(CMAKE_CXX_FLAGS "-gdwarf-3
+# -gstrict-dwarf")
 
 option(SLED_BUILD_BENCHMARK "Build benchmark" OFF)
 option(SLED_BUILD_TESTS "Build tests" OFF)
@@ -24,6 +26,7 @@ target_include_directories(benchmark_main PUBLIC src/)
 
 add_library(sled STATIC "")
 
+add_subdirectory(3party/libelfin EXCLUDE_FROM_ALL)
 add_subdirectory(3party/minilua EXCLUDE_FROM_ALL)
 # add_subdirectory(3party/gperftools EXCLUDE_FROM_ALL)
 add_subdirectory(3party/asyncplusplus EXCLUDE_FROM_ALL)
@@ -50,8 +53,7 @@ target_include_directories(sled PUBLIC src/ 3party/eigen 3party/inja
                                        3party/rxcpp)
 target_sources(
   sled
-  PRIVATE 
-  src/sled/async/async.cc
+  PRIVATE src/sled/async/async.cc
           src/sled/debugging/demangle.cc
           src/sled/debugging/symbolize.cc
           src/sled/event_bus/event_bus.cc
@@ -88,20 +90,12 @@ target_sources(
           src/sled/time_utils.cc
           src/sled/units/time_delta.cc
           src/sled/units/timestamp.cc
-          src/sled/uri.cc
-)
-# set(BUILD_RTTR_DYNAMIC OFF) set(BUILD_UNIT_TESTS OFF)
-# set(BUILD_WITH_STATIC_RUNTIME_LIBS ON) set(BUILD_WITH_DOCUMENTATION OFF)
-# add_subdirectory(3party/rttr EXCLUDE_FROM_ALL) include(CheckCCompilerFlag)
-# check_c_compiler_flag("-Wl,--whole-archive" SUPPORT_COMPILE_WHOLE_ARCHIVE)
-# if(SUPPORT_COMPILE_WHOLE_ARCHIVE) set(WHOLE_ARCHIVE_WRAPPER_START
-# "-Wl,--whole-archive") set(WHOLE_ARCHIVE_WRAPPER_END "-Wl,--no-whole-archive")
-# endif()
+          src/sled/uri.cc)
 
 target_link_libraries(
   sled
   PUBLIC rpc_core fmt marl Async++ minilua
-  PRIVATE dl
+  PRIVATE dl elf
   # protobuf::libprotobuf ${WHOLE_ARCHIVE_WRAPPER_START}
   # tcmalloc_and_profiler_static ${WHOLE_ARCHIVE_WRAPPER_END}
 )

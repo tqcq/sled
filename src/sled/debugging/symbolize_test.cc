@@ -64,7 +64,7 @@ void_cast(TRet (TClass::*mem_func)(Args...))
 }
 
 // TODO: Support Linux
-#if defined(__APPLE__)
+// #if defined(__APPLE__)
 TEST_SUITE("Symbolize")
 {
     TEST_CASE("Trivial Function")
@@ -87,7 +87,8 @@ TEST_SUITE("Symbolize")
         CHECK_EQ(doctest::String("Class::StaticFunc()"), TrySymbolize(void_cast(&Class::StaticFunc)));
     }
 }
-#endif
+
+// #endif
 
 int
 main(int argc, char *argv[])

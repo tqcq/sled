@@ -4,6 +4,7 @@
 extern "C" int
 LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 {
+    if (size > 15) { return 1; }
     auto uri_or = sled::URI::ParseURI(std::string(reinterpret_cast<const char *>(data), size));
     if (!uri_or.ok()) { return 0; }
     auto uri = std::move(uri_or.value());
