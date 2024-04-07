@@ -9,6 +9,9 @@ namespace async {}
 #include "inja.hpp"
 #include "rx.h"
 
+// experimental
+#include "sled/experimental/design_patterns/dispatcher.h"
+
 // event_bus
 #include "sled/event_bus/event_bus.h"
 
