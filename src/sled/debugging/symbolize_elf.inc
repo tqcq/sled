@@ -51,7 +51,7 @@ Symbolize(const void *pc, char *out, int out_size)
                 } else {
                     snprintf(out, out_size, "%s", iter->get_description().c_str());
                     out[out_size - 1] = '\0';
-                    LOGD("found line {}", iter->get_description());
+                    LOGD("Symbolize", "found line {}", iter->get_description());
                 }
                 found = true;
                 break;
