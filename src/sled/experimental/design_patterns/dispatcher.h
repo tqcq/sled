@@ -44,7 +44,10 @@ public:
         // sled::MutexLock lock(&mutex_);
         sled::SharedMutexReadLock lock(&rwlock_);
         for (auto &handler : handlers_) {
-            if (handler->HandleMessage(message)) { return DispatchResult::kHandled; }
+            if (handler->HandleMessage(message)) {
+                handler->OnMessage(message);
+                return DispatchResult::kHandled;
+            }
         }
         return DispatchResult::kNotFound;
     }
