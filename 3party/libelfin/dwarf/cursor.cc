@@ -88,7 +88,7 @@ cursor::offset()
 void
 cursor::string(std::string &out)
 {
-    size_t size;
+    size_t size   = 0;
     const char *p = this->cstr(&size);
     // out.resize(size);
     // memmove(&out.front(), p, size);
