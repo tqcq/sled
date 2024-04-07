@@ -16,5 +16,17 @@ Symbolize(const void *pc, char *out, int out_size)
 #elif defined(__APPLE__)
 #include "symbolize_darwin.inc"
 #elif defined(__linux__)
-#include "sled/debugging/symbolize_elf.inc"
+namespace sled {
+void
+InitializeSymbolizer(const char *argv0)
+{}
+
+bool
+Symbolize(const void *pc, char *out, int out_size)
+{
+    return false;
+}
+}// namespace sled
+
+// #include "sled/debugging/symbolize_elf.inc"
 #endif

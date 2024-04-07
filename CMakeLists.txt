@@ -26,7 +26,6 @@ target_include_directories(benchmark_main PUBLIC src/)
 
 add_library(sled STATIC "")
 
-add_subdirectory(3party/libelfin EXCLUDE_FROM_ALL)
 add_subdirectory(3party/minilua EXCLUDE_FROM_ALL)
 # add_subdirectory(3party/gperftools EXCLUDE_FROM_ALL)
 add_subdirectory(3party/asyncplusplus EXCLUDE_FROM_ALL)
@@ -95,7 +94,7 @@ target_sources(
 target_link_libraries(
   sled
   PUBLIC rpc_core fmt marl Async++ minilua
-  PRIVATE dl elf
+  PRIVATE dl
   # protobuf::libprotobuf ${WHOLE_ARCHIVE_WRAPPER_START}
   # tcmalloc_and_profiler_static ${WHOLE_ARCHIVE_WRAPPER_END}
 )
