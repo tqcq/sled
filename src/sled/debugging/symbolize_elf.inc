@@ -16,6 +16,7 @@ InitializeSymbolizer(const char *argv0)
     if (g_elf) { return; }
     int self_fd = open(argv0, O_RDONLY);
     if (self_fd < 0) { return; }
+    LOGW(kTag, "open self({}) fd: {}", argv0, self_fd);
     g_elf   = new elf::elf(elf::create_mmap_loader(self_fd));
     g_dwarf = new dwarf::dwarf(dwarf::elf::create_loader(*g_elf));
 }
@@ -34,8 +35,8 @@ Symbolize(const void *pc, char *out, int out_size)
     out[0] = '\0';
 
     union {
-        const void *void_pc;
         dwarf::taddr pc_addr;
+        const void *void_pc;
     } u;
 
     u.void_pc  = pc;
@@ -48,6 +49,8 @@ Symbolize(const void *pc, char *out, int out_size)
                 if (iter == lt.end()) {
                     return false;
                 } else {
+                    snprintf(out, out_size, "%s", iter->get_description().c_str());
+                    out[out_size - 1] = '\0';
                     LOGD("found line {}", iter->get_description());
                 }
                 found = true;
