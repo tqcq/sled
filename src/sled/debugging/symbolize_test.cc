@@ -64,7 +64,7 @@ void_cast(TRet (TClass::*mem_func)(Args...))
 }
 
 // TODO: Support Linux
-// #if defined(__APPLE__)
+#if defined(__APPLE__)
 TEST_SUITE("Symbolize")
 {
     TEST_CASE("Trivial Function")
@@ -88,7 +88,7 @@ TEST_SUITE("Symbolize")
     }
 }
 
-// #endif
+#endif
 
 int
 main(int argc, char *argv[])
