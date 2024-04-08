@@ -10,6 +10,8 @@
 #define SLED_THREAD_ANNOTATION_ATTRIBUTE__(x)// no-op
 #endif
 
+#define SLED_UNUSED(x) (void) (x)
+
 #define SLED_CAPABILITY(x) SLED_THREAD_ANNOTATION_ATTRIBUTE__(capability(x))
 
 #define SLED_SCOPED_CAPABILITY SLED_THREAD_ANNOTATION_ATTRIBUTE__(scoped_lockable)

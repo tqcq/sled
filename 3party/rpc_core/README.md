@@ -1,6 +1,7 @@
 # rpc_core
 
-[![Build Status](https://github.com/shuai132/rpc_core/workflows/build/badge.svg)](https://github.com/shuai132/rpc_core/actions?workflow=build)
+[![Build Status](https://github.com/shuai132/rpc_core/workflows/cpp/badge.svg)](https://github.com/shuai132/rpc_core/actions?workflow=cpp)
+[![Build Status](https://github.com/shuai132/rpc_core/workflows/rust/badge.svg)](https://github.com/shuai132/rpc_core/actions?workflow=rust)
 
 a tiny c++11 rpc library, supports all platforms (macOS, Linux, Windows, iOS, Android, etc.) and most microchips (
 Arduino, STM32, ESP32/ESP8266, etc.)
@@ -29,6 +30,14 @@ For TCP-based implementations: [asio_net](https://github.com/shuai132/asio_net)
 * RAII-based `dispose` for automatic cancel request
 * Timeout and Retry API
 * Support `std::future` interface
+
+## Language supports
+
+* C++
+    - [asio_net](https://github.com/shuai132/asio_net): based on [asio](https://think-async.com/Asio/#)
+
+* Rust
+    - [./rust](./rust): based on [tokio](https://github.com/tokio-rs/tokio)
 
 ## Requirements
 
@@ -138,6 +147,10 @@ json: `{"id":1,"age":18,"name":"test"}`
 
 * [json.hpp](include/rpc_core/plugin/json.hpp)  
   A flexible way to use `nlohmann/json`
+
+# License
+
+This project is licensed under the [MIT license](LICENSE).
 
 ## Links
 
