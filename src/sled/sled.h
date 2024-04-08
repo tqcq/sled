@@ -2,12 +2,11 @@
 #ifndef SLED_SLED_H
 #define SLED_SLED_H
 
-namespace async {}
-
 // thrid_party
 #include "async/async.h"
 #include "inja.hpp"
 #include "rx.h"
+#include "toml.hpp"
 
 // experimental
 #include "sled/experimental/design_patterns/dispatcher.h"

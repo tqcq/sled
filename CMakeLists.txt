@@ -49,7 +49,7 @@ if(SLED_LOCATION_PATH)
 endif()
 # add_subdirectory(3party/eigen EXCLUDE_FROM_ALL)
 target_include_directories(sled PUBLIC src/ 3party/eigen 3party/inja
-                                       3party/rxcpp)
+                                       3party/rxcpp 3party/toml11)
 target_sources(
   sled
   PRIVATE src/sled/async/async.cc
