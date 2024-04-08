@@ -34,6 +34,7 @@ namespace async {}
 #include "sled/network/ip_address.h"
 #include "sled/network/null_socket_server.h"
 #include "sled/network/physical_socket_server.h"
+#include "sled/network/rpc.h"
 #include "sled/network/socket.h"
 #include "sled/network/socket_address.h"
 #include "sled/network/socket_factory.h"
