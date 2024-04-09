@@ -1704,10 +1704,10 @@ public:
 
 #endif// nssv_HAVE_STD_HASH
 
-namespace sled {
-using namespace nonstd;
-}
 nssv_RESTORE_WARNINGS()
 
 #endif// nssv_HAVE_STD_STRING_VIEW
+namespace sled {
+using namespace nonstd;
+}
 #endif// NONSTD_SV_LITE_H_INCLUDED

@@ -27,16 +27,15 @@ SOFTWARE.
 
 #include <nlohmann/json.hpp>
 
-#if (defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND))                    \
-    && !defined(INJA_NOEXCEPTION)
+#if (defined(__cpp_exceptions) || defined(__EXCEPTIONS) || defined(_CPPUNWIND)) && !defined(INJA_NOEXCEPTION)
 #ifndef INJA_THROW
 #define INJA_THROW(exception) throw exception
 #endif
 #else
 #include <cstdlib>
 #ifndef INJA_THROW
-#define INJA_THROW(exception)                                                                      \
-    std::abort();                                                                                  \
+#define INJA_THROW(exception)                                                                                          \
+    std::abort();                                                                                                      \
     std::ignore = exception
 #endif
 #ifndef INJA_NOEXCEPTION
@@ -79,9 +78,9 @@ SOFTWARE.
 #define string_view_lite_MINOR 4
 #define string_view_lite_PATCH 0
 
-#define string_view_lite_VERSION                                                                   \
-    nssv_STRINGIFY(string_view_lite_MAJOR) "." nssv_STRINGIFY(                                     \
-        string_view_lite_MINOR) "." nssv_STRINGIFY(string_view_lite_PATCH)
+#define string_view_lite_VERSION                                                                                       \
+    nssv_STRINGIFY(string_view_lite_MAJOR) "." nssv_STRINGIFY(string_view_lite_MINOR) "." nssv_STRINGIFY(              \
+        string_view_lite_PATCH)
 
 #define nssv_STRINGIFY(x) nssv_STRINGIFY_(x)
 #define nssv_STRINGIFY_(x) #x
@@ -93,8 +92,7 @@ SOFTWARE.
 #define nssv_STRING_VIEW_STD 2
 
 #if !defined(nssv_CONFIG_SELECT_STRING_VIEW)
-#define nssv_CONFIG_SELECT_STRING_VIEW                                                             \
-    (nssv_HAVE_STD_STRING_VIEW ? nssv_STRING_VIEW_STD : nssv_STRING_VIEW_NONSTD)
+#define nssv_CONFIG_SELECT_STRING_VIEW (nssv_HAVE_STD_STRING_VIEW ? nssv_STRING_VIEW_STD : nssv_STRING_VIEW_NONSTD)
 #endif
 
 #if defined(nssv_CONFIG_SELECT_STD_STRING_VIEW) || defined(nssv_CONFIG_SELECT_NONSTD_STRING_VIEW)
@@ -162,10 +160,9 @@ SOFTWARE.
 #define nssv_HAVE_STD_STRING_VIEW 0
 #endif
 
-#define nssv_USES_STD_STRING_VIEW                                                                  \
-    ((nssv_CONFIG_SELECT_STRING_VIEW == nssv_STRING_VIEW_STD)                                      \
-     || ((nssv_CONFIG_SELECT_STRING_VIEW == nssv_STRING_VIEW_DEFAULT)                              \
-         && nssv_HAVE_STD_STRING_VIEW))
+#define nssv_USES_STD_STRING_VIEW                                                                                      \
+    ((nssv_CONFIG_SELECT_STRING_VIEW == nssv_STRING_VIEW_STD)                                                          \
+     || ((nssv_CONFIG_SELECT_STRING_VIEW == nssv_STRING_VIEW_DEFAULT) && nssv_HAVE_STD_STRING_VIEW))
 
 #define nssv_HAVE_STARTS_WITH (nssv_CPP20_OR_GREATER || !nssv_USES_STD_STRING_VIEW)
 #define nssv_HAVE_ENDS_WITH nssv_HAVE_STARTS_WITH
@@ -295,15 +292,13 @@ using std::operator<<;
 #define nssv_COMPILER_VERSION(major, minor, patch) (10 * (10 * (major) + (minor)) + (patch))
 
 #if defined(__clang__)
-#define nssv_COMPILER_CLANG_VERSION                                                                \
-    nssv_COMPILER_VERSION(__clang_major__, __clang_minor__, __clang_patchlevel__)
+#define nssv_COMPILER_CLANG_VERSION nssv_COMPILER_VERSION(__clang_major__, __clang_minor__, __clang_patchlevel__)
 #else
 #define nssv_COMPILER_CLANG_VERSION 0
 #endif
 
 #if defined(__GNUC__) && !defined(__clang__)
-#define nssv_COMPILER_GNUC_VERSION                                                                 \
-    nssv_COMPILER_VERSION(__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__)
+#define nssv_COMPILER_GNUC_VERSION nssv_COMPILER_VERSION(__GNUC__, __GNUC_MINOR__, __GNUC_PATCHLEVEL__)
 #else
 #define nssv_COMPILER_GNUC_VERSION 0
 #endif
@@ -349,8 +344,7 @@ using std::operator<<;
 #define nssv_HAVE_WCHAR16_T nssv_CPP11_100
 #define nssv_HAVE_WCHAR32_T nssv_CPP11_100
 
-#if !((nssv_CPP11_OR_GREATER && nssv_COMPILER_CLANG_VERSION)                                       \
-      || nssv_BETWEEN(nssv_COMPILER_CLANG_VERSION, 300, 400))
+#if !((nssv_CPP11_OR_GREATER && nssv_COMPILER_CLANG_VERSION) || nssv_BETWEEN(nssv_COMPILER_CLANG_VERSION, 300, 400))
 #define nssv_HAVE_STD_DEFINED_LITERALS nssv_CPP11_140
 #else
 #define nssv_HAVE_STD_DEFINED_LITERALS 0
@@ -564,8 +558,7 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
         // Assignment:
 
 #if nssv_CPP11_OR_GREATER
-        nssv_constexpr14 basic_string_view &operator=(basic_string_view const &other) nssv_noexcept
-            = default;
+        nssv_constexpr14 basic_string_view &operator=(basic_string_view const &other) nssv_noexcept = default;
 #else
         nssv_constexpr14 basic_string_view &operator=(basic_string_view const &other) nssv_noexcept
         {
@@ -585,15 +578,9 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
 
         nssv_constexpr const_iterator cend() const nssv_noexcept { return end(); }
 
-        nssv_constexpr const_reverse_iterator rbegin() const nssv_noexcept
-        {
-            return const_reverse_iterator(end());
-        }
+        nssv_constexpr const_reverse_iterator rbegin() const nssv_noexcept { return const_reverse_iterator(end()); }
 
-        nssv_constexpr const_reverse_iterator rend() const nssv_noexcept
-        {
-            return const_reverse_iterator(begin());
-        }
+        nssv_constexpr const_reverse_iterator rend() const nssv_noexcept { return const_reverse_iterator(begin()); }
 
         nssv_constexpr const_reverse_iterator crbegin() const nssv_noexcept { return rbegin(); }
 
@@ -605,10 +592,7 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
 
         nssv_constexpr size_type length() const nssv_noexcept { return size_; }
 
-        nssv_constexpr size_type max_size() const nssv_noexcept
-        {
-            return (std::numeric_limits<size_type>::max)();
-        }
+        nssv_constexpr size_type max_size() const nssv_noexcept { return (std::numeric_limits<size_type>::max)(); }
 
         // since C++20
         nssv_nodiscard nssv_constexpr bool empty() const nssv_noexcept { return 0 == size_; }
@@ -685,16 +669,14 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
 
         nssv_constexpr14 int compare(basic_string_view other) const nssv_noexcept// (1)
         {
-            if (const int result
-                = Traits::compare(data(), other.data(), (std::min)(size(), other.size()))) {
+            if (const int result = Traits::compare(data(), other.data(), (std::min)(size(), other.size()))) {
                 return result;
             }
 
             return size() == other.size() ? 0 : size() < other.size() ? -1 : 1;
         }
 
-        nssv_constexpr int
-        compare(size_type pos1, size_type n1, basic_string_view other) const// (2)
+        nssv_constexpr int compare(size_type pos1, size_type n1, basic_string_view other) const// (2)
         {
             return substr(pos1, n1).compare(other);
         }
@@ -718,8 +700,7 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
             return substr(pos1, n1).compare(basic_string_view(s));
         }
 
-        nssv_constexpr int
-        compare(size_type pos1, size_type n1, CharT const *s, size_type n2) const// (6)
+        nssv_constexpr int compare(size_type pos1, size_type n1, CharT const *s, size_type n2) const// (6)
         {
             return substr(pos1, n1).compare(basic_string_view(s, n2));
         }
@@ -766,10 +747,7 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
                                         size_type pos = 0) const nssv_noexcept// (1)
         {
             return assert(v.size() == 0 || v.data() != nssv_nullptr),
-                   pos >= size()
-                       ? npos
-                       : to_pos(
-                           std::search(cbegin() + pos, cend(), v.cbegin(), v.cend(), Traits::eq));
+                   pos >= size() ? npos : to_pos(std::search(cbegin() + pos, cend(), v.cbegin(), v.cend(), Traits::eq));
         }
 
         nssv_constexpr14 size_type find(CharT c, size_type pos = 0) const nssv_noexcept// (2)
@@ -796,7 +774,7 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
 
             if (v.empty()) { return (std::min)(size(), pos); }
 
-            const_iterator last = cbegin() + (std::min)(size() - v.size(), pos) + v.size();
+            const_iterator last   = cbegin() + (std::min)(size() - v.size(), pos) + v.size();
             const_iterator result = std::find_end(cbegin(), last, v.cbegin(), v.cend(), Traits::eq);
 
             return result != last ? size_type(result - cbegin()) : npos;
@@ -822,10 +800,8 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
         nssv_constexpr size_type find_first_of(basic_string_view v,
                                                size_type pos = 0) const nssv_noexcept// (1)
         {
-            return pos >= size()
-                ? npos
-                : to_pos(
-                    std::find_first_of(cbegin() + pos, cend(), v.cbegin(), v.cend(), Traits::eq));
+            return pos >= size() ? npos
+                                 : to_pos(std::find_first_of(cbegin() + pos, cend(), v.cbegin(), v.cend(), Traits::eq));
         }
 
         nssv_constexpr size_type find_first_of(CharT c, size_type pos = 0) const nssv_noexcept// (2)
@@ -833,8 +809,7 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
             return find_first_of(basic_string_view(&c, 1), pos);
         }
 
-        nssv_constexpr size_type find_first_of(CharT const *s,
-                                               size_type pos,
+        nssv_constexpr size_type find_first_of(CharT const *s, size_type pos,
                                                size_type n) const// (3)
         {
             return find_first_of(basic_string_view(s, n), pos);
@@ -851,13 +826,13 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
                                               size_type pos = npos) const nssv_noexcept// (1)
         {
             return empty() ? npos
-                : pos >= size()
-                ? find_last_of(v, size() - 1)
-                : to_pos(std::find_first_of(const_reverse_iterator(cbegin() + pos + 1),
-                                            crend(),
-                                            v.cbegin(),
-                                            v.cend(),
-                                            Traits::eq));
+                   : pos >= size()
+                       ? find_last_of(v, size() - 1)
+                       : to_pos(std::find_first_of(const_reverse_iterator(cbegin() + pos + 1),
+                                                   crend(),
+                                                   v.cbegin(),
+                                                   v.cend(),
+                                                   Traits::eq));
         }
 
         nssv_constexpr size_type find_last_of(CharT c,
@@ -866,8 +841,7 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
             return find_last_of(basic_string_view(&c, 1), pos);
         }
 
-        nssv_constexpr size_type find_last_of(CharT const *s,
-                                              size_type pos,
+        nssv_constexpr size_type find_last_of(CharT const *s, size_type pos,
                                               size_type count) const// (3)
         {
             return find_last_of(basic_string_view(s, count), pos);
@@ -883,8 +857,7 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
         nssv_constexpr size_type find_first_not_of(basic_string_view v,
                                                    size_type pos = 0) const nssv_noexcept// (1)
         {
-            return pos >= size() ? npos
-                                 : to_pos(std::find_if(cbegin() + pos, cend(), not_in_view(v)));
+            return pos >= size() ? npos : to_pos(std::find_if(cbegin() + pos, cend(), not_in_view(v)));
         }
 
         nssv_constexpr size_type find_first_not_of(CharT c,
@@ -893,8 +866,7 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
             return find_first_not_of(basic_string_view(&c, 1), pos);
         }
 
-        nssv_constexpr size_type find_first_not_of(CharT const *s,
-                                                   size_type pos,
+        nssv_constexpr size_type find_first_not_of(CharT const *s, size_type pos,
                                                    size_type count) const// (3)
         {
             return find_first_not_of(basic_string_view(s, count), pos);
@@ -910,11 +882,10 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
         nssv_constexpr size_type find_last_not_of(basic_string_view v,
                                                   size_type pos = npos) const nssv_noexcept// (1)
         {
-            return empty()      ? npos
-                : pos >= size() ? find_last_not_of(v, size() - 1)
-                                : to_pos(std::find_if(const_reverse_iterator(cbegin() + pos + 1),
-                                                      crend(),
-                                                      not_in_view(v)));
+            return empty() ? npos
+                   : pos >= size()
+                       ? find_last_not_of(v, size() - 1)
+                       : to_pos(std::find_if(const_reverse_iterator(cbegin() + pos + 1), crend(), not_in_view(v)));
         }
 
         nssv_constexpr size_type find_last_not_of(CharT c,
@@ -923,8 +894,7 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
             return find_last_not_of(basic_string_view(&c, 1), pos);
         }
 
-        nssv_constexpr size_type find_last_not_of(CharT const *s,
-                                                  size_type pos,
+        nssv_constexpr size_type find_last_not_of(CharT const *s, size_type pos,
                                                   size_type count) const// (3)
         {
             return find_last_not_of(basic_string_view(s, count), pos);
@@ -999,18 +969,14 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
 #if nssv_CPP11_OR_GREATER
 
         template<class Allocator = std::allocator<CharT>>
-        std::basic_string<CharT, Traits, Allocator> to_string(Allocator const &a
-                                                              = Allocator()) const
+        std::basic_string<CharT, Traits, Allocator> to_string(Allocator const &a = Allocator()) const
         {
             return std::basic_string<CharT, Traits, Allocator>(begin(), end(), a);
         }
 
 #else
 
-        std::basic_string<CharT, Traits> to_string() const
-        {
-            return std::basic_string<CharT, Traits>(begin(), end());
-        }
+        std::basic_string<CharT, Traits> to_string() const { return std::basic_string<CharT, Traits>(begin(), end()); }
 
         template<class Allocator>
         std::basic_string<CharT, Traits, Allocator> to_string(Allocator const &a) const
@@ -1031,43 +997,43 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
     // lexicographically compare two string views (function template):
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator==(basic_string_view<CharT, Traits> lhs,
-                                   basic_string_view<CharT, Traits> rhs) nssv_noexcept
+    nssv_constexpr bool
+    operator==(basic_string_view<CharT, Traits> lhs, basic_string_view<CharT, Traits> rhs) nssv_noexcept
     {
         return lhs.compare(rhs) == 0;
     }
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator!=(basic_string_view<CharT, Traits> lhs,
-                                   basic_string_view<CharT, Traits> rhs) nssv_noexcept
+    nssv_constexpr bool
+    operator!=(basic_string_view<CharT, Traits> lhs, basic_string_view<CharT, Traits> rhs) nssv_noexcept
     {
         return lhs.compare(rhs) != 0;
     }
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator<(basic_string_view<CharT, Traits> lhs,
-                                  basic_string_view<CharT, Traits> rhs) nssv_noexcept
+    nssv_constexpr bool
+    operator<(basic_string_view<CharT, Traits> lhs, basic_string_view<CharT, Traits> rhs) nssv_noexcept
     {
         return lhs.compare(rhs) < 0;
     }
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator<=(basic_string_view<CharT, Traits> lhs,
-                                   basic_string_view<CharT, Traits> rhs) nssv_noexcept
+    nssv_constexpr bool
+    operator<=(basic_string_view<CharT, Traits> lhs, basic_string_view<CharT, Traits> rhs) nssv_noexcept
     {
         return lhs.compare(rhs) <= 0;
     }
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator>(basic_string_view<CharT, Traits> lhs,
-                                  basic_string_view<CharT, Traits> rhs) nssv_noexcept
+    nssv_constexpr bool
+    operator>(basic_string_view<CharT, Traits> lhs, basic_string_view<CharT, Traits> rhs) nssv_noexcept
     {
         return lhs.compare(rhs) > 0;
     }
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator>=(basic_string_view<CharT, Traits> lhs,
-                                   basic_string_view<CharT, Traits> rhs) nssv_noexcept
+    nssv_constexpr bool
+    operator>=(basic_string_view<CharT, Traits> lhs, basic_string_view<CharT, Traits> rhs) nssv_noexcept
     {
         return lhs.compare(rhs) >= 0;
     }
@@ -1084,29 +1050,27 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
     // ==
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator==(basic_string_view<CharT, Traits> lhs,
-                                   char const *rhs) nssv_noexcept
+    nssv_constexpr bool operator==(basic_string_view<CharT, Traits> lhs, char const *rhs) nssv_noexcept
     {
         return lhs.compare(rhs) == 0;
     }
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator==(char const *lhs,
-                                   basic_string_view<CharT, Traits> rhs) nssv_noexcept
+    nssv_constexpr bool operator==(char const *lhs, basic_string_view<CharT, Traits> rhs) nssv_noexcept
     {
         return rhs.compare(lhs) == 0;
     }
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator==(basic_string_view<CharT, Traits> lhs,
-                                   std::basic_string<CharT, Traits> rhs) nssv_noexcept
+    nssv_constexpr bool
+    operator==(basic_string_view<CharT, Traits> lhs, std::basic_string<CharT, Traits> rhs) nssv_noexcept
     {
         return lhs.size() == rhs.size() && lhs.compare(rhs) == 0;
     }
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator==(std::basic_string<CharT, Traits> rhs,
-                                   basic_string_view<CharT, Traits> lhs) nssv_noexcept
+    nssv_constexpr bool
+    operator==(std::basic_string<CharT, Traits> rhs, basic_string_view<CharT, Traits> lhs) nssv_noexcept
     {
         return lhs.size() == rhs.size() && lhs.compare(rhs) == 0;
     }
@@ -1114,29 +1078,27 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
     // !=
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator!=(basic_string_view<CharT, Traits> lhs,
-                                   char const *rhs) nssv_noexcept
+    nssv_constexpr bool operator!=(basic_string_view<CharT, Traits> lhs, char const *rhs) nssv_noexcept
     {
         return lhs.compare(rhs) != 0;
     }
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator!=(char const *lhs,
-                                   basic_string_view<CharT, Traits> rhs) nssv_noexcept
+    nssv_constexpr bool operator!=(char const *lhs, basic_string_view<CharT, Traits> rhs) nssv_noexcept
     {
         return rhs.compare(lhs) != 0;
     }
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator!=(basic_string_view<CharT, Traits> lhs,
-                                   std::basic_string<CharT, Traits> rhs) nssv_noexcept
+    nssv_constexpr bool
+    operator!=(basic_string_view<CharT, Traits> lhs, std::basic_string<CharT, Traits> rhs) nssv_noexcept
     {
         return lhs.size() != rhs.size() && lhs.compare(rhs) != 0;
     }
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator!=(std::basic_string<CharT, Traits> rhs,
-                                   basic_string_view<CharT, Traits> lhs) nssv_noexcept
+    nssv_constexpr bool
+    operator!=(std::basic_string<CharT, Traits> rhs, basic_string_view<CharT, Traits> lhs) nssv_noexcept
     {
         return lhs.size() != rhs.size() || rhs.compare(lhs) != 0;
     }
@@ -1144,29 +1106,27 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
     // <
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator<(basic_string_view<CharT, Traits> lhs,
-                                  char const *rhs) nssv_noexcept
+    nssv_constexpr bool operator<(basic_string_view<CharT, Traits> lhs, char const *rhs) nssv_noexcept
     {
         return lhs.compare(rhs) < 0;
     }
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator<(char const *lhs,
-                                  basic_string_view<CharT, Traits> rhs) nssv_noexcept
+    nssv_constexpr bool operator<(char const *lhs, basic_string_view<CharT, Traits> rhs) nssv_noexcept
     {
         return rhs.compare(lhs) > 0;
     }
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator<(basic_string_view<CharT, Traits> lhs,
-                                  std::basic_string<CharT, Traits> rhs) nssv_noexcept
+    nssv_constexpr bool
+    operator<(basic_string_view<CharT, Traits> lhs, std::basic_string<CharT, Traits> rhs) nssv_noexcept
     {
         return lhs.compare(rhs) < 0;
     }
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator<(std::basic_string<CharT, Traits> rhs,
-                                  basic_string_view<CharT, Traits> lhs) nssv_noexcept
+    nssv_constexpr bool
+    operator<(std::basic_string<CharT, Traits> rhs, basic_string_view<CharT, Traits> lhs) nssv_noexcept
     {
         return rhs.compare(lhs) > 0;
     }
@@ -1174,29 +1134,27 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
     // <=
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator<=(basic_string_view<CharT, Traits> lhs,
-                                   char const *rhs) nssv_noexcept
+    nssv_constexpr bool operator<=(basic_string_view<CharT, Traits> lhs, char const *rhs) nssv_noexcept
     {
         return lhs.compare(rhs) <= 0;
     }
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator<=(char const *lhs,
-                                   basic_string_view<CharT, Traits> rhs) nssv_noexcept
+    nssv_constexpr bool operator<=(char const *lhs, basic_string_view<CharT, Traits> rhs) nssv_noexcept
     {
         return rhs.compare(lhs) >= 0;
     }
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator<=(basic_string_view<CharT, Traits> lhs,
-                                   std::basic_string<CharT, Traits> rhs) nssv_noexcept
+    nssv_constexpr bool
+    operator<=(basic_string_view<CharT, Traits> lhs, std::basic_string<CharT, Traits> rhs) nssv_noexcept
     {
         return lhs.compare(rhs) <= 0;
     }
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator<=(std::basic_string<CharT, Traits> rhs,
-                                   basic_string_view<CharT, Traits> lhs) nssv_noexcept
+    nssv_constexpr bool
+    operator<=(std::basic_string<CharT, Traits> rhs, basic_string_view<CharT, Traits> lhs) nssv_noexcept
     {
         return rhs.compare(lhs) >= 0;
     }
@@ -1204,29 +1162,27 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
     // >
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator>(basic_string_view<CharT, Traits> lhs,
-                                  char const *rhs) nssv_noexcept
+    nssv_constexpr bool operator>(basic_string_view<CharT, Traits> lhs, char const *rhs) nssv_noexcept
     {
         return lhs.compare(rhs) > 0;
     }
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator>(char const *lhs,
-                                  basic_string_view<CharT, Traits> rhs) nssv_noexcept
+    nssv_constexpr bool operator>(char const *lhs, basic_string_view<CharT, Traits> rhs) nssv_noexcept
     {
         return rhs.compare(lhs) < 0;
     }
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator>(basic_string_view<CharT, Traits> lhs,
-                                  std::basic_string<CharT, Traits> rhs) nssv_noexcept
+    nssv_constexpr bool
+    operator>(basic_string_view<CharT, Traits> lhs, std::basic_string<CharT, Traits> rhs) nssv_noexcept
     {
         return lhs.compare(rhs) > 0;
     }
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator>(std::basic_string<CharT, Traits> rhs,
-                                  basic_string_view<CharT, Traits> lhs) nssv_noexcept
+    nssv_constexpr bool
+    operator>(std::basic_string<CharT, Traits> rhs, basic_string_view<CharT, Traits> lhs) nssv_noexcept
     {
         return rhs.compare(lhs) < 0;
     }
@@ -1234,29 +1190,27 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
     // >=
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator>=(basic_string_view<CharT, Traits> lhs,
-                                   char const *rhs) nssv_noexcept
+    nssv_constexpr bool operator>=(basic_string_view<CharT, Traits> lhs, char const *rhs) nssv_noexcept
     {
         return lhs.compare(rhs) >= 0;
     }
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator>=(char const *lhs,
-                                   basic_string_view<CharT, Traits> rhs) nssv_noexcept
+    nssv_constexpr bool operator>=(char const *lhs, basic_string_view<CharT, Traits> rhs) nssv_noexcept
     {
         return rhs.compare(lhs) <= 0;
     }
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator>=(basic_string_view<CharT, Traits> lhs,
-                                   std::basic_string<CharT, Traits> rhs) nssv_noexcept
+    nssv_constexpr bool
+    operator>=(basic_string_view<CharT, Traits> lhs, std::basic_string<CharT, Traits> rhs) nssv_noexcept
     {
         return lhs.compare(rhs) >= 0;
     }
 
     template<class CharT, class Traits>
-    nssv_constexpr bool operator>=(std::basic_string<CharT, Traits> rhs,
-                                   basic_string_view<CharT, Traits> lhs) nssv_noexcept
+    nssv_constexpr bool
+    operator>=(std::basic_string<CharT, Traits> rhs, basic_string_view<CharT, Traits> lhs) nssv_noexcept
     {
         return rhs.compare(lhs) <= 0;
     }
@@ -1274,15 +1228,15 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
     // ==
 
     template<class CharT, class Traits nssv_MSVC_ORDER(1)>
-    nssv_constexpr bool operator==(basic_string_view<CharT, Traits> lhs,
-                                   nssv_BASIC_STRING_VIEW_I(CharT, Traits) rhs) nssv_noexcept
+    nssv_constexpr bool
+    operator==(basic_string_view<CharT, Traits> lhs, nssv_BASIC_STRING_VIEW_I(CharT, Traits) rhs) nssv_noexcept
     {
         return lhs.compare(rhs) == 0;
     }
 
     template<class CharT, class Traits nssv_MSVC_ORDER(2)>
-    nssv_constexpr bool operator==(nssv_BASIC_STRING_VIEW_I(CharT, Traits) lhs,
-                                   basic_string_view<CharT, Traits> rhs) nssv_noexcept
+    nssv_constexpr bool
+    operator==(nssv_BASIC_STRING_VIEW_I(CharT, Traits) lhs, basic_string_view<CharT, Traits> rhs) nssv_noexcept
     {
         return lhs.size() == rhs.size() && lhs.compare(rhs) == 0;
     }
@@ -1290,15 +1244,15 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
     // !=
 
     template<class CharT, class Traits nssv_MSVC_ORDER(1)>
-    nssv_constexpr bool operator!=(basic_string_view<CharT, Traits> lhs,
-                                   nssv_BASIC_STRING_VIEW_I(CharT, Traits) rhs) nssv_noexcept
+    nssv_constexpr bool
+    operator!=(basic_string_view<CharT, Traits> lhs, nssv_BASIC_STRING_VIEW_I(CharT, Traits) rhs) nssv_noexcept
     {
         return lhs.size() != rhs.size() || lhs.compare(rhs) != 0;
     }
 
     template<class CharT, class Traits nssv_MSVC_ORDER(2)>
-    nssv_constexpr bool operator!=(nssv_BASIC_STRING_VIEW_I(CharT, Traits) lhs,
-                                   basic_string_view<CharT, Traits> rhs) nssv_noexcept
+    nssv_constexpr bool
+    operator!=(nssv_BASIC_STRING_VIEW_I(CharT, Traits) lhs, basic_string_view<CharT, Traits> rhs) nssv_noexcept
     {
         return lhs.compare(rhs) != 0;
     }
@@ -1306,15 +1260,15 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
     // <
 
     template<class CharT, class Traits nssv_MSVC_ORDER(1)>
-    nssv_constexpr bool operator<(basic_string_view<CharT, Traits> lhs,
-                                  nssv_BASIC_STRING_VIEW_I(CharT, Traits) rhs) nssv_noexcept
+    nssv_constexpr bool
+    operator<(basic_string_view<CharT, Traits> lhs, nssv_BASIC_STRING_VIEW_I(CharT, Traits) rhs) nssv_noexcept
     {
         return lhs.compare(rhs) < 0;
     }
 
     template<class CharT, class Traits nssv_MSVC_ORDER(2)>
-    nssv_constexpr bool operator<(nssv_BASIC_STRING_VIEW_I(CharT, Traits) lhs,
-                                  basic_string_view<CharT, Traits> rhs) nssv_noexcept
+    nssv_constexpr bool
+    operator<(nssv_BASIC_STRING_VIEW_I(CharT, Traits) lhs, basic_string_view<CharT, Traits> rhs) nssv_noexcept
     {
         return lhs.compare(rhs) < 0;
     }
@@ -1322,15 +1276,15 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
     // <=
 
     template<class CharT, class Traits nssv_MSVC_ORDER(1)>
-    nssv_constexpr bool operator<=(basic_string_view<CharT, Traits> lhs,
-                                   nssv_BASIC_STRING_VIEW_I(CharT, Traits) rhs) nssv_noexcept
+    nssv_constexpr bool
+    operator<=(basic_string_view<CharT, Traits> lhs, nssv_BASIC_STRING_VIEW_I(CharT, Traits) rhs) nssv_noexcept
     {
         return lhs.compare(rhs) <= 0;
     }
 
     template<class CharT, class Traits nssv_MSVC_ORDER(2)>
-    nssv_constexpr bool operator<=(nssv_BASIC_STRING_VIEW_I(CharT, Traits) lhs,
-                                   basic_string_view<CharT, Traits> rhs) nssv_noexcept
+    nssv_constexpr bool
+    operator<=(nssv_BASIC_STRING_VIEW_I(CharT, Traits) lhs, basic_string_view<CharT, Traits> rhs) nssv_noexcept
     {
         return lhs.compare(rhs) <= 0;
     }
@@ -1338,15 +1292,15 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
     // >
 
     template<class CharT, class Traits nssv_MSVC_ORDER(1)>
-    nssv_constexpr bool operator>(basic_string_view<CharT, Traits> lhs,
-                                  nssv_BASIC_STRING_VIEW_I(CharT, Traits) rhs) nssv_noexcept
+    nssv_constexpr bool
+    operator>(basic_string_view<CharT, Traits> lhs, nssv_BASIC_STRING_VIEW_I(CharT, Traits) rhs) nssv_noexcept
     {
         return lhs.compare(rhs) > 0;
     }
 
     template<class CharT, class Traits nssv_MSVC_ORDER(2)>
-    nssv_constexpr bool operator>(nssv_BASIC_STRING_VIEW_I(CharT, Traits) lhs,
-                                  basic_string_view<CharT, Traits> rhs) nssv_noexcept
+    nssv_constexpr bool
+    operator>(nssv_BASIC_STRING_VIEW_I(CharT, Traits) lhs, basic_string_view<CharT, Traits> rhs) nssv_noexcept
     {
         return lhs.compare(rhs) > 0;
     }
@@ -1354,15 +1308,15 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
     // >=
 
     template<class CharT, class Traits nssv_MSVC_ORDER(1)>
-    nssv_constexpr bool operator>=(basic_string_view<CharT, Traits> lhs,
-                                   nssv_BASIC_STRING_VIEW_I(CharT, Traits) rhs) nssv_noexcept
+    nssv_constexpr bool
+    operator>=(basic_string_view<CharT, Traits> lhs, nssv_BASIC_STRING_VIEW_I(CharT, Traits) rhs) nssv_noexcept
     {
         return lhs.compare(rhs) >= 0;
     }
 
     template<class CharT, class Traits nssv_MSVC_ORDER(2)>
-    nssv_constexpr bool operator>=(nssv_BASIC_STRING_VIEW_I(CharT, Traits) lhs,
-                                   basic_string_view<CharT, Traits> rhs) nssv_noexcept
+    nssv_constexpr bool
+    operator>=(nssv_BASIC_STRING_VIEW_I(CharT, Traits) lhs, basic_string_view<CharT, Traits> rhs) nssv_noexcept
     {
         return lhs.compare(rhs) >= 0;
     }
@@ -1392,9 +1346,8 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
         const std::streamsize length = static_cast<std::streamsize>(sv.length());
 
         // Whether, and how, to pad:
-        const bool pad = (length < os.width());
-        const bool left_pad
-            = pad && (os.flags() & std::ios_base::adjustfield) == std::ios_base::right;
+        const bool pad      = (length < os.width());
+        const bool left_pad = pad && (os.flags() & std::ios_base::adjustfield) == std::ios_base::right;
 
         if (left_pad) write_padding(os, os.width() - length);
 
@@ -1412,8 +1365,8 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
     }// namespace detail
 
     template<class CharT, class Traits>
-    std::basic_ostream<CharT, Traits> &operator<<(std::basic_ostream<CharT, Traits> &os,
-                                                  basic_string_view<CharT, Traits> sv)
+    std::basic_ostream<CharT, Traits> &
+    operator<<(std::basic_ostream<CharT, Traits> &os, basic_string_view<CharT, Traits> sv)
     {
         return detail::write_to_stream(os, sv);
     }
@@ -1444,8 +1397,7 @@ nssv_inline_ns namespace literals
 
 #if nssv_CONFIG_STD_SV_OPERATOR && nssv_HAVE_STD_DEFINED_LITERALS
 
-        nssv_constexpr nonstd::sv_lite::string_view operator"" sv(const char *str, size_t len)
-            nssv_noexcept// (1)
+        nssv_constexpr nonstd::sv_lite::string_view operator"" sv(const char *str, size_t len) nssv_noexcept// (1)
         {
             return nonstd::sv_lite::string_view{str, len};
         }
@@ -1462,8 +1414,7 @@ nssv_inline_ns namespace literals
             return nonstd::sv_lite::u32string_view{str, len};
         }
 
-        nssv_constexpr nonstd::sv_lite::wstring_view operator"" sv(const wchar_t *str, size_t len)
-            nssv_noexcept// (4)
+        nssv_constexpr nonstd::sv_lite::wstring_view operator"" sv(const wchar_t *str, size_t len) nssv_noexcept// (4)
         {
             return nonstd::sv_lite::wstring_view{str, len};
         }
@@ -1472,28 +1423,24 @@ nssv_inline_ns namespace literals
 
 #if nssv_CONFIG_USR_SV_OPERATOR
 
-        nssv_constexpr nonstd::sv_lite::string_view operator"" _sv(const char *str, size_t len)
-            nssv_noexcept// (1)
+        nssv_constexpr nonstd::sv_lite::string_view operator"" _sv(const char *str, size_t len) nssv_noexcept// (1)
         {
             return nonstd::sv_lite::string_view{str, len};
         }
 
         nssv_constexpr nonstd::sv_lite::u16string_view operator"" _sv(const char16_t *str,
-                                                                      size_t len)
-            nssv_noexcept// (2)
+                                                                      size_t len) nssv_noexcept// (2)
         {
             return nonstd::sv_lite::u16string_view{str, len};
         }
 
         nssv_constexpr nonstd::sv_lite::u32string_view operator"" _sv(const char32_t *str,
-                                                                      size_t len)
-            nssv_noexcept// (3)
+                                                                      size_t len) nssv_noexcept// (3)
         {
             return nonstd::sv_lite::u32string_view{str, len};
         }
 
-        nssv_constexpr nonstd::sv_lite::wstring_view operator"" _sv(const wchar_t *str, size_t len)
-            nssv_noexcept// (4)
+        nssv_constexpr nonstd::sv_lite::wstring_view operator"" _sv(const wchar_t *str, size_t len) nssv_noexcept// (4)
         {
             return nonstd::sv_lite::wstring_view{str, len};
         }
@@ -1644,6 +1591,9 @@ public:
 nssv_RESTORE_WARNINGS()
 
 #endif// nssv_HAVE_STD_STRING_VIEW
+namespace sled {
+using namespace nonstd;
+}
 #endif// NONSTD_SV_LITE_H_INCLUDED
 
 namespace inja {
@@ -1674,27 +1624,19 @@ struct LexerConfig {
     void update_open_chars()
     {
         open_chars = "";
-        if (open_chars.find(line_statement[0]) == std::string::npos) {
-            open_chars += line_statement[0];
-        }
-        if (open_chars.find(statement_open[0]) == std::string::npos) {
-            open_chars += statement_open[0];
-        }
+        if (open_chars.find(line_statement[0]) == std::string::npos) { open_chars += line_statement[0]; }
+        if (open_chars.find(statement_open[0]) == std::string::npos) { open_chars += statement_open[0]; }
         if (open_chars.find(statement_open_no_lstrip[0]) == std::string::npos) {
             open_chars += statement_open_no_lstrip[0];
         }
         if (open_chars.find(statement_open_force_lstrip[0]) == std::string::npos) {
             open_chars += statement_open_force_lstrip[0];
         }
-        if (open_chars.find(expression_open[0]) == std::string::npos) {
-            open_chars += expression_open[0];
-        }
+        if (open_chars.find(expression_open[0]) == std::string::npos) { open_chars += expression_open[0]; }
         if (open_chars.find(expression_open_force_lstrip[0]) == std::string::npos) {
             open_chars += expression_open_force_lstrip[0];
         }
-        if (open_chars.find(comment_open[0]) == std::string::npos) {
-            open_chars += comment_open[0];
-        }
+        if (open_chars.find(comment_open[0]) == std::string::npos) { open_chars += comment_open[0]; }
         if (open_chars.find(comment_open_force_lstrip[0]) == std::string::npos) {
             open_chars += comment_open_force_lstrip[0];
         }
@@ -1731,8 +1673,8 @@ namespace inja {
 
 using json = nlohmann::json;
 
-using Arguments = std::vector<const json *>;
-using CallbackFunction = std::function<json(Arguments &args)>;
+using Arguments            = std::vector<const json *>;
+using CallbackFunction     = std::function<json(Arguments &args)>;
 using VoidCallbackFunction = std::function<void(Arguments &args)>;
 
 /*!
@@ -1806,42 +1748,41 @@ private:
     const int VARIADIC{-1};
 
     std::map<std::pair<std::string, int>, FunctionData> function_storage = {
-        {std::make_pair("at", 2), FunctionData{Operation::At}},
-        {std::make_pair("default", 2), FunctionData{Operation::Default}},
-        {std::make_pair("divisibleBy", 2), FunctionData{Operation::DivisibleBy}},
-        {std::make_pair("even", 1), FunctionData{Operation::Even}},
-        {std::make_pair("exists", 1), FunctionData{Operation::Exists}},
-        {std::make_pair("existsIn", 2), FunctionData{Operation::ExistsInObject}},
-        {std::make_pair("first", 1), FunctionData{Operation::First}},
-        {std::make_pair("float", 1), FunctionData{Operation::Float}},
-        {std::make_pair("int", 1), FunctionData{Operation::Int}},
-        {std::make_pair("isArray", 1), FunctionData{Operation::IsArray}},
-        {std::make_pair("isBoolean", 1), FunctionData{Operation::IsBoolean}},
-        {std::make_pair("isFloat", 1), FunctionData{Operation::IsFloat}},
-        {std::make_pair("isInteger", 1), FunctionData{Operation::IsInteger}},
-        {std::make_pair("isNumber", 1), FunctionData{Operation::IsNumber}},
-        {std::make_pair("isObject", 1), FunctionData{Operation::IsObject}},
-        {std::make_pair("isString", 1), FunctionData{Operation::IsString}},
-        {std::make_pair("last", 1), FunctionData{Operation::Last}},
-        {std::make_pair("length", 1), FunctionData{Operation::Length}},
-        {std::make_pair("lower", 1), FunctionData{Operation::Lower}},
-        {std::make_pair("max", 1), FunctionData{Operation::Max}},
-        {std::make_pair("min", 1), FunctionData{Operation::Min}},
-        {std::make_pair("odd", 1), FunctionData{Operation::Odd}},
-        {std::make_pair("range", 1), FunctionData{Operation::Range}},
-        {std::make_pair("round", 2), FunctionData{Operation::Round}},
-        {std::make_pair("sort", 1), FunctionData{Operation::Sort}},
-        {std::make_pair("upper", 1), FunctionData{Operation::Upper}},
-        {std::make_pair("super", 0), FunctionData{Operation::Super}},
-        {std::make_pair("super", 1), FunctionData{Operation::Super}},
-        {std::make_pair("join", 2), FunctionData{Operation::Join}},
+        {std::make_pair("at",          2), FunctionData{Operation::At}            },
+        {std::make_pair("default",     2), FunctionData{Operation::Default}       },
+        {std::make_pair("divisibleBy", 2), FunctionData{Operation::DivisibleBy}   },
+        {std::make_pair("even",        1), FunctionData{Operation::Even}          },
+        {std::make_pair("exists",      1), FunctionData{Operation::Exists}        },
+        {std::make_pair("existsIn",    2), FunctionData{Operation::ExistsInObject}},
+        {std::make_pair("first",       1), FunctionData{Operation::First}         },
+        {std::make_pair("float",       1), FunctionData{Operation::Float}         },
+        {std::make_pair("int",         1), FunctionData{Operation::Int}           },
+        {std::make_pair("isArray",     1), FunctionData{Operation::IsArray}       },
+        {std::make_pair("isBoolean",   1), FunctionData{Operation::IsBoolean}     },
+        {std::make_pair("isFloat",     1), FunctionData{Operation::IsFloat}       },
+        {std::make_pair("isInteger",   1), FunctionData{Operation::IsInteger}     },
+        {std::make_pair("isNumber",    1), FunctionData{Operation::IsNumber}      },
+        {std::make_pair("isObject",    1), FunctionData{Operation::IsObject}      },
+        {std::make_pair("isString",    1), FunctionData{Operation::IsString}      },
+        {std::make_pair("last",        1), FunctionData{Operation::Last}          },
+        {std::make_pair("length",      1), FunctionData{Operation::Length}        },
+        {std::make_pair("lower",       1), FunctionData{Operation::Lower}         },
+        {std::make_pair("max",         1), FunctionData{Operation::Max}           },
+        {std::make_pair("min",         1), FunctionData{Operation::Min}           },
+        {std::make_pair("odd",         1), FunctionData{Operation::Odd}           },
+        {std::make_pair("range",       1), FunctionData{Operation::Range}         },
+        {std::make_pair("round",       2), FunctionData{Operation::Round}         },
+        {std::make_pair("sort",        1), FunctionData{Operation::Sort}          },
+        {std::make_pair("upper",       1), FunctionData{Operation::Upper}         },
+        {std::make_pair("super",       0), FunctionData{Operation::Super}         },
+        {std::make_pair("super",       1), FunctionData{Operation::Super}         },
+        {std::make_pair("join",        2), FunctionData{Operation::Join}          },
     };
 
 public:
     void add_builtin(nonstd::string_view name, int num_args, Operation op)
     {
-        function_storage.emplace(std::make_pair(static_cast<std::string>(name), num_args),
-                                 FunctionData{op});
+        function_storage.emplace(std::make_pair(static_cast<std::string>(name), num_args), FunctionData{op});
     }
 
     void add_callback(nonstd::string_view name, int num_args, const CallbackFunction &callback)
@@ -1911,8 +1852,8 @@ struct InjaError : public std::runtime_error {
     {}
 
     explicit InjaError(const std::string &type, const std::string &message, SourceLocation location)
-        : std::runtime_error("[inja.exception." + type + "] (at " + std::to_string(location.line)
-                             + ":" + std::to_string(location.column) + ") " + message),
+        : std::runtime_error("[inja.exception." + type + "] (at " + std::to_string(location.line) + ":"
+                             + std::to_string(location.column) + ") " + message),
           type(type),
           message(message),
           location(location)
@@ -1934,14 +1875,12 @@ struct RenderError : public InjaError {
 struct FileError : public InjaError {
     explicit FileError(const std::string &message) : InjaError("file_error", message) {}
 
-    explicit FileError(const std::string &message, SourceLocation location)
-        : InjaError("file_error", message, location)
+    explicit FileError(const std::string &message, SourceLocation location) : InjaError("file_error", message, location)
     {}
 };
 
 struct JsonError : public InjaError {
-    explicit JsonError(const std::string &message, SourceLocation location)
-        : InjaError("json_error", message, location)
+    explicit JsonError(const std::string &message, SourceLocation location) : InjaError("json_error", message, location)
     {}
 };
 
@@ -2073,7 +2012,7 @@ inline nonstd::string_view
 slice(nonstd::string_view view, size_t start, size_t end)
 {
     start = std::min(start, view.size());
-    end = std::min(std::max(start, end), view.size());
+    end   = std::min(std::max(start, end), view.size());
     return view.substr(start, end - start);
 }
 
@@ -2096,13 +2035,13 @@ inline SourceLocation
 get_source_location(nonstd::string_view content, size_t pos)
 {
     // Get line and offset position (starts at 1:1)
-    auto sliced = string_view::slice(content, 0, pos);
+    auto sliced              = string_view::slice(content, 0, pos);
     std::size_t last_newline = sliced.rfind("\n");
 
     if (last_newline == nonstd::string_view::npos) { return {1, sliced.length() + 1}; }
 
     // Count newlines
-    size_t count_lines = 0;
+    size_t count_lines  = 0;
     size_t search_start = 0;
     while (search_start <= sliced.size()) {
         search_start = sliced.find("\n", search_start) + 1;
@@ -2166,7 +2105,7 @@ class Lexer {
     Token scan_body(nonstd::string_view close,
                     Token::Kind closeKind,
                     nonstd::string_view close_trim = nonstd::string_view(),
-                    bool trim = false)
+                    bool trim                      = false)
     {
     again:
         // skip whitespace (except for \n as it might be a close)
@@ -2178,18 +2117,17 @@ class Lexer {
         }
 
         // check for close
-        if (!close_trim.empty()
-            && inja::string_view::starts_with(m_in.substr(tok_start), close_trim)) {
-            state = State::Text;
-            pos = tok_start + close_trim.size();
+        if (!close_trim.empty() && inja::string_view::starts_with(m_in.substr(tok_start), close_trim)) {
+            state           = State::Text;
+            pos             = tok_start + close_trim.size();
             const Token tok = make_token(closeKind);
             skip_whitespaces_and_newlines();
             return tok;
         }
 
         if (inja::string_view::starts_with(m_in.substr(tok_start), close)) {
-            state = State::Text;
-            pos = tok_start + close.size();
+            state           = State::Text;
+            pos             = tok_start + close.size();
             const Token tok = make_token(closeKind);
             if (trim) { skip_whitespaces_and_first_newline(); }
             return tok;
@@ -2214,9 +2152,7 @@ class Lexer {
         case '+':
             return make_token(Token::Kind::Plus);
         case '-':
-            if (current_minus_state == MinusState::Operator) {
-                return make_token(Token::Kind::Minus);
-            }
+            if (current_minus_state == MinusState::Operator) { return make_token(Token::Kind::Minus); }
             return scan_number();
         case '*':
             return make_token(Token::Kind::Times);
@@ -2312,10 +2248,7 @@ class Lexer {
             if (pos >= m_in.size()) { break; }
             const char ch = m_in[pos];
             // be very permissive in lexer (we'll catch errors when conversion happens)
-            if (!std::isdigit(ch) && ch != '.' && ch != 'e' && ch != 'E' && ch != '+'
-                && ch != '-') {
-                break;
-            }
+            if (!std::isdigit(ch) && ch != '.' && ch != 'e' && ch != 'E' && ch != '+' && ch != '-') { break; }
             pos += 1;
         }
         return make_token(Token::Kind::Number);
@@ -2338,17 +2271,13 @@ class Lexer {
         return make_token(Token::Kind::String);
     }
 
-    Token make_token(Token::Kind kind) const
-    {
-        return Token(kind, string_view::slice(m_in, tok_start, pos));
-    }
+    Token make_token(Token::Kind kind) const { return Token(kind, string_view::slice(m_in, tok_start, pos)); }
 
     void skip_whitespaces_and_newlines()
     {
         if (pos < m_in.size()) {
             while (pos < m_in.size()
-                   && (m_in[pos] == ' ' || m_in[pos] == '\t' || m_in[pos] == '\n'
-                       || m_in[pos] == '\r')) {
+                   && (m_in[pos] == ' ' || m_in[pos] == '\t' || m_in[pos] == '\n' || m_in[pos] == '\r')) {
                 pos += 1;
             }
         }
@@ -2388,20 +2317,16 @@ class Lexer {
     }
 
 public:
-    explicit Lexer(const LexerConfig &config)
-        : config(config),
-          state(State::Text),
-          minus_state(MinusState::Number)
-    {}
+    explicit Lexer(const LexerConfig &config) : config(config), state(State::Text), minus_state(MinusState::Number) {}
 
     SourceLocation current_position() const { return get_source_location(m_in, tok_start); }
 
     void start(nonstd::string_view input)
     {
-        m_in = input;
-        tok_start = 0;
-        pos = 0;
-        state = State::Text;
+        m_in        = input;
+        tok_start   = 0;
+        pos         = 0;
+        state       = State::Text;
         minus_state = MinusState::Number;
 
         // Consume byte order mark (BOM) for UTF-8
@@ -2429,10 +2354,10 @@ public:
 
             // try to match one of the opening sequences, and get the close
             nonstd::string_view open_str = m_in.substr(pos);
-            bool must_lstrip = false;
+            bool must_lstrip             = false;
             if (inja::string_view::starts_with(open_str, config.expression_open)) {
                 if (inja::string_view::starts_with(open_str, config.expression_open_force_lstrip)) {
-                    state = State::ExpressionStartForceLstrip;
+                    state       = State::ExpressionStartForceLstrip;
                     must_lstrip = true;
                 } else {
                     state = State::ExpressionStart;
@@ -2440,20 +2365,19 @@ public:
             } else if (inja::string_view::starts_with(open_str, config.statement_open)) {
                 if (inja::string_view::starts_with(open_str, config.statement_open_no_lstrip)) {
                     state = State::StatementStartNoLstrip;
-                } else if (inja::string_view::starts_with(open_str,
-                                                          config.statement_open_force_lstrip)) {
-                    state = State::StatementStartForceLstrip;
+                } else if (inja::string_view::starts_with(open_str, config.statement_open_force_lstrip)) {
+                    state       = State::StatementStartForceLstrip;
                     must_lstrip = true;
                 } else {
-                    state = State::StatementStart;
+                    state       = State::StatementStart;
                     must_lstrip = config.lstrip_blocks;
                 }
             } else if (inja::string_view::starts_with(open_str, config.comment_open)) {
                 if (inja::string_view::starts_with(open_str, config.comment_open_force_lstrip)) {
-                    state = State::CommentStartForceLstrip;
+                    state       = State::CommentStartForceLstrip;
                     must_lstrip = true;
                 } else {
-                    state = State::CommentStart;
+                    state       = State::CommentStart;
                     must_lstrip = config.lstrip_blocks;
                 }
             } else if ((pos == 0 || m_in[pos - 1] == '\n')
@@ -2533,8 +2457,7 @@ public:
 
             // Check for trim pattern
             const bool must_rstrip
-                = inja::string_view::starts_with(m_in.substr(pos + end - 1),
-                                                 config.comment_close_force_rstrip);
+                = inja::string_view::starts_with(m_in.substr(pos + end - 1), config.comment_close_force_rstrip);
 
             // return the entire comment in the close token
             state = State::Text;
@@ -2591,22 +2514,22 @@ class NodeVisitor {
 public:
     virtual ~NodeVisitor() = default;
 
-    virtual void visit(const BlockNode &node) = 0;
-    virtual void visit(const TextNode &node) = 0;
-    virtual void visit(const ExpressionNode &node) = 0;
-    virtual void visit(const LiteralNode &node) = 0;
-    virtual void visit(const JsonNode &node) = 0;
-    virtual void visit(const FunctionNode &node) = 0;
-    virtual void visit(const ExpressionListNode &node) = 0;
-    virtual void visit(const StatementNode &node) = 0;
-    virtual void visit(const ForStatementNode &node) = 0;
-    virtual void visit(const ForArrayStatementNode &node) = 0;
+    virtual void visit(const BlockNode &node)              = 0;
+    virtual void visit(const TextNode &node)               = 0;
+    virtual void visit(const ExpressionNode &node)         = 0;
+    virtual void visit(const LiteralNode &node)            = 0;
+    virtual void visit(const JsonNode &node)               = 0;
+    virtual void visit(const FunctionNode &node)           = 0;
+    virtual void visit(const ExpressionListNode &node)     = 0;
+    virtual void visit(const StatementNode &node)          = 0;
+    virtual void visit(const ForStatementNode &node)       = 0;
+    virtual void visit(const ForArrayStatementNode &node)  = 0;
     virtual void visit(const ForObjectStatementNode &node) = 0;
-    virtual void visit(const IfStatementNode &node) = 0;
-    virtual void visit(const IncludeStatementNode &node) = 0;
-    virtual void visit(const ExtendsStatementNode &node) = 0;
-    virtual void visit(const BlockStatementNode &node) = 0;
-    virtual void visit(const SetStatementNode &node) = 0;
+    virtual void visit(const IfStatementNode &node)        = 0;
+    virtual void visit(const IncludeStatementNode &node)   = 0;
+    virtual void visit(const ExtendsStatementNode &node)   = 0;
+    virtual void visit(const BlockStatementNode &node)     = 0;
+    virtual void visit(const SetStatementNode &node)       = 0;
 };
 
 /*!
@@ -2652,10 +2575,7 @@ class LiteralNode : public ExpressionNode {
 public:
     const nlohmann::json value;
 
-    explicit LiteralNode(const nlohmann::json &value, size_t pos)
-        : ExpressionNode(pos),
-          value(value)
-    {}
+    explicit LiteralNode(const nlohmann::json &value, size_t pos) : ExpressionNode(pos), value(value) {}
 
     void accept(NodeVisitor &v) const { v.visit(*this); }
 };
@@ -2714,99 +2634,96 @@ public:
           number_args(1)
     {}
 
-    explicit FunctionNode(Op operation, size_t pos)
-        : ExpressionNode(pos),
-          operation(operation),
-          number_args(1)
+    explicit FunctionNode(Op operation, size_t pos) : ExpressionNode(pos), operation(operation), number_args(1)
     {
         switch (operation) {
         case Op::Not: {
-            number_args = 1;
-            precedence = 4;
+            number_args   = 1;
+            precedence    = 4;
             associativity = Associativity::Left;
         } break;
         case Op::And: {
-            number_args = 2;
-            precedence = 1;
+            number_args   = 2;
+            precedence    = 1;
             associativity = Associativity::Left;
         } break;
         case Op::Or: {
-            number_args = 2;
-            precedence = 1;
+            number_args   = 2;
+            precedence    = 1;
             associativity = Associativity::Left;
         } break;
         case Op::In: {
-            number_args = 2;
-            precedence = 2;
+            number_args   = 2;
+            precedence    = 2;
             associativity = Associativity::Left;
         } break;
         case Op::Equal: {
-            number_args = 2;
-            precedence = 2;
+            number_args   = 2;
+            precedence    = 2;
             associativity = Associativity::Left;
         } break;
         case Op::NotEqual: {
-            number_args = 2;
-            precedence = 2;
+            number_args   = 2;
+            precedence    = 2;
             associativity = Associativity::Left;
         } break;
         case Op::Greater: {
-            number_args = 2;
-            precedence = 2;
+            number_args   = 2;
+            precedence    = 2;
             associativity = Associativity::Left;
         } break;
         case Op::GreaterEqual: {
-            number_args = 2;
-            precedence = 2;
+            number_args   = 2;
+            precedence    = 2;
             associativity = Associativity::Left;
         } break;
         case Op::Less: {
-            number_args = 2;
-            precedence = 2;
+            number_args   = 2;
+            precedence    = 2;
             associativity = Associativity::Left;
         } break;
         case Op::LessEqual: {
-            number_args = 2;
-            precedence = 2;
+            number_args   = 2;
+            precedence    = 2;
             associativity = Associativity::Left;
         } break;
         case Op::Add: {
-            number_args = 2;
-            precedence = 3;
+            number_args   = 2;
+            precedence    = 3;
             associativity = Associativity::Left;
         } break;
         case Op::Subtract: {
-            number_args = 2;
-            precedence = 3;
+            number_args   = 2;
+            precedence    = 3;
             associativity = Associativity::Left;
         } break;
         case Op::Multiplication: {
-            number_args = 2;
-            precedence = 4;
+            number_args   = 2;
+            precedence    = 4;
             associativity = Associativity::Left;
         } break;
         case Op::Division: {
-            number_args = 2;
-            precedence = 4;
+            number_args   = 2;
+            precedence    = 4;
             associativity = Associativity::Left;
         } break;
         case Op::Power: {
-            number_args = 2;
-            precedence = 5;
+            number_args   = 2;
+            precedence    = 5;
             associativity = Associativity::Right;
         } break;
         case Op::Modulo: {
-            number_args = 2;
-            precedence = 4;
+            number_args   = 2;
+            precedence    = 4;
             associativity = Associativity::Left;
         } break;
         case Op::AtId: {
-            number_args = 2;
-            precedence = 8;
+            number_args   = 2;
+            precedence    = 8;
             associativity = Associativity::Left;
         } break;
         default: {
-            precedence = 1;
+            precedence    = 1;
             associativity = Associativity::Left;
         }
         }
@@ -2883,10 +2800,7 @@ public:
     const bool is_nested;
     bool has_false_statement{false};
 
-    explicit IfStatementNode(BlockNode *const parent, size_t pos)
-        : StatementNode(pos),
-          parent(parent),
-          is_nested(false)
+    explicit IfStatementNode(BlockNode *const parent, size_t pos) : StatementNode(pos), parent(parent), is_nested(false)
     {}
 
     explicit IfStatementNode(bool is_nested, BlockNode *const parent, size_t pos)
@@ -2902,10 +2816,7 @@ class IncludeStatementNode : public StatementNode {
 public:
     const std::string file;
 
-    explicit IncludeStatementNode(const std::string &file, size_t pos)
-        : StatementNode(pos),
-          file(file)
-    {}
+    explicit IncludeStatementNode(const std::string &file, size_t pos) : StatementNode(pos), file(file) {}
 
     void accept(NodeVisitor &v) const { v.visit(*this); }
 };
@@ -2914,10 +2825,7 @@ class ExtendsStatementNode : public StatementNode {
 public:
     const std::string file;
 
-    explicit ExtendsStatementNode(const std::string &file, size_t pos)
-        : StatementNode(pos),
-          file(file)
-    {}
+    explicit ExtendsStatementNode(const std::string &file, size_t pos) : StatementNode(pos), file(file) {}
 
     void accept(NodeVisitor &v) const { v.visit(*this); };
 };
@@ -3109,7 +3017,7 @@ class Parser {
     inline void get_next_token()
     {
         if (have_peek_tok) {
-            tok = peek_tok;
+            tok           = peek_tok;
             have_peek_tok = false;
         } else {
             tok = lexer.scan();
@@ -3119,7 +3027,7 @@ class Parser {
     inline void get_peek_token()
     {
         if (!have_peek_tok) {
-            peek_tok = lexer.scan();
+            peek_tok      = lexer.scan();
             have_peek_tok = true;
         }
     }
@@ -3127,10 +3035,8 @@ class Parser {
     inline void add_json_literal(const char *content_ptr)
     {
         nonstd::string_view json_text(json_literal_start.data(),
-                                      tok.text.data() - json_literal_start.data()
-                                          + tok.text.size());
-        arguments.emplace_back(
-            std::make_shared<LiteralNode>(json::parse(json_text), json_text.data() - content_ptr));
+                                      tok.text.data() - json_literal_start.data() + tok.text.size());
+        arguments.emplace_back(std::make_shared<LiteralNode>(json::parse(json_text), json_text.data() - content_ptr));
     }
 
     inline void add_operator()
@@ -3181,16 +3087,12 @@ class Parser {
 
             } break;
             case Token::Kind::LeftBracket: {
-                if (current_brace_level == 0 && current_bracket_level == 0) {
-                    json_literal_start = tok.text;
-                }
+                if (current_brace_level == 0 && current_bracket_level == 0) { json_literal_start = tok.text; }
                 current_bracket_level += 1;
 
             } break;
             case Token::Kind::LeftBrace: {
-                if (current_brace_level == 0 && current_bracket_level == 0) {
-                    json_literal_start = tok.text;
-                }
+                if (current_brace_level == 0 && current_bracket_level == 0) { json_literal_start = tok.text; }
                 current_brace_level += 1;
 
             } break;
@@ -3198,18 +3100,14 @@ class Parser {
                 if (current_bracket_level == 0) { throw_parser_error("unexpected ']'"); }
 
                 current_bracket_level -= 1;
-                if (current_brace_level == 0 && current_bracket_level == 0) {
-                    add_json_literal(tmpl.content.c_str());
-                }
+                if (current_brace_level == 0 && current_bracket_level == 0) { add_json_literal(tmpl.content.c_str()); }
 
             } break;
             case Token::Kind::RightBrace: {
                 if (current_brace_level == 0) { throw_parser_error("unexpected '}'"); }
 
                 current_brace_level -= 1;
-                if (current_brace_level == 0 && current_bracket_level == 0) {
-                    add_json_literal(tmpl.content.c_str());
-                }
+                if (current_brace_level == 0 && current_bracket_level == 0) { add_json_literal(tmpl.content.c_str()); }
 
             } break;
             case Token::Kind::Id: {
@@ -3225,22 +3123,19 @@ class Parser {
                     }
 
                     // Operator
-                } else if (tok.text == "and" || tok.text == "or" || tok.text == "in"
-                           || tok.text == "not") {
+                } else if (tok.text == "and" || tok.text == "or" || tok.text == "in" || tok.text == "not") {
                     goto parse_operator;
 
                     // Functions
                 } else if (peek_tok.kind == Token::Kind::LeftParen) {
-                    operator_stack.emplace(
-                        std::make_shared<FunctionNode>(static_cast<std::string>(tok.text),
-                                                       tok.text.data() - tmpl.content.c_str()));
+                    operator_stack.emplace(std::make_shared<FunctionNode>(static_cast<std::string>(tok.text),
+                                                                          tok.text.data() - tmpl.content.c_str()));
                     function_stack.emplace(operator_stack.top().get(), current_paren_level);
 
                     // Variables
                 } else {
-                    arguments.emplace_back(
-                        std::make_shared<JsonNode>(static_cast<std::string>(tok.text),
-                                                   tok.text.data() - tmpl.content.c_str()));
+                    arguments.emplace_back(std::make_shared<JsonNode>(static_cast<std::string>(tok.text),
+                                                                      tok.text.data() - tmpl.content.c_str()));
                 }
 
                 // Operators
@@ -3318,16 +3213,13 @@ class Parser {
                     throw_parser_error("unknown operator in parser.");
                 }
                 }
-                auto function_node
-                    = std::make_shared<FunctionNode>(operation,
-                                                     tok.text.data() - tmpl.content.c_str());
+                auto function_node = std::make_shared<FunctionNode>(operation, tok.text.data() - tmpl.content.c_str());
 
-                while (
-                    !operator_stack.empty()
-                    && ((operator_stack.top()->precedence > function_node->precedence)
-                        || (operator_stack.top()->precedence == function_node->precedence
-                            && function_node->associativity == FunctionNode::Associativity::Left))
-                    && (operator_stack.top()->operation != FunctionStorage::Operation::ParenLeft)) {
+                while (!operator_stack.empty()
+                       && ((operator_stack.top()->precedence > function_node->precedence)
+                           || (operator_stack.top()->precedence == function_node->precedence
+                               && function_node->associativity == FunctionNode::Associativity::Left))
+                       && (operator_stack.top()->operation != FunctionStorage::Operation::ParenLeft)) {
                     add_operator();
                 }
 
@@ -3343,21 +3235,17 @@ class Parser {
 
             } break;
             case Token::Kind::Colon: {
-                if (current_brace_level == 0 && current_bracket_level == 0) {
-                    throw_parser_error("unexpected ':'");
-                }
+                if (current_brace_level == 0 && current_bracket_level == 0) { throw_parser_error("unexpected ':'"); }
 
             } break;
             case Token::Kind::LeftParen: {
                 current_paren_level += 1;
-                operator_stack.emplace(
-                    std::make_shared<FunctionNode>(FunctionStorage::Operation::ParenLeft,
-                                                   tok.text.data() - tmpl.content.c_str()));
+                operator_stack.emplace(std::make_shared<FunctionNode>(FunctionStorage::Operation::ParenLeft,
+                                                                      tok.text.data() - tmpl.content.c_str()));
 
                 get_peek_token();
                 if (peek_tok.kind == Token::Kind::RightParen) {
-                    if (!function_stack.empty()
-                        && function_stack.top().second == current_paren_level - 1) {
+                    if (!function_stack.empty() && function_stack.top().second == current_paren_level - 1) {
                         function_stack.top().first->number_args = 0;
                     }
                 }
@@ -3366,8 +3254,7 @@ class Parser {
             case Token::Kind::RightParen: {
                 current_paren_level -= 1;
                 while (!operator_stack.empty()
-                       && operator_stack.top()->operation
-                           != FunctionStorage::Operation::ParenLeft) {
+                       && operator_stack.top()->operation != FunctionStorage::Operation::ParenLeft) {
                     add_operator();
                 }
 
@@ -3377,9 +3264,8 @@ class Parser {
                 }
 
                 if (!function_stack.empty() && function_stack.top().second == current_paren_level) {
-                    auto func = function_stack.top().first;
-                    auto function_data
-                        = function_storage.find_function(func->name, func->number_args);
+                    auto func          = function_stack.top().first;
+                    auto function_data = function_storage.find_function(func->name, func->number_args);
                     if (function_data.operation == FunctionStorage::Operation::None) {
                         throw_parser_error("unknown function " + func->name);
                     }
@@ -3388,9 +3274,7 @@ class Parser {
                         func->callback = function_data.callback;
                     }
 
-                    if (operator_stack.empty()) {
-                        throw_parser_error("internal error at function " + func->name);
-                    }
+                    if (operator_stack.empty()) { throw_parser_error("internal error at function " + func->name); }
 
                     add_operator();
                     function_stack.pop();
@@ -3407,7 +3291,7 @@ class Parser {
 
         if (arguments.size() == 1) {
             current_expression_list->root = arguments[0];
-            arguments = {};
+            arguments                     = {};
 
         } else if (arguments.size() > 1) {
             throw_parser_error("malformed expression");
@@ -3424,11 +3308,10 @@ class Parser {
             get_next_token();
 
             auto if_statement_node
-                = std::make_shared<IfStatementNode>(current_block,
-                                                    tok.text.data() - tmpl.content.c_str());
+                = std::make_shared<IfStatementNode>(current_block, tok.text.data() - tmpl.content.c_str());
             current_block->nodes.emplace_back(if_statement_node);
             if_statement_stack.emplace(if_statement_node.get());
-            current_block = &if_statement_node->true_statement;
+            current_block           = &if_statement_node->true_statement;
             current_expression_list = &if_statement_node->condition;
 
             if (!parse_expression(tmpl, closing)) { return false; }
@@ -3439,19 +3322,17 @@ class Parser {
             get_next_token();
 
             if_statement_data->has_false_statement = true;
-            current_block = &if_statement_data->false_statement;
+            current_block                          = &if_statement_data->false_statement;
 
             // Chained else if
             if (tok.kind == Token::Kind::Id && tok.text == static_cast<decltype(tok.text)>("if")) {
                 get_next_token();
 
                 auto if_statement_node
-                    = std::make_shared<IfStatementNode>(true,
-                                                        current_block,
-                                                        tok.text.data() - tmpl.content.c_str());
+                    = std::make_shared<IfStatementNode>(true, current_block, tok.text.data() - tmpl.content.c_str());
                 current_block->nodes.emplace_back(if_statement_node);
                 if_statement_stack.emplace(if_statement_node.get());
-                current_block = &if_statement_node->true_statement;
+                current_block           = &if_statement_node->true_statement;
                 current_expression_list = &if_statement_node->condition;
 
                 if (!parse_expression(tmpl, closing)) { return false; }
@@ -3478,24 +3359,20 @@ class Parser {
 
             const std::string block_name = static_cast<std::string>(tok.text);
 
-            auto block_statement_node
-                = std::make_shared<BlockStatementNode>(current_block,
-                                                       block_name,
-                                                       tok.text.data() - tmpl.content.c_str());
+            auto block_statement_node = std::make_shared<BlockStatementNode>(
+                current_block,
+                block_name,
+                tok.text.data() - tmpl.content.c_str());
             current_block->nodes.emplace_back(block_statement_node);
             block_statement_stack.emplace(block_statement_node.get());
             current_block = &block_statement_node->block;
-            auto success = tmpl.block_storage.emplace(block_name, block_statement_node);
-            if (!success.second) {
-                throw_parser_error("block with the name '" + block_name + "' does already exist");
-            }
+            auto success  = tmpl.block_storage.emplace(block_name, block_statement_node);
+            if (!success.second) { throw_parser_error("block with the name '" + block_name + "' does already exist"); }
 
             get_next_token();
 
         } else if (tok.text == static_cast<decltype(tok.text)>("endblock")) {
-            if (block_statement_stack.empty()) {
-                throw_parser_error("endblock without matching block");
-            }
+            if (block_statement_stack.empty()) { throw_parser_error("endblock without matching block"); }
 
             auto &block_statement_data = block_statement_stack.top();
             get_next_token();
@@ -3507,9 +3384,7 @@ class Parser {
             get_next_token();
 
             // options: for a in arr; for a, b in obj
-            if (tok.kind != Token::Kind::Id) {
-                throw_parser_error("expected id, got '" + tok.describe() + "'");
-            }
+            if (tok.kind != Token::Kind::Id) { throw_parser_error("expected id, got '" + tok.describe() + "'"); }
 
             Token value_token = tok;
             get_next_token();
@@ -3518,12 +3393,10 @@ class Parser {
             std::shared_ptr<ForStatementNode> for_statement_node;
             if (tok.kind == Token::Kind::Comma) {
                 get_next_token();
-                if (tok.kind != Token::Kind::Id) {
-                    throw_parser_error("expected id, got '" + tok.describe() + "'");
-                }
+                if (tok.kind != Token::Kind::Id) { throw_parser_error("expected id, got '" + tok.describe() + "'"); }
 
                 Token key_token = std::move(value_token);
-                value_token = tok;
+                value_token     = tok;
                 get_next_token();
 
                 for_statement_node = std::make_shared<ForObjectStatementNode>(
@@ -3542,7 +3415,7 @@ class Parser {
 
             current_block->nodes.emplace_back(for_statement_node);
             for_statement_stack.emplace(for_statement_node.get());
-            current_block = &for_statement_node->body;
+            current_block           = &for_statement_node->body;
             current_expression_list = &for_statement_node->condition;
 
             if (tok.kind != Token::Kind::Id || tok.text != static_cast<decltype(tok.text)>("in")) {
@@ -3572,8 +3445,7 @@ class Parser {
             add_to_template_storage(path, template_name);
 
             current_block->nodes.emplace_back(
-                std::make_shared<IncludeStatementNode>(template_name,
-                                                       tok.text.data() - tmpl.content.c_str()));
+                std::make_shared<IncludeStatementNode>(template_name, tok.text.data() - tmpl.content.c_str()));
 
             get_next_token();
 
@@ -3588,8 +3460,7 @@ class Parser {
             add_to_template_storage(path, template_name);
 
             current_block->nodes.emplace_back(
-                std::make_shared<ExtendsStatementNode>(template_name,
-                                                       tok.text.data() - tmpl.content.c_str()));
+                std::make_shared<ExtendsStatementNode>(template_name, tok.text.data() - tmpl.content.c_str()));
 
             get_next_token();
 
@@ -3603,8 +3474,7 @@ class Parser {
             std::string key = static_cast<std::string>(tok.text);
             get_next_token();
 
-            auto set_statement_node
-                = std::make_shared<SetStatementNode>(key, tok.text.data() - tmpl.content.c_str());
+            auto set_statement_node = std::make_shared<SetStatementNode>(key, tok.text.data() - tmpl.content.c_str());
             current_block->nodes.emplace_back(set_statement_node);
             current_expression_list = &set_statement_node->expression;
 
@@ -3636,8 +3506,7 @@ class Parser {
                 return;
             case Token::Kind::Text: {
                 current_block->nodes.emplace_back(
-                    std::make_shared<TextNode>(tok.text.data() - tmpl.content.c_str(),
-                                               tok.text.size()));
+                    std::make_shared<TextNode>(tok.text.data() - tmpl.content.c_str(), tok.text.size()));
             } break;
             case Token::Kind::StatementOpen: {
                 get_next_token();
@@ -3654,8 +3523,7 @@ class Parser {
                     throw_parser_error("expected statement, got '" + tok.describe() + "'");
                 }
                 if (tok.kind != Token::Kind::LineStatementClose && tok.kind != Token::Kind::Eof) {
-                    throw_parser_error("expected line statement close, got '" + tok.describe()
-                                       + "'");
+                    throw_parser_error("expected line statement close, got '" + tok.describe() + "'");
                 }
             } break;
             case Token::Kind::ExpressionOpen: {
@@ -3820,16 +3688,12 @@ class Renderer : public NodeVisitor {
         json_eval_stack.pop();
 
         if (!result) {
-            if (not_found_stack.empty()) {
-                throw_renderer_error("expression could not be evaluated", expression_list);
-            }
+            if (not_found_stack.empty()) { throw_renderer_error("expression could not be evaluated", expression_list); }
 
             auto node = not_found_stack.top();
             not_found_stack.pop();
 
-            throw_renderer_error("variable '" + static_cast<std::string>(node->name)
-                                     + "' not found",
-                                 *node);
+            throw_renderer_error("variable '" + static_cast<std::string>(node->name) + "' not found", *node);
         }
         return std::make_shared<json>(*result);
     }
@@ -3844,8 +3708,7 @@ class Renderer : public NodeVisitor {
     std::array<const json *, N> get_arguments(const FunctionNode &node)
     {
         if (node.arguments.size() < N_start + N) {
-            throw_renderer_error("function needs " + std::to_string(N_start + N)
-                                     + " variables, but has only found "
+            throw_renderer_error("function needs " + std::to_string(N_start + N) + " variables, but has only found "
                                      + std::to_string(node.arguments.size()),
                                  node);
         }
@@ -3853,8 +3716,7 @@ class Renderer : public NodeVisitor {
         for (size_t i = N_start; i < N_start + N; i += 1) { node.arguments[i]->accept(*this); }
 
         if (json_eval_stack.size() < N) {
-            throw_renderer_error("function needs " + std::to_string(N)
-                                     + " variables, but has only found "
+            throw_renderer_error("function needs " + std::to_string(N) + " variables, but has only found "
                                      + std::to_string(json_eval_stack.size()),
                                  node);
         }
@@ -3869,8 +3731,7 @@ class Renderer : public NodeVisitor {
                 not_found_stack.pop();
 
                 if (throw_not_found) {
-                    throw_renderer_error("variable '" + static_cast<std::string>(json_node->name)
-                                             + "' not found",
+                    throw_renderer_error("variable '" + static_cast<std::string>(json_node->name) + "' not found",
                                          *json_node);
                 }
             }
@@ -3885,8 +3746,7 @@ class Renderer : public NodeVisitor {
         for (auto a : node.arguments) { a->accept(*this); }
 
         if (json_eval_stack.size() < N) {
-            throw_renderer_error("function needs " + std::to_string(N)
-                                     + " variables, but has only found "
+            throw_renderer_error("function needs " + std::to_string(N) + " variables, but has only found "
                                      + std::to_string(json_eval_stack.size()),
                                  node);
         }
@@ -3901,8 +3761,7 @@ class Renderer : public NodeVisitor {
                 not_found_stack.pop();
 
                 if (throw_not_found) {
-                    throw_renderer_error("variable '" + static_cast<std::string>(json_node->name)
-                                             + "' not found",
+                    throw_renderer_error("variable '" + static_cast<std::string>(json_node->name) + "' not found",
                                          *json_node);
                 }
             }
@@ -3959,77 +3818,76 @@ class Renderer : public NodeVisitor {
         switch (node.operation) {
         case Op::Not: {
             const auto args = get_arguments<1>(node);
-            result_ptr = std::make_shared<json>(!truthy(args[0]));
+            result_ptr      = std::make_shared<json>(!truthy(args[0]));
             json_tmp_stack.push_back(result_ptr);
             json_eval_stack.push(result_ptr.get());
         } break;
         case Op::And: {
-            result_ptr = std::make_shared<json>(truthy(get_arguments<1, 0>(node)[0])
-                                                && truthy(get_arguments<1, 1>(node)[0]));
+            result_ptr
+                = std::make_shared<json>(truthy(get_arguments<1, 0>(node)[0]) && truthy(get_arguments<1, 1>(node)[0]));
             json_tmp_stack.push_back(result_ptr);
             json_eval_stack.push(result_ptr.get());
         } break;
         case Op::Or: {
-            result_ptr = std::make_shared<json>(truthy(get_arguments<1, 0>(node)[0])
-                                                || truthy(get_arguments<1, 1>(node)[0]));
+            result_ptr
+                = std::make_shared<json>(truthy(get_arguments<1, 0>(node)[0]) || truthy(get_arguments<1, 1>(node)[0]));
             json_tmp_stack.push_back(result_ptr);
             json_eval_stack.push(result_ptr.get());
         } break;
         case Op::In: {
             const auto args = get_arguments<2>(node);
-            result_ptr = std::make_shared<json>(
-                std::find(args[1]->begin(), args[1]->end(), *args[0]) != args[1]->end());
+            result_ptr
+                = std::make_shared<json>(std::find(args[1]->begin(), args[1]->end(), *args[0]) != args[1]->end());
             json_tmp_stack.push_back(result_ptr);
             json_eval_stack.push(result_ptr.get());
         } break;
         case Op::Equal: {
             const auto args = get_arguments<2>(node);
-            result_ptr = std::make_shared<json>(*args[0] == *args[1]);
+            result_ptr      = std::make_shared<json>(*args[0] == *args[1]);
             json_tmp_stack.push_back(result_ptr);
             json_eval_stack.push(result_ptr.get());
         } break;
         case Op::NotEqual: {
             const auto args = get_arguments<2>(node);
-            result_ptr = std::make_shared<json>(*args[0] != *args[1]);
+            result_ptr      = std::make_shared<json>(*args[0] != *args[1]);
             json_tmp_stack.push_back(result_ptr);
             json_eval_stack.push(result_ptr.get());
         } break;
         case Op::Greater: {
             const auto args = get_arguments<2>(node);
-            result_ptr = std::make_shared<json>(*args[0] > *args[1]);
+            result_ptr      = std::make_shared<json>(*args[0] > *args[1]);
             json_tmp_stack.push_back(result_ptr);
             json_eval_stack.push(result_ptr.get());
         } break;
         case Op::GreaterEqual: {
             const auto args = get_arguments<2>(node);
-            result_ptr = std::make_shared<json>(*args[0] >= *args[1]);
+            result_ptr      = std::make_shared<json>(*args[0] >= *args[1]);
             json_tmp_stack.push_back(result_ptr);
             json_eval_stack.push(result_ptr.get());
         } break;
         case Op::Less: {
             const auto args = get_arguments<2>(node);
-            result_ptr = std::make_shared<json>(*args[0] < *args[1]);
+            result_ptr      = std::make_shared<json>(*args[0] < *args[1]);
             json_tmp_stack.push_back(result_ptr);
             json_eval_stack.push(result_ptr.get());
         } break;
         case Op::LessEqual: {
             const auto args = get_arguments<2>(node);
-            result_ptr = std::make_shared<json>(*args[0] <= *args[1]);
+            result_ptr      = std::make_shared<json>(*args[0] <= *args[1]);
             json_tmp_stack.push_back(result_ptr);
             json_eval_stack.push(result_ptr.get());
         } break;
         case Op::Add: {
             const auto args = get_arguments<2>(node);
             if (args[0]->is_string() && args[1]->is_string()) {
-                result_ptr = std::make_shared<json>(args[0]->get_ref<const std::string &>()
-                                                    + args[1]->get_ref<const std::string &>());
+                result_ptr = std::make_shared<json>(
+                    args[0]->get_ref<const std::string &>() + args[1]->get_ref<const std::string &>());
                 json_tmp_stack.push_back(result_ptr);
             } else if (args[0]->is_number_integer() && args[1]->is_number_integer()) {
                 result_ptr = std::make_shared<json>(args[0]->get<int>() + args[1]->get<int>());
                 json_tmp_stack.push_back(result_ptr);
             } else {
-                result_ptr
-                    = std::make_shared<json>(args[0]->get<double>() + args[1]->get<double>());
+                result_ptr = std::make_shared<json>(args[0]->get<double>() + args[1]->get<double>());
                 json_tmp_stack.push_back(result_ptr);
             }
             json_eval_stack.push(result_ptr.get());
@@ -4040,8 +3898,7 @@ class Renderer : public NodeVisitor {
                 result_ptr = std::make_shared<json>(args[0]->get<int>() - args[1]->get<int>());
                 json_tmp_stack.push_back(result_ptr);
             } else {
-                result_ptr
-                    = std::make_shared<json>(args[0]->get<double>() - args[1]->get<double>());
+                result_ptr = std::make_shared<json>(args[0]->get<double>() - args[1]->get<double>());
                 json_tmp_stack.push_back(result_ptr);
             }
             json_eval_stack.push(result_ptr.get());
@@ -4052,8 +3909,7 @@ class Renderer : public NodeVisitor {
                 result_ptr = std::make_shared<json>(args[0]->get<int>() * args[1]->get<int>());
                 json_tmp_stack.push_back(result_ptr);
             } else {
-                result_ptr
-                    = std::make_shared<json>(args[0]->get<double>() * args[1]->get<double>());
+                result_ptr = std::make_shared<json>(args[0]->get<double>() * args[1]->get<double>());
                 json_tmp_stack.push_back(result_ptr);
             }
             json_eval_stack.push(result_ptr.get());
@@ -4073,23 +3929,21 @@ class Renderer : public NodeVisitor {
                 json_tmp_stack.push_back(result_ptr);
             } else {
                 double result = std::pow(args[0]->get<double>(), args[1]->get<int>());
-                result_ptr = std::make_shared<json>(std::move(result));
+                result_ptr    = std::make_shared<json>(std::move(result));
                 json_tmp_stack.push_back(result_ptr);
             }
             json_eval_stack.push(result_ptr.get());
         } break;
         case Op::Modulo: {
             const auto args = get_arguments<2>(node);
-            result_ptr = std::make_shared<json>(args[0]->get<int>() % args[1]->get<int>());
+            result_ptr      = std::make_shared<json>(args[0]->get<int>() % args[1]->get<int>());
             json_tmp_stack.push_back(result_ptr);
             json_eval_stack.push(result_ptr.get());
         } break;
         case Op::AtId: {
             const auto container = get_arguments<1, 0, false>(node)[0];
             node.arguments[1]->accept(*this);
-            if (not_found_stack.empty()) {
-                throw_renderer_error("could not find element with given name", node);
-            }
+            if (not_found_stack.empty()) { throw_renderer_error("could not find element with given name", node); }
             const auto id_node = not_found_stack.top();
             not_found_stack.pop();
             json_eval_stack.pop();
@@ -4108,10 +3962,9 @@ class Renderer : public NodeVisitor {
             json_eval_stack.push(test_arg ? test_arg : get_arguments<1, 1>(node)[0]);
         } break;
         case Op::DivisibleBy: {
-            const auto args = get_arguments<2>(node);
+            const auto args   = get_arguments<2>(node);
             const int divisor = args[1]->get<int>();
-            result_ptr
-                = std::make_shared<json>((divisor != 0) && (args[0]->get<int>() % divisor == 0));
+            result_ptr        = std::make_shared<json>((divisor != 0) && (args[0]->get<int>() % divisor == 0));
             json_tmp_stack.push_back(result_ptr);
             json_eval_stack.push(result_ptr.get());
         } break;
@@ -4122,15 +3975,15 @@ class Renderer : public NodeVisitor {
         } break;
         case Op::Exists: {
             auto &&name = get_arguments<1>(node)[0]->get_ref<const std::string &>();
-            result_ptr = std::make_shared<json>(
+            result_ptr  = std::make_shared<json>(
                 json_input->contains(json::json_pointer(JsonNode::convert_dot_to_json_ptr(name))));
             json_tmp_stack.push_back(result_ptr);
             json_eval_stack.push(result_ptr.get());
         } break;
         case Op::ExistsInObject: {
             const auto args = get_arguments<2>(node);
-            auto &&name = args[1]->get_ref<const std::string &>();
-            result_ptr = std::make_shared<json>(args[0]->find(name) != args[0]->end());
+            auto &&name     = args[1]->get_ref<const std::string &>();
+            result_ptr      = std::make_shared<json>(args[0]->find(name) != args[0]->end());
             json_tmp_stack.push_back(result_ptr);
             json_eval_stack.push(result_ptr.get());
         } break;
@@ -4139,14 +3992,12 @@ class Renderer : public NodeVisitor {
             json_eval_stack.push(result);
         } break;
         case Op::Float: {
-            result_ptr = std::make_shared<json>(
-                std::stod(get_arguments<1>(node)[0]->get_ref<const std::string &>()));
+            result_ptr = std::make_shared<json>(std::stod(get_arguments<1>(node)[0]->get_ref<const std::string &>()));
             json_tmp_stack.push_back(result_ptr);
             json_eval_stack.push(result_ptr.get());
         } break;
         case Op::Int: {
-            result_ptr = std::make_shared<json>(
-                std::stoi(get_arguments<1>(node)[0]->get_ref<const std::string &>()));
+            result_ptr = std::make_shared<json>(std::stoi(get_arguments<1>(node)[0]->get_ref<const std::string &>()));
             json_tmp_stack.push_back(result_ptr);
             json_eval_stack.push(result_ptr.get());
         } break;
@@ -4172,12 +4023,12 @@ class Renderer : public NodeVisitor {
             json_eval_stack.push(result_ptr.get());
         } break;
         case Op::Max: {
-            const auto args = get_arguments<1>(node);
+            const auto args   = get_arguments<1>(node);
             const auto result = std::max_element(args[0]->begin(), args[0]->end());
             json_eval_stack.push(&(*result));
         } break;
         case Op::Min: {
-            const auto args = get_arguments<1>(node);
+            const auto args   = get_arguments<1>(node);
             const auto result = std::min_element(args[0]->begin(), args[0]->end());
             json_eval_stack.push(&(*result));
         } break;
@@ -4194,10 +4045,10 @@ class Renderer : public NodeVisitor {
             json_eval_stack.push(result_ptr.get());
         } break;
         case Op::Round: {
-            const auto args = get_arguments<2>(node);
+            const auto args     = get_arguments<2>(node);
             const int precision = args[1]->get<int>();
-            const double result = std::round(args[0]->get<double>() * std::pow(10.0, precision))
-                / std::pow(10.0, precision);
+            const double result
+                = std::round(args[0]->get<double>() * std::pow(10.0, precision)) / std::pow(10.0, precision);
             if (0 == precision) {
                 result_ptr = std::make_shared<json>(int(result));
             } else {
@@ -4207,8 +4058,7 @@ class Renderer : public NodeVisitor {
             json_eval_stack.push(result_ptr.get());
         } break;
         case Op::Sort: {
-            result_ptr
-                = std::make_shared<json>(get_arguments<1>(node)[0]->get<std::vector<json>>());
+            result_ptr = std::make_shared<json>(get_arguments<1>(node)[0]->get<std::vector<json>>());
             std::sort(result_ptr->begin(), result_ptr->end());
             json_tmp_stack.push_back(result_ptr);
             json_eval_stack.push(result_ptr.get());
@@ -4256,49 +4106,44 @@ class Renderer : public NodeVisitor {
             json_eval_stack.push(result_ptr.get());
         } break;
         case Op::Callback: {
-            auto args = get_argument_vector(node);
+            auto args  = get_argument_vector(node);
             result_ptr = std::make_shared<json>(node.callback(args));
             json_tmp_stack.push_back(result_ptr);
             json_eval_stack.push(result_ptr.get());
         } break;
         case Op::Super: {
-            const auto args = get_argument_vector(node);
-            const size_t old_level = current_level;
+            const auto args         = get_argument_vector(node);
+            const size_t old_level  = current_level;
             const size_t level_diff = (args.size() == 1) ? args[0]->get<int>() : 1;
-            const size_t level = current_level + level_diff;
+            const size_t level      = current_level + level_diff;
 
-            if (block_statement_stack.empty()) {
-                throw_renderer_error("super() call is not within a block", node);
-            }
+            if (block_statement_stack.empty()) { throw_renderer_error("super() call is not within a block", node); }
 
             if (level < 1 || level > template_stack.size() - 1) {
-                throw_renderer_error(
-                    "level of super() call does not match parent templates (between 1 and "
-                        + std::to_string(template_stack.size() - 1) + ")",
-                    node);
+                throw_renderer_error("level of super() call does not match parent templates (between 1 and "
+                                         + std::to_string(template_stack.size() - 1) + ")",
+                                     node);
             }
 
             const auto current_block_statement = block_statement_stack.back();
-            const Template *new_template = template_stack.at(level);
-            const Template *old_template = current_template;
-            const auto block_it = new_template->block_storage.find(current_block_statement->name);
+            const Template *new_template       = template_stack.at(level);
+            const Template *old_template       = current_template;
+            const auto block_it                = new_template->block_storage.find(current_block_statement->name);
             if (block_it != new_template->block_storage.end()) {
                 current_template = new_template;
-                current_level = level;
+                current_level    = level;
                 block_it->second->block.accept(*this);
-                current_level = old_level;
+                current_level    = old_level;
                 current_template = old_template;
             } else {
-                throw_renderer_error("could not find block with name '"
-                                         + current_block_statement->name + "'",
-                                     node);
+                throw_renderer_error("could not find block with name '" + current_block_statement->name + "'", node);
             }
             result_ptr = std::make_shared<json>(nullptr);
             json_tmp_stack.push_back(result_ptr);
             json_eval_stack.push(result_ptr.get());
         } break;
         case Op::Join: {
-            const auto args = get_arguments<2>(node);
+            const auto args      = get_arguments<2>(node);
             const auto separator = args[1]->get<std::string>();
             std::ostringstream os;
             std::string sep;
@@ -4334,17 +4179,17 @@ class Renderer : public NodeVisitor {
         if (!result->is_array()) { throw_renderer_error("object must be an array", node); }
 
         if (!current_loop_data->empty()) {
-            auto tmp = *current_loop_data;// Because of clang-3
+            auto tmp                       = *current_loop_data;// Because of clang-3
             (*current_loop_data)["parent"] = std::move(tmp);
         }
 
-        size_t index = 0;
+        size_t index                     = 0;
         (*current_loop_data)["is_first"] = true;
-        (*current_loop_data)["is_last"] = (result->size() <= 1);
+        (*current_loop_data)["is_last"]  = (result->size() <= 1);
         for (auto it = result->begin(); it != result->end(); ++it) {
             json_additional_data[static_cast<std::string>(node.value)] = *it;
 
-            (*current_loop_data)["index"] = index;
+            (*current_loop_data)["index"]  = index;
             (*current_loop_data)["index1"] = index + 1;
             if (index == 1) { (*current_loop_data)["is_first"] = false; }
             if (index == result->size() - 1) { (*current_loop_data)["is_last"] = true; }
@@ -4355,7 +4200,7 @@ class Renderer : public NodeVisitor {
 
         json_additional_data[static_cast<std::string>(node.value)].clear();
         if (!(*current_loop_data)["parent"].empty()) {
-            const auto tmp = (*current_loop_data)["parent"];
+            const auto tmp     = (*current_loop_data)["parent"];
             *current_loop_data = std::move(tmp);
         } else {
             current_loop_data = &json_additional_data["loop"];
@@ -4367,18 +4212,16 @@ class Renderer : public NodeVisitor {
         const auto result = eval_expression_list(node.condition);
         if (!result->is_object()) { throw_renderer_error("object must be an object", node); }
 
-        if (!current_loop_data->empty()) {
-            (*current_loop_data)["parent"] = std::move(*current_loop_data);
-        }
+        if (!current_loop_data->empty()) { (*current_loop_data)["parent"] = std::move(*current_loop_data); }
 
-        size_t index = 0;
+        size_t index                     = 0;
         (*current_loop_data)["is_first"] = true;
-        (*current_loop_data)["is_last"] = (result->size() <= 1);
+        (*current_loop_data)["is_last"]  = (result->size() <= 1);
         for (auto it = result->begin(); it != result->end(); ++it) {
-            json_additional_data[static_cast<std::string>(node.key)] = it.key();
+            json_additional_data[static_cast<std::string>(node.key)]   = it.key();
             json_additional_data[static_cast<std::string>(node.value)] = it.value();
 
-            (*current_loop_data)["index"] = index;
+            (*current_loop_data)["index"]  = index;
             (*current_loop_data)["index1"] = index + 1;
             if (index == 1) { (*current_loop_data)["is_first"] = false; }
             if (index == result->size() - 1) { (*current_loop_data)["is_last"] = true; }
@@ -4408,13 +4251,10 @@ class Renderer : public NodeVisitor {
 
     void visit(const IncludeStatementNode &node)
     {
-        auto sub_renderer = Renderer(config, template_storage, function_storage);
+        auto sub_renderer               = Renderer(config, template_storage, function_storage);
         const auto included_template_it = template_storage.find(node.file);
         if (included_template_it != template_storage.end()) {
-            sub_renderer.render_to(*output_stream,
-                                   included_template_it->second,
-                                   *json_input,
-                                   &json_additional_data);
+            sub_renderer.render_to(*output_stream, included_template_it->second, *json_input, &json_additional_data);
         } else if (config.throw_at_missing_includes) {
             throw_renderer_error("include '" + node.file + "' not found", node);
         }
@@ -4435,15 +4275,15 @@ class Renderer : public NodeVisitor {
     void visit(const BlockStatementNode &node)
     {
         const size_t old_level = current_level;
-        current_level = 0;
-        current_template = template_stack.front();
-        const auto block_it = current_template->block_storage.find(node.name);
+        current_level          = 0;
+        current_template       = template_stack.front();
+        const auto block_it    = current_template->block_storage.find(node.name);
         if (block_it != current_template->block_storage.end()) {
             block_statement_stack.emplace_back(&node);
             block_it->second->block.accept(*this);
             block_statement_stack.pop_back();
         }
-        current_level = old_level;
+        current_level    = old_level;
         current_template = template_stack.back();
     }
 
@@ -4451,9 +4291,8 @@ class Renderer : public NodeVisitor {
     {
         std::string ptr = node.key;
         replace_substring(ptr, ".", "/");
-        ptr = "/" + ptr;
-        json_additional_data[nlohmann::json::json_pointer(ptr)]
-            = *eval_expression_list(node.expression);
+        ptr                                                     = "/" + ptr;
+        json_additional_data[nlohmann::json::json_pointer(ptr)] = *eval_expression_list(node.expression);
     }
 
 public:
@@ -4465,15 +4304,14 @@ public:
           function_storage(function_storage)
     {}
 
-    void
-    render_to(std::ostream &os, const Template &tmpl, const json &data, json *loop_data = nullptr)
+    void render_to(std::ostream &os, const Template &tmpl, const json &data, json *loop_data = nullptr)
     {
-        output_stream = &os;
+        output_stream    = &os;
         current_template = &tmpl;
-        json_input = &data;
+        json_input       = &data;
         if (loop_data) {
             json_additional_data = *loop_data;
-            current_loop_data = &json_additional_data["loop"];
+            current_loop_data    = &json_additional_data["loop"];
         }
 
         template_stack.emplace_back(current_template);
@@ -4514,10 +4352,7 @@ class Environment {
 public:
     Environment() : Environment("") {}
 
-    explicit Environment(const std::string &global_path)
-        : input_path(global_path),
-          output_path(global_path)
-    {}
+    explicit Environment(const std::string &global_path) : input_path(global_path), output_path(global_path) {}
 
     Environment(const std::string &input_path, const std::string &output_path)
         : input_path(input_path),
@@ -4527,10 +4362,10 @@ public:
     /// Sets the opener and closer for template statements
     void set_statement(const std::string &open, const std::string &close)
     {
-        lexer_config.statement_open = open;
-        lexer_config.statement_open_no_lstrip = open + "+";
-        lexer_config.statement_open_force_lstrip = open + "-";
-        lexer_config.statement_close = close;
+        lexer_config.statement_open               = open;
+        lexer_config.statement_open_no_lstrip     = open + "+";
+        lexer_config.statement_open_force_lstrip  = open + "-";
+        lexer_config.statement_close              = close;
         lexer_config.statement_close_force_rstrip = "-" + close;
         lexer_config.update_open_chars();
     }
@@ -4545,9 +4380,9 @@ public:
     /// Sets the opener and closer for template expressions
     void set_expression(const std::string &open, const std::string &close)
     {
-        lexer_config.expression_open = open;
-        lexer_config.expression_open_force_lstrip = open + "-";
-        lexer_config.expression_close = close;
+        lexer_config.expression_open               = open;
+        lexer_config.expression_open_force_lstrip  = open + "-";
+        lexer_config.expression_close              = close;
         lexer_config.expression_close_force_rstrip = "-" + close;
         lexer_config.update_open_chars();
     }
@@ -4555,9 +4390,9 @@ public:
     /// Sets the opener and closer for template comments
     void set_comment(const std::string &open, const std::string &close)
     {
-        lexer_config.comment_open = open;
-        lexer_config.comment_open_force_lstrip = open + "-";
-        lexer_config.comment_close = close;
+        lexer_config.comment_open               = open;
+        lexer_config.comment_open_force_lstrip  = open + "-";
+        lexer_config.comment_close              = close;
         lexer_config.comment_close_force_rstrip = "-" + close;
         lexer_config.update_open_chars();
     }
@@ -4575,10 +4410,7 @@ public:
     }
 
     /// Sets whether a missing include will throw an error
-    void set_throw_at_missing_includes(bool will_throw)
-    {
-        render_config.throw_at_missing_includes = will_throw;
-    }
+    void set_throw_at_missing_includes(bool will_throw) { render_config.throw_at_missing_includes = will_throw; }
 
     Template parse(nonstd::string_view input)
     {
@@ -4596,10 +4428,7 @@ public:
 
     Template parse_file(const std::string &filename) { return parse_template(filename); }
 
-    std::string render(nonstd::string_view input, const json &data)
-    {
-        return render(parse(input), data);
-    }
+    std::string render(nonstd::string_view input, const json &data) { return render(parse(input), data); }
 
     std::string render(const Template &tmpl, const json &data)
     {
@@ -4613,8 +4442,7 @@ public:
         return render(parse_template(filename), data);
     }
 
-    std::string render_file_with_json_file(const std::string &filename,
-                                           const std::string &filename_data)
+    std::string render_file_with_json_file(const std::string &filename, const std::string &filename_data)
     {
         const json data = load_json(filename_data);
         return render_file(filename, data);
@@ -4634,17 +4462,14 @@ public:
         file.close();
     }
 
-    void write_with_json_file(const std::string &filename,
-                              const std::string &filename_data,
-                              const std::string &filename_out)
+    void
+    write_with_json_file(const std::string &filename, const std::string &filename_data, const std::string &filename_out)
     {
         const json data = load_json(filename_data);
         write(filename, data, filename_out);
     }
 
-    void write_with_json_file(const Template &temp,
-                              const std::string &filename_data,
-                              const std::string &filename_out)
+    void write_with_json_file(const Template &temp, const std::string &filename_data, const std::string &filename_out)
     {
         const json data = load_json(filename_data);
         write(temp, data, filename_out);
@@ -4674,10 +4499,7 @@ public:
     /*!
   @brief Adds a variadic callback
   */
-    void add_callback(const std::string &name, const CallbackFunction &callback)
-    {
-        add_callback(name, -1, callback);
-    }
+    void add_callback(const std::string &name, const CallbackFunction &callback) { add_callback(name, -1, callback); }
 
     /*!
   @brief Adds a variadic void callback
@@ -4698,8 +4520,7 @@ public:
     /*!
   @brief Adds a void callback with given number or arguments
   */
-    void
-    add_void_callback(const std::string &name, int num_args, const VoidCallbackFunction &callback)
+    void add_void_callback(const std::string &name, int num_args, const VoidCallbackFunction &callback)
     {
         function_storage.add_callback(name, num_args, [callback](Arguments &args) {
             callback(args);
@@ -4711,10 +4532,7 @@ public:
    * Then, a template can be rendered in another template using the
    * include "<name>" syntax.
    */
-    void include_template(const std::string &name, const Template &tmpl)
-    {
-        template_storage[name] = tmpl;
-    }
+    void include_template(const std::string &name, const Template &tmpl) { template_storage[name] = tmpl; }
 };
 
 /*!
