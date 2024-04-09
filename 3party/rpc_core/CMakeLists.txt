@@ -4,7 +4,7 @@ project(rpc_core CXX)
 
 # config
 option(RPC_CORE_SERIALIZE_USE_CUSTOM "" "")
-option(RPC_CORE_SERIALIZE_USE_NLOHMANN_JSON "" ON)
+option(RPC_CORE_SERIALIZE_USE_NLOHMANN_JSON "" OFF)
 
 # test
 option(RPC_CORE_BUILD_TEST "" OFF)
