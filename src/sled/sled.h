@@ -3,9 +3,10 @@
 #define SLED_SLED_H
 
 // thrid_party
-#include "async/async.h"
 #include "inja.hpp"
 #include "rx.h"
+#include "sled/async/async.h"
+#include "sled/nonstd/string_view.h"
 #include "toml.hpp"
 
 // experimental
@@ -22,7 +23,7 @@
 // #include "sled/futures/promise.h"
 
 // lang
-#include "lang/attributes.h"
+#include "sled/lang/attributes.h"
 
 // log
 #include "sled/log/log.h"

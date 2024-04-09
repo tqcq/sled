@@ -191,6 +191,8 @@ if(SLED_BUILD_TESTS)
                 src/sled/debugging/symbolize_test.cc NO_MAIN)
   sled_add_test(NAME sled_sigslot_test SRCS src/sled/sigslot_test.cc)
   sled_add_test(NAME sled_rpc_test SRCS src/sled/network/rpc_test.cc)
+  sled_add_test(NAME sled_string_view_test SRCS
+                src/sled/nonstd/string_view_test.cc)
 endif(SLED_BUILD_TESTS)
 
 if(SLED_BUILD_FUZZ)
