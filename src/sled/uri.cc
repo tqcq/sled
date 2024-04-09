@@ -33,7 +33,7 @@ URI::ParseURI(const std::string &uri_str)
     if (!std::regex_match(uri_str, match, uri_regex)) {
         return sled::MakeStatusOr<URI>(sled::StatusCode::kInvalidArgument, "Invalid URI format");
     }
-    uri.set_scheme(sled::ToLower(match[2]));
+    uri.set_scheme(sled::ToLower(match[2].str()));
 
     int counter = 0;
     // for (auto res : match) { LOGD("match", "{}:{}", counter++, res); }

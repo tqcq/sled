@@ -17,7 +17,7 @@ ToUpper(char c)
 }
 
 std::string
-ToLower(const std::string &str)
+ToLower(sled::string_view str)
 {
     std::stringstream ss;
     for (auto &ch : str) { ss << ToLower(ch); }
@@ -25,7 +25,7 @@ ToLower(const std::string &str)
 }
 
 std::string
-ToUpper(const std::string &str)
+ToUpper(sled::string_view str)
 {
     std::stringstream ss;
     for (auto &ch : str) { ss << ToUpper(ch); }
@@ -102,28 +102,75 @@ TrimRight(const std::string &str, const std::string &chars)
     return end == std::string::npos ? "" : str.substr(0, end + 1);
 }
 
+// bool
+// EndsWith(const std::string &str, const std::string &suffix)
+// {
+//     return str.size() >= suffix.size() && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+// }
+//
+// bool
+// StartsWith(const std::string &str, const std::string &prefix)
+// {
+//     return str.size() >= prefix.size() && str.compare(0, prefix.size(), prefix) == 0;
+// }
 bool
-EndsWith(const std::string &str, const std::string &suffix)
-{
-    return str.size() >= suffix.size() && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
-}
-
-bool
-StartsWith(const std::string &str, const std::string &prefix)
+StartsWith(sled::string_view str, sled::string_view prefix)
 {
     return str.size() >= prefix.size() && str.compare(0, prefix.size(), prefix) == 0;
 }
 
 bool
-EndsWithIgnoreCase(const std::string &str, const std::string &suffix)
+EndsWith(sled::string_view str, sled::string_view suffix)
 {
-    return EndsWith(ToLower(str), ToLower(suffix));
+    return str.size() >= suffix.size() && str.compare(str.size() - suffix.size(), suffix.size(), suffix) == 0;
+}
+
+// bool
+// EndsWithIgnoreCase(const std::string &str, const std::string &suffix)
+// {
+//     return EndsWith(ToLower(str), ToLower(suffix));
+// }
+//
+// bool
+// StartsWithIgnoreCase(const std::string &str, const std::string &prefix)
+// {
+//     return StartsWith(ToLower(str), ToLower(prefix));
+// }
+
+bool
+EndsWithIgnoreCase(sled::string_view str, sled::string_view suffix)
+{
+    if (str.size() < suffix.size()) { return false; }
+
+    auto str_iter    = str.rbegin();
+    auto suffix_iter = suffix.rbegin();
+
+    for (; suffix_iter != suffix.rend(); ++str_iter, ++suffix_iter) {
+        if (ToLower(*str_iter) != ToLower(*suffix_iter)) { return false; }
+    }
+    return true;
 }
 
 bool
-StartsWithIgnoreCase(const std::string &str, const std::string &prefix)
+StartsWithIgnoreCase(sled::string_view str, sled::string_view prefix)
 {
-    return StartsWith(ToLower(str), ToLower(prefix));
+    if (str.size() < prefix.size()) { return false; }
+    auto str_iter    = str.begin();
+    auto prefix_iter = prefix.begin();
+    for (; prefix_iter != prefix.end(); ++str_iter, ++prefix_iter) {
+        if (ToLower(*str_iter) != ToLower(*prefix_iter)) { return false; }
+    }
+    return true;
+}
+
+bool
+EqualsIgnoreCase(sled::string_view lhs, sled::string_view rhs)
+{
+    if (lhs.size() != rhs.size()) { return false; }
+    for (size_t i = 0; i < lhs.size(); ++i) {
+        if (ToLower(lhs[i]) != ToLower(rhs[i])) { return false; }
+    }
+    return true;
 }
 
 bool

@@ -10,6 +10,7 @@
 #include "sled/nonstd/string_view.h"
 #include "toml.hpp"
 
+#include "sled/config.h"
 // experimental
 #include "sled/experimental/design_patterns/dispatcher.h"
 

@@ -53,6 +53,7 @@ target_include_directories(sled PUBLIC src/ 3party/eigen 3party/inja
 target_sources(
   sled
   PRIVATE src/sled/async/async.cc
+          src/sled/config.cc
           src/sled/debugging/demangle.cc
           src/sled/debugging/symbolize.cc
           src/sled/event_bus/event_bus.cc
@@ -194,6 +195,7 @@ if(SLED_BUILD_TESTS)
   sled_add_test(NAME sled_string_view_test SRCS
                 src/sled/nonstd/string_view_test.cc)
   sled_add_test(NAME sled_expected_test SRCS src/sled/nonstd/expected_test.cc)
+  sled_add_test(NAME sled_config_test SRCS src/sled//config_test.cc)
 endif(SLED_BUILD_TESTS)
 
 if(SLED_BUILD_FUZZ)
