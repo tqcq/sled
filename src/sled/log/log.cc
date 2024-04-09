@@ -4,6 +4,7 @@
 #include <atomic>
 #include <ctime>
 #include <fmt/format.h>
+#include <fstream>
 #include <iostream>
 
 namespace sled {
@@ -97,11 +98,20 @@ GetCurrentUTCTime()
 }
 
 static LogLevel g_log_level = LogLevel::kTrace;
+static std::string g_log_file_name;
+static std::ofstream g_log_stream;
 
 void
 SetLogLevel(LogLevel level)
 {
     g_log_level = level;
+}
+
+void
+SetLogFileName(const char *file_name)
+{
+    g_log_file_name = file_name;
+    g_log_stream.open(file_name);
 }
 
 static std::atomic<uint32_t> g_current_id(0);
@@ -138,6 +148,7 @@ Log(LogLevel level, const char *tag, const char *fmt, const char *file_name, int
 
     Waiter waiter(g_request_id.fetch_add(1), g_current_id);
     waiter.wait();
+    if (g_log_stream.is_open()) { g_log_stream << msg << std::endl; }
     std::cout << GetConsoleColorPrefix(level) << msg << GetConsoleColorSuffix() << std::endl;
 }
 

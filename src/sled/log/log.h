@@ -58,6 +58,7 @@ enum class LogLevel {
     kFatal = 5,
 };
 void SetLogLevel(LogLevel level);
+void SetLogFileName(const char *file_name);
 
 void Log(LogLevel level, const char *tag, const char *fmt, const char *file_name, int line, const char *func_name, ...);
 
