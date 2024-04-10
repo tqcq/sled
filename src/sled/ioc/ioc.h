@@ -163,20 +163,20 @@ class InjectionContext {
 public:
     InjectionContext(Container &container, component_type requesterComponent) : container_(container)
     {
-        pushType(requesterComponent);
+        PushType(requesterComponent);
     }
 
-    ~InjectionContext() { popType(); }
+    ~InjectionContext() { PopType(); }
 
-    Container &getContainer() { return container_; }
+    Container &GetContainer() { return container_; }
 
-    void pushType(component_type &type) { componentStack_.emplace_back(type); }
+    void PushType(component_type &type) { componentStack_.emplace_back(type); }
 
-    void popType() { componentStack_.pop_back(); }
+    void PopType() { componentStack_.pop_back(); }
 
     const std::vector<component_type> &getComponentStack() { return componentStack_; }
 
-    const component_type &getRequester()
+    const component_type &GetRequester()
     {
         if (componentStack_.size() < 2) { throw InvalidOperationException("Context not valid."); }
 
@@ -201,10 +201,10 @@ class ContextGuard {
 public:
     ContextGuard(InjectionContext *context, component_type type) : context_(context), type_(type)
     {
-        context_->pushType(type);
+        context_->PushType(type);
     }
 
-    ~ContextGuard() { context_->popType(); }
+    ~ContextGuard() { context_->PopType(); }
 
     void ensureNoCycle()
     {
@@ -411,7 +411,7 @@ struct ctor_arg_resolver {
     template<typename TCtorArgument, typename std::enable_if<!std::is_pointer<TCtorArgument>::value, int>::type = 0>
     operator TCtorArgument()
     {
-        return context_->getContainer().Get<TCtorArgument>(context_);
+        return context_->GetContainer().Get<TCtorArgument>(context_);
     }
 
     InjectionContext *context_;
@@ -429,7 +429,7 @@ struct ctor_arg_resolver_1st {
              = 0>
     operator TCtorArgument()
     {
-        return context_->getContainer().Get<TCtorArgument>(context_);
+        return context_->GetContainer().Get<TCtorArgument>(context_);
     }
 
     InjectionContext *context_;
@@ -511,7 +511,7 @@ template<typename TInstance, typename... TConstructorArgs>
 struct ConstructorInvoker<TInstance(TConstructorArgs...)> {
     static std::shared_ptr<TInstance> invoke(InjectionContext *context)
     {
-        Container &container = context->getContainer();
+        Container &container = context->GetContainer();
 
         return std::make_shared<TInstance>(container.Get<TConstructorArgs>(context)...);
     }

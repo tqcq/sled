@@ -14,6 +14,12 @@ Config::Config(sled::string_view name, sled::string_view path) : config_name_(na
 }
 
 void
+Config::AddConfigFullPath(sled::string_view path)
+{
+    config_full_paths_.emplace_back(path.to_string());
+}
+
+void
 Config::SetConfigName(sled::string_view name)
 {
     config_name_ = name.to_string();
@@ -29,32 +35,35 @@ bool
 Config::ReadInConfig()
 {
     const static std::vector<std::string> extensions = {".toml"};
-    for (const auto &path : config_paths_) {
-        auto name = path + config_name_;
-        for (const auto &ext : extensions) {
-            const std::ifstream file(name + ext);
-            if (file.good()) {
-                try {
-                    std::stringstream ss;
-                    ss << file.rdbuf();
+    auto load_config_from                            = [](sled::string_view full_path, toml::value &value) {
+        const std::ifstream file(full_path.to_string());
+        if (file.good()) {
+            try {
+                std::stringstream ss;
+                ss << file.rdbuf();
 
-                    std::istringstream stream_data(ss.str(), std::ios_base::binary | std::ios_base::in);
-                    toml_ = toml::parse(stream_data, "string");
-                    return true;
-                    // goto config_read_success;
-                } catch (...) {
-                    LOGD("Failed to parse config file: {}", name + ext);
-                }
+                std::istringstream stream_data(ss.str(), std::ios_base::binary | std::ios_base::in);
+                value = toml::parse(stream_data, "string");
+                return true;
+                // goto config_read_success;
+            } catch (...) {
+                LOGD("Failed to parse config file: {}", full_path.to_string());
             }
         }
+        return false;
+    };
+
+    for (const auto &full_path : config_full_paths_) {
+        if (load_config_from(full_path, toml_)) { return true; }
     }
 
-    // config_read_success:
-    //     // pair<key, value>
-    //     for (auto &pair : default_values_) {
-    //         toml::value value;
-    //         if (!GetNode(pair.first, value)) { AddDefaultNode(pair.first, pair.second); }
-    //     }
+    for (const auto &path : config_paths_) {
+        auto name = path + "/" + config_name_;
+        for (const auto &ext : extensions) {
+            auto full_path = name + ext;
+            if (load_config_from(full_path, toml_)) { return true; }
+        }
+    }
 
     return false;
 }

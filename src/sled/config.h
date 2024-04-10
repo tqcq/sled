@@ -17,6 +17,18 @@ public:
     Config &operator=(const Config &lhs)     = delete;
     Config &operator=(Config &&rhs) noexcept = delete;
 
+    /**
+     * case 1
+    * - fullpath = /path/to/config.toml
+    * - path = /path/to
+    * - name = config
+    *
+    * case 2
+    * - fullpath = ./path/to/config.toml
+    * - path = ./path/to
+    * - name = config
+    **/
+    void AddConfigFullPath(sled::string_view path);
     void SetConfigName(sled::string_view name);
     void AddConfigPath(sled::string_view path);
 
@@ -54,6 +66,7 @@ private:
     std::unordered_map<std::string, ValueType> default_values_;// low_priority
     std::unordered_map<std::string, ValueType> values_;        // high_priority
 
+    std::vector<std::string> config_full_paths_;
     std::vector<std::string> config_paths_;
     std::string config_name_;
     toml::value toml_;
