@@ -156,9 +156,50 @@ Config::SetDefault(sled::string_view key, const double &value)
     default_values_.insert({key.to_string(), value});
 }
 
+void
+Config::SetValue(sled::string_view key, const bool &value)
+{
+    values_.insert({key.to_string(), value});
+}
+
+void
+Config::SetValue(sled::string_view key, const char *value)
+{
+    SetValue(key, std::string(value));
+}
+
+void
+Config::SetValue(sled::string_view key, const std::string &value)
+{
+
+    values_.insert({key.to_string(), value});
+}
+
+void
+Config::SetValue(sled::string_view key, sled::string_view value)
+{
+    SetValue(key, std::string(value));
+}
+
+void
+Config::SetValue(sled::string_view key, const int &value)
+{
+    values_.insert({key.to_string(), value});
+}
+
+void
+Config::SetValue(sled::string_view key, const double &value)
+{
+    values_.insert({key.to_string(), value});
+}
+
 bool
 Config::GetNode(sled::string_view key, toml::value &value) const
 {
+    // 1.优先使用用户设定的值
+    if (GetValueNode(key, value)) { return true; }
+
+    // 2. 然后从配置文件获取
     auto keys = StrSplit(key.to_string(), ".");
     auto cur  = toml_;
     for (const auto &k : keys) {
@@ -166,6 +207,7 @@ Config::GetNode(sled::string_view key, toml::value &value) const
             auto next = toml::find(cur, k);
             cur       = next;
         } catch (...) {
+            // 3. 最后使用默认值
             if (GetDefaultNode(key, value)) { return true; }
             return false;
         }
@@ -199,6 +241,32 @@ Config::AddDefaultNode(sled::string_view key, ValueType value)
         return true;
     }
     return false;
+}
+
+bool
+Config::GetValueNode(sled::string_view key, toml::value &value) const
+{
+
+    auto iter = values_.find(key.to_string());
+    if (iter == values_.end()) { return false; }
+    auto &default_value = iter->second;
+    switch (default_value.index()) {
+    case 0:
+        value = sled::get<bool>(default_value);
+        break;
+    case 1:
+        value = sled::get<std::string>(default_value);
+        break;
+    case 2:
+        value = sled::get<int>(default_value);
+        break;
+    case 3:
+        value = sled::get<double>(default_value);
+        break;
+    default:
+        return false;
+    }
+    return true;
 }
 
 bool

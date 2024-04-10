@@ -20,6 +20,7 @@ public:
     void SetConfigName(sled::string_view name);
     void AddConfigPath(sled::string_view path);
 
+    // medium priority
     bool ReadInConfig();
 
     bool IsSet(sled::string_view key) const;
@@ -28,6 +29,7 @@ public:
     double GetDoubleOr(sled::string_view key, const double &def = 0.0) const;
     std::string GetStringOr(sled::string_view key, const sled::string_view def = "") const;
 
+    // low priority
     void SetDefault(sled::string_view key, const bool &value);
     void SetDefault(sled::string_view key, const char *value);
     void SetDefault(sled::string_view key, const std::string &value);
@@ -35,12 +37,23 @@ public:
     void SetDefault(sled::string_view key, const int &value);
     void SetDefault(sled::string_view key, const double &value);
 
+    // high priority
+    void SetValue(sled::string_view key, const bool &value);
+    void SetValue(sled::string_view key, const char *value);
+    void SetValue(sled::string_view key, const std::string &value);
+    void SetValue(sled::string_view key, sled::string_view value);
+    void SetValue(sled::string_view key, const int &value);
+    void SetValue(sled::string_view key, const double &value);
+
 private:
     bool GetNode(sled::string_view key, toml::value &value) const;
-    bool AddDefaultNode(sled::string_view, ValueType value);
     bool GetDefaultNode(sled::string_view key, toml::value &value) const;
+    bool GetValueNode(sled::string_view key, toml::value &value) const;
+    bool AddDefaultNode(sled::string_view, ValueType value);
 
-    std::unordered_map<std::string, ValueType> default_values_;
+    std::unordered_map<std::string, ValueType> default_values_;// low_priority
+    std::unordered_map<std::string, ValueType> values_;        // high_priority
+
     std::vector<std::string> config_paths_;
     std::string config_name_;
     toml::value toml_;
