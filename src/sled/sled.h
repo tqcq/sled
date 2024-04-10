@@ -3,11 +3,11 @@
 #define SLED_SLED_H
 
 // thrid_party
-#include "inja.hpp"
 #include "rx.h"
 #include "sled/async/async.h"
 #include "sled/nonstd/cxxopts.h"
 #include "sled/nonstd/expected.h"
+#include "sled/nonstd/inja.h"
 #include "sled/nonstd/string_view.h"
 #include "toml.hpp"
 

@@ -2,7 +2,7 @@
 #include <sled/strings/utils.h>
 
 static std::string test_config_name = "config_test";
-static std::string test_config_path = sled::StripSuffix(__FILE__, "config_test.cc").to_string();
+static std::string test_config_path = sled::to_string(sled::StripSuffix(__FILE__, "config_test.cc"));
 
 TEST_SUITE("Config")
 {

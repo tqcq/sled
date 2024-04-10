@@ -4,9 +4,11 @@ project(
   VERSION 0.1.1
   LANGUAGES C CXX)
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_STANDARD_EXTENSIONS OFF)
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 11)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+  set(CMAKE_CXX_STANDARD_EXTENSIONS OFF)
+endif()
 # set(CMAKE_C_FLAGS "-gdwarf-3 -gstrict-dwarf") set(CMAKE_CXX_FLAGS "-gdwarf-3
 # -gstrict-dwarf")
 
@@ -48,8 +50,8 @@ if(SLED_LOCATION_PATH)
     sled PRIVATE __SLED_LOCATION_PATH="${SLED_LOCATION_PATH}")
 endif()
 # add_subdirectory(3party/eigen EXCLUDE_FROM_ALL)
-target_include_directories(sled PUBLIC src/ 3party/eigen 3party/inja
-                                       3party/rxcpp 3party/toml11)
+target_include_directories(sled PUBLIC src/ 3party/eigen 3party/rxcpp
+                                       3party/nlohammn 3party/toml11)
 target_sources(
   sled
   PRIVATE src/sled/async/async.cc

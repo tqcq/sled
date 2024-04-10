@@ -10,25 +10,25 @@ Config::Config(sled::string_view name) : Config(name, "") {}
 
 Config::Config(sled::string_view name, sled::string_view path) : config_name_(name)
 {
-    config_paths_.emplace_back(path.to_string());
+    config_paths_.emplace_back(sled::to_string(path));
 }
 
 void
 Config::AddConfigFullPath(sled::string_view path)
 {
-    config_full_paths_.emplace_back(path.to_string());
+    config_full_paths_.emplace_back(sled::to_string(path));
 }
 
 void
 Config::SetConfigName(sled::string_view name)
 {
-    config_name_ = name.to_string();
+    config_name_ = sled::to_string(name);
 }
 
 void
 Config::AddConfigPath(sled::string_view path)
 {
-    config_paths_.emplace_back(path.to_string());
+    config_paths_.emplace_back(sled::to_string(path));
 }
 
 bool
@@ -36,7 +36,7 @@ Config::ReadInConfig()
 {
     const static std::vector<std::string> extensions = {".toml"};
     auto load_config_from                            = [](sled::string_view full_path, toml::value &value) {
-        const std::ifstream file(full_path.to_string());
+        const std::ifstream file(to_string(full_path));
         if (file.good()) {
             try {
                 std::stringstream ss;
@@ -47,7 +47,7 @@ Config::ReadInConfig()
                 return true;
                 // goto config_read_success;
             } catch (...) {
-                LOGD("Failed to parse config file: {}", full_path.to_string());
+                LOGD("Failed to parse config file: {}", sled::to_string(full_path));
             }
         }
         return false;
@@ -126,13 +126,13 @@ Config::GetStringOr(sled::string_view key, sled::string_view def) const
     try {
         if (GetNode(key, value) && value.is_string()) { return value.as_string(); }
     } catch (...) {}
-    return def.to_string();
+    return sled::to_string(def);
 }
 
 void
 Config::SetDefault(sled::string_view key, const bool &value)
 {
-    default_values_.insert({key.to_string(), value});
+    default_values_.insert({sled::to_string(key), value});
 }
 
 void
@@ -144,7 +144,7 @@ Config::SetDefault(sled::string_view key, const char *value)
 void
 Config::SetDefault(sled::string_view key, const std::string &value)
 {
-    default_values_.insert({key.to_string(), value});
+    default_values_.insert({sled::to_string(key), value});
 }
 
 void
@@ -156,19 +156,19 @@ Config::SetDefault(sled::string_view key, sled::string_view value)
 void
 Config::SetDefault(sled::string_view key, const int &value)
 {
-    default_values_.insert({key.to_string(), value});
+    default_values_.insert({sled::to_string(key), value});
 }
 
 void
 Config::SetDefault(sled::string_view key, const double &value)
 {
-    default_values_.insert({key.to_string(), value});
+    default_values_.insert({sled::to_string(key), value});
 }
 
 void
 Config::SetValue(sled::string_view key, const bool &value)
 {
-    values_.insert({key.to_string(), value});
+    values_.insert({sled::to_string(key), value});
 }
 
 void
@@ -181,7 +181,7 @@ void
 Config::SetValue(sled::string_view key, const std::string &value)
 {
 
-    values_.insert({key.to_string(), value});
+    values_.insert({sled::to_string(key), value});
 }
 
 void
@@ -193,13 +193,13 @@ Config::SetValue(sled::string_view key, sled::string_view value)
 void
 Config::SetValue(sled::string_view key, const int &value)
 {
-    values_.insert({key.to_string(), value});
+    values_.insert({sled::to_string(key), value});
 }
 
 void
 Config::SetValue(sled::string_view key, const double &value)
 {
-    values_.insert({key.to_string(), value});
+    values_.insert({sled::to_string(key), value});
 }
 
 bool
@@ -209,7 +209,7 @@ Config::GetNode(sled::string_view key, toml::value &value) const
     if (GetValueNode(key, value)) { return true; }
 
     // 2. 然后从配置文件获取
-    auto keys = StrSplit(key.to_string(), ".");
+    auto keys = StrSplit(sled::to_string(key), ".");
     auto cur  = toml_;
     for (const auto &k : keys) {
         try {
@@ -228,7 +228,7 @@ Config::GetNode(sled::string_view key, toml::value &value) const
 bool
 Config::AddDefaultNode(sled::string_view key, ValueType value)
 {
-    auto keys = StrSplit(key.to_string(), ".");
+    auto keys = StrSplit(sled::to_string(key), ".");
     if (keys.size() == 1) {
         auto first_key = keys[0];
         switch (value.index()) {
@@ -256,7 +256,7 @@ bool
 Config::GetValueNode(sled::string_view key, toml::value &value) const
 {
 
-    auto iter = values_.find(key.to_string());
+    auto iter = values_.find(sled::to_string(key));
     if (iter == values_.end()) { return false; }
     auto &default_value = iter->second;
     switch (default_value.index()) {
@@ -281,7 +281,7 @@ Config::GetValueNode(sled::string_view key, toml::value &value) const
 bool
 Config::GetDefaultNode(sled::string_view key, toml::value &value) const
 {
-    auto iter = default_values_.find(key.to_string());
+    auto iter = default_values_.find(sled::to_string(key));
     if (iter == default_values_.end()) { return false; }
     auto &default_value = iter->second;
     switch (default_value.index()) {
