@@ -199,6 +199,7 @@ if(SLED_BUILD_TESTS)
   sled_add_test(NAME sled_expected_test SRCS src/sled/nonstd/expected_test.cc)
   sled_add_test(NAME sled_config_test SRCS src/sled/config_test.cc)
   sled_add_test(NAME sled_ioc_test SRCS src/sled/ioc/ioc_test.cc)
+  sled_add_test(NAME sled_inja_test SRCS src/sled/nonstd/inja_test.cc)
 endif(SLED_BUILD_TESTS)
 
 if(SLED_BUILD_FUZZ)
