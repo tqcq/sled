@@ -24,6 +24,7 @@
 
 // futures
 // #include "sled/futures/promise.h"
+#include "sled/ioc/ioc.h"
 
 // lang
 #include "sled/lang/attributes.h"
