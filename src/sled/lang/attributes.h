@@ -2,7 +2,9 @@
 #define SLED_LANG_ATTRIBUTES_H
 #pragma once
 
-#define SLED_DEPRECATED __attribute__((deprecated))
+// #define SLED_DEPRECATED __attribute__((deprecated))
+#define SLED_NODISCARD [[nodiscard]]
+#define SLED_DEPRECATED [[deprecated]]
 
 #if defined(__clang__) && (!defined(SWIG))
 #define SLED_THREAD_ANNOTATION_ATTRIBUTE__(x) __attribute__((x))

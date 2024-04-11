@@ -8,6 +8,7 @@
 #ifndef SLED_STRINGS_BASE64_H
 #define SLED_STRINGS_BASE64_H
 
+#include "sled/nonstd/string_view.h"
 #include "sled/status_or.h"
 #include <string.h>
 #include <string>
