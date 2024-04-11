@@ -54,7 +54,7 @@ Config::ReadInConfig()
                 return true;
                 // goto config_read_success;
             } catch (const std::exception &e) {
-                LOGE("Failed to parse config file: {}, reason: e", sled::to_string(full_path), e.what());
+                LOGE("Failed to parse config file: {}, reason: {}", sled::to_string(full_path), e.what());
             } catch (...) {
                 LOGD("Failed to parse config file: {}", sled::to_string(full_path));
             }
