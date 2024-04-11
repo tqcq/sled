@@ -447,7 +447,7 @@ private:
     bool processing = false;
 #else
     struct processing_lock {
-        processing_lock(fsm &) {}
+        processing_lock(Fsm &) {}
     };
 #endif
 };
