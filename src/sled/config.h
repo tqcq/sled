@@ -17,7 +17,7 @@ public:
     Config &operator=(const Config &lhs)     = delete;
     Config &operator=(Config &&rhs) noexcept = delete;
 
-    sled::string ToString() const;
+    std::string ToString() const;
 
     /**
      * case 1
