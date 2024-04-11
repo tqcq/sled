@@ -13,6 +13,13 @@ Config::Config(sled::string_view name, sled::string_view path) : config_name_(na
     config_paths_.emplace_back(sled::to_string(path));
 }
 
+std::string
+Config::ToString() const
+{
+    toml::value root = toml_;
+    return toml::format(root);
+}
+
 void
 Config::AddConfigFullPath(sled::string_view path)
 {
@@ -73,6 +80,14 @@ Config::IsSet(sled::string_view key) const
 {
     toml::value value;
     return GetNode(key, value);
+}
+
+bool
+Config::IsArray(sled::string_view key) const
+{
+    toml::value value;
+    if (!GetNode(key, value)) { return false; }
+    return value.is_array();
 }
 
 bool

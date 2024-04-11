@@ -17,6 +17,8 @@ public:
     Config &operator=(const Config &lhs)     = delete;
     Config &operator=(Config &&rhs) noexcept = delete;
 
+    sled::string ToString() const;
+
     /**
      * case 1
     * - fullpath = /path/to/config.toml
@@ -36,6 +38,8 @@ public:
     bool ReadInConfig();
 
     bool IsSet(sled::string_view key) const;
+    bool IsArray(sled::string_view key) const;
+
     bool GetBoolOr(sled::string_view key, const bool &def = false) const;
     int GetIntOr(sled::string_view key, const int &def = 0) const;
     double GetDoubleOr(sled::string_view key, const double &def = 0.0) const;
