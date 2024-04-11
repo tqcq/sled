@@ -7,6 +7,7 @@
 #include "sled/async/async.h"
 #include "sled/nonstd/cxxopts.h"
 #include "sled/nonstd/expected.h"
+#include "sled/nonstd/fsm.h"
 #include "sled/nonstd/inja.h"
 #include "sled/nonstd/string_view.h"
 #include "toml.hpp"
