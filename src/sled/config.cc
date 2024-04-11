@@ -17,7 +17,10 @@ std::string
 Config::ToString() const
 {
     toml::value root = toml_;
-    return toml::format(root);
+    // format(const basic_value<C, M, V>& v, std::size_t w = 80u,
+    //        int fprec = std::numeric_limits<toml::floating>::max_digits10,
+    //        bool no_comment = false, bool force_inline = false)
+    return toml::format(root, 180u);
 }
 
 void
