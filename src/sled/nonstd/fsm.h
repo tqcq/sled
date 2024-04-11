@@ -456,6 +456,9 @@ private:
 
 namespace sled {
 template<typename T, typename State = int>
-using Fsm = fsmlite::Fsm<T, State>;
-}
+class Fsm : public fsmlite::Fsm<T, State> {
+public:
+    Fsm(State init_state = State()) : fsmlite::Fsm<T, State>(init_state) {}
+};
+}// namespace sled
 #endif
