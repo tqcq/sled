@@ -1,3 +1,7 @@
+#ifndef SLED_SLED_NONSTD_FSM_H
+#define SLED_SLED_NONSTD_FSM_H
+
+#pragma once
 /*
  * Copyright (c) 2015-2021 Thomas Kemmer
  *
@@ -22,9 +26,6 @@
  * SOFTWARE.
  */
 
-#ifndef FSMLITE_FSM_H
-#define FSMLITE_FSM_H
-
 #include <cstddef>
 #include <type_traits>
 
@@ -32,9 +33,7 @@
 #include <stdexcept>
 #endif
 
-namespace fsmlite {
-template<typename T, typename State>
-class Fsm;
+namespace sled {
 
 namespace detail {
 
@@ -452,13 +451,7 @@ private:
     };
 #endif
 };
-}// namespace fsmlite
 
-namespace sled {
-template<typename T, typename State = int>
-class Fsm : public fsmlite::Fsm<T, State> {
-public:
-    Fsm(State init_state = State()) : fsmlite::Fsm<T, State>(init_state) {}
-};
 }// namespace sled
-#endif
+
+#endif// SLED_SLED_NONSTD_FSM_H

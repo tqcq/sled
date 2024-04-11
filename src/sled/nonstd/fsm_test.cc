@@ -39,6 +39,7 @@ private:
     void OnReset(const ResetEvent &) {}
 
 public:
+    friend class sled::Fsm<FSMTest, State>;
     using TransitionTable
         = table<row<State::kIdle, StartEvent, State::kStarted, &FSMTest::OnStart, &FSMTest::StartCheck>,
                 row<State::kStarted, StopEvent, State::kEnd, &FSMTest::OnStop>,
