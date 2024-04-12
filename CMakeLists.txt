@@ -201,6 +201,8 @@ if(SLED_BUILD_TESTS)
   sled_add_test(NAME sled_ioc_test SRCS src/sled/ioc/ioc_test.cc)
   sled_add_test(NAME sled_inja_test SRCS src/sled/nonstd/inja_test.cc)
   sled_add_test(NAME sled_fsm_test SRCS src/sled/nonstd/fsm_test.cc)
+  sled_add_test(NAME sled_cache_test SRCS src/sled/cache/lru_cache_test.cc
+                src/sled/cache/fifo_cache_test.cc)
 endif(SLED_BUILD_TESTS)
 
 if(SLED_BUILD_FUZZ)

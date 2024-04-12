@@ -39,7 +39,7 @@ public:
     static constexpr Timestamp Nanos(T value)
     {
         static_assert(std::is_arithmetic<T>::value, "");
-        return FromValue(value) * 1000;
+        return FromValue(value * 1000LL);
     }
 
     Timestamp() = delete;
@@ -68,20 +68,11 @@ public:
         return ToMultiple<1000, T>();
     }
 
-    constexpr int64_t seconds_or(int64_t fallback_value) const
-    {
-        return ToFractionOr<1000000>(fallback_value);
-    }
+    constexpr int64_t seconds_or(int64_t fallback_value) const { return ToFractionOr<1000000>(fallback_value); }
 
-    constexpr int64_t ms_or(int64_t fallback_value) const
-    {
-        return ToFractionOr<1000>(fallback_value);
-    }
+    constexpr int64_t ms_or(int64_t fallback_value) const { return ToFractionOr<1000>(fallback_value); }
 
-    constexpr int64_t us_or(int64_t fallback_value) const
-    {
-        return ToValueOr(fallback_value);
-    }
+    constexpr int64_t us_or(int64_t fallback_value) const { return ToValueOr(fallback_value); }
 
     Timestamp operator+(const TimeDelta delta) const
     {
