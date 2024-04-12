@@ -3,14 +3,15 @@
 #pragma once
 
 // #define SLED_DEPRECATED __attribute__((deprecated))
-#define SLED_NODISCARD [[nodiscard]]
-#define SLED_DEPRECATED [[deprecated]]
 
 #if defined(__clang__) && (!defined(SWIG))
 #define SLED_THREAD_ANNOTATION_ATTRIBUTE__(x) __attribute__((x))
 #else
 #define SLED_THREAD_ANNOTATION_ATTRIBUTE__(x)// no-op
 #endif
+
+#define SLED_NODISCARD SLED_THREAD_ANNOTATION_ATTRIBUTE__(__warn_unused_result__)
+#define SLED_DEPRECATED SLED_THREAD_ANNOTATION_ATTRIBUTE__(deprecated)
 
 #define SLED_UNUSED(x) (void) (x)
 
