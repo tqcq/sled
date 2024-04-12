@@ -27,18 +27,25 @@ public:
     static constexpr TimeDelta Seconds(T value)
     {
         static_assert(std::is_arithmetic<T>::value, "");
-        return FromFraction(1000000, value);
+        return FromFraction(1000000000, value);
     }
 
     template<typename T>
     static constexpr TimeDelta Millis(T value)
     {
         static_assert(std::is_arithmetic<T>::value, "");
-        return FromFraction(1000, value);
+        return FromFraction(1000000, value);
     }
 
     template<typename T>
     static constexpr TimeDelta Micros(T value)
+    {
+        static_assert(std::is_arithmetic<T>::value, "");
+        return FromFraction(1000, value);
+    }
+
+    template<typename T>
+    static constexpr TimeDelta Nanos(T value)
     {
         static_assert(std::is_arithmetic<T>::value, "");
         return FromValue(value);
@@ -47,7 +54,7 @@ public:
     template<typename Clock, typename Duration>
     inline TimeDelta(const std::chrono::duration<Clock, Duration> &duration)
     {
-        *this = FromValue(std::chrono::duration_cast<std::chrono::microseconds>(duration).count());
+        *this = FromValue(std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count());
     }
 
     TimeDelta() = delete;
@@ -55,32 +62,34 @@ public:
     template<typename T = int64_t>
     constexpr T seconds() const
     {
-        return ToFraction<1000000, T>();
+        return ToFraction<1000000000, T>();
     }
 
     template<typename T = int64_t>
     constexpr T ms() const
     {
-        return ToFraction<1000, T>();
+        return ToFraction<1000000, T>();
     }
 
     template<typename T = int64_t>
     constexpr T us() const
     {
-        return ToValue<T>();
+        return ToFraction<1000, T>();
     }
 
     template<typename T = int64_t>
     constexpr T ns() const
     {
-        return ToMultiple<1000, T>();
+        return ToValue<T>();
     }
 
-    constexpr int64_t seconds_or(int64_t fallback_value) const { return ToFractionOr<1000000>(fallback_value); }
+    constexpr int64_t seconds_or(int64_t fallback_value) const { return ToFractionOr<1000000000>(fallback_value); }
 
-    constexpr int64_t ms_or(int64_t fallback_value) const { return ToFractionOr<1000>(fallback_value); }
+    constexpr int64_t ms_or(int64_t fallback_value) const { return ToFractionOr<1000000>(fallback_value); }
 
-    constexpr int64_t us_or(int64_t fallback_value) const { return ToValueOr(fallback_value); }
+    constexpr int64_t us_or(int64_t fallback_value) const { return ToFractionOr<1000>(fallback_value); }
+
+    constexpr int64_t ns_or(int64_t fallback_value) const { return ToValueOr(fallback_value); }
 
     constexpr TimeDelta Abs() const { return us() < 0 ? TimeDelta::Micros(-us()) : *this; }
 

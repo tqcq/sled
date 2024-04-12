@@ -9,6 +9,11 @@ namespace sled {
 template<typename TKey, typename TValue>
 class ExpireCache : public AbstractCache<TKey, TValue, ExpireCachePolicy<TKey>> {
 public:
+    ExpireCache(const TimeDelta &expire_time)
+    {
+        this->policy_.insert(std::make_shared<ExpireCachePolicy<TKey>>(expire_time));
+    }
+
     ~ExpireCache() override = default;
 };
 }// namespace sled

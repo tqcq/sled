@@ -41,9 +41,18 @@ public:
         BaseClass::OnClear();
     }
 
-    void OnReplace(std::set<TKey> &key) override
+    void OnReplace(std::set<TKey> &elems_to_remove) override
     {
-        // do nothing
+        BaseClass::OnReplace(elems_to_remove);
+
+        if (keys_.size() <= size_) { return; }
+        std::size_t diff  = keys_.size() - size_;
+        std::size_t index = 0;
+        auto iter         = keys_.begin();
+        while (index++ < diff) {
+            elems_to_remove.insert(*iter);
+            if (iter != keys_.end()) { ++iter; }
+        }
     }
 
     bool IsValid(const TKey &key) override { return BaseClass::IsValid(key); }

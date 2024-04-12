@@ -7,6 +7,7 @@
 #pragma once
 #ifndef SLED_UNITS_TIMESTAMP_H
 #define SLED_UNITS_TIMESTAMP_H
+#include "sled/time_utils.h"
 #include "sled/units/time_delta.h"
 #include "sled/units/unit_base.h"
 
@@ -14,65 +15,71 @@ namespace sled {
 
 class Timestamp final : public detail::UnitBase<Timestamp> {
 public:
+    static Timestamp Now() { return Timestamp::Nanos(TimeNanos()); }
+
     template<typename T>
     static constexpr Timestamp Seconds(T value)
     {
         static_assert(std::is_arithmetic<T>::value, "");
-        return FromFraction(1000000, value);
+        return FromFraction(1000000000, value);
     }
 
     template<typename T>
     static constexpr Timestamp Millis(T value)
     {
         static_assert(std::is_arithmetic<T>::value, "");
-        return FromFraction(1000, value);
+        return FromFraction(1000000, value);
     }
 
     template<typename T>
     static constexpr Timestamp Micros(T value)
     {
         static_assert(std::is_arithmetic<T>::value, "");
-        return FromValue(value);
+        return FromFraction(1000, value);
     }
 
     template<typename T>
     static constexpr Timestamp Nanos(T value)
     {
         static_assert(std::is_arithmetic<T>::value, "");
-        return FromValue(value * 1000LL);
+        return FromValue(value);
     }
 
     Timestamp() = delete;
 
+    bool IsExpired() const { return *this < Now(); }
+
     template<typename T = int64_t>
     constexpr T seconds() const
     {
-        return ToFraction<1000000, T>();
+        return ToFraction<1000000000, T>();
     }
 
     template<typename T = int64_t>
     constexpr T ms() const
     {
-        return ToFraction<1000, T>();
+        return ToFraction<1000000, T>();
     }
 
     template<typename T = int64_t>
     constexpr T us() const
     {
-        return ToValue<T>();
+        return ToFraction<1000, T>();
     }
 
     template<typename T = int64_t>
     constexpr T ns() const
     {
-        return ToMultiple<1000, T>();
+        return ToValue<T>();
     }
 
-    constexpr int64_t seconds_or(int64_t fallback_value) const { return ToFractionOr<1000000>(fallback_value); }
+    constexpr int64_t seconds_or(int64_t fallback_value) const { return ToFractionOr<1000000000>(fallback_value); }
 
-    constexpr int64_t ms_or(int64_t fallback_value) const { return ToFractionOr<1000>(fallback_value); }
+    constexpr int64_t ms_or(int64_t fallback_value) const { return ToFractionOr<1000000>(fallback_value); }
 
-    constexpr int64_t us_or(int64_t fallback_value) const { return ToValueOr(fallback_value); }
+    constexpr int64_t us_or(int64_t fallback_value) const { return ToFractionOr<1000>(fallback_value); }
+
+    constexpr int64_t ns_or(int64_t fallback_value) const { return ToValueOr(fallback_value); }
 
     Timestamp operator+(const TimeDelta delta) const
     {
@@ -81,7 +88,7 @@ public:
         } else if (IsMinusInfinity() || delta.IsMinusInfinity()) {
             return MinusInfinity();
         }
-        return Timestamp::Micros(us() - delta.us());
+        return Timestamp::Nanos(ns() + delta.ns());
     }
 
     Timestamp operator-(const TimeDelta delta) const
@@ -91,7 +98,7 @@ public:
         } else if (IsMinusInfinity() || delta.IsPlusInfinity()) {
             return MinusInfinity();
         }
-        return Timestamp::Micros(us() - delta.us());
+        return Timestamp::Nanos(ns() - delta.ns());
     }
 
     TimeDelta operator-(const Timestamp other) const
