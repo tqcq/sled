@@ -7,6 +7,36 @@
 #else
 #define SLED_THREAD_ANNOTATION_ATTRIBUTE__(x)// no-op
 #endif
+//
+// Global compiler specific defines/customizations
+//
+#if defined(_MSC_VER)
+#if defined(__cplusplus)
+#define SLED_EXPORT extern "C" __declspec(dllexport)
+#define SLED_IMPORT extern "C" __declspec(dllimport)
+#else
+#define SLED_EXPORT __declspec(dllexport)
+#define SLED_IMPORT __declspec(dllimport)
+#endif
+#endif// defined(_MSC_VER)
+
+#if defined(__GNUC__)// clang & gcc
+#if defined(__cplusplus)
+#define SLED_EXPORT extern "C" __attribute__((visibility("default")))
+#else
+#define SLED_EXPORT __attribute__((visibility("default")))
+#endif
+#define SLED_IMPORT
+#endif// defined(__GNUC__)
+
+#if defined(__MINGW32__)
+#undef SLED_EXPORT
+#if defined(__cplusplus)
+#define SLED_EXPORT extern "C" __declspec(dllexport)
+#else
+#define SLED_EXPORT __declspec(dllexport)
+#endif
+#endif
 
 #define SLED_NODISCARD SLED_THREAD_ANNOTATION_ATTRIBUTE__(__warn_unused_result__)
 #define SLED_DEPRECATED SLED_THREAD_ANNOTATION_ATTRIBUTE__(deprecated)

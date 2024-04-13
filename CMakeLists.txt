@@ -80,6 +80,7 @@ target_sources(
           src/sled/synchronization/sequence_checker.cc
           src/sled/synchronization/thread_local.cc
           src/sled/system/location.cc
+          src/sled/system/hot_reloader.cc
           src/sled/system/pid.cc
           src/sled/system/thread.cc
           src/sled/system/thread_pool.cc
@@ -211,6 +212,21 @@ if(SLED_BUILD_TESTS)
   sled_add_test(
     NAME sled_cache_test SRCS src/sled/cache/lru_cache_test.cc
     src/sled/cache/fifo_cache_test.cc src/sled/cache/expire_cache_test.cc)
+
+  add_library(hot_reloader_test_dynamic SHARED
+              src/sled/system/hot_reloader_test_dynamic.cc)
+  target_link_libraries(hot_reloader_test_dynamic PRIVATE sled)
+  message(
+    STATUS "HOT_RELOADER_TEST_DYNAMIC_LOCATION ${hot_reloader_test_dynamic}")
+  get_target_property(HOT_RELOADER_TEST_DYNAMIC_LOCATION
+                      hot_reloader_test_dynamic LINK_LIBRARIES)
+
+  sled_add_test(
+    NAME sled_hot_reloader_test SRCS src/sled/system/hot_reloader_test.cc LIBS
+    hot_reloader_test_dynamic)
+  target_compile_definitions(
+    sled_hot_reloader_test
+    PRIVATE "TEST_BIN_PATH=\"${HOT_RELOADER_TEST_DYNAMIC_LOCATION}\"")
 endif(SLED_BUILD_TESTS)
 
 if(SLED_BUILD_FUZZ)

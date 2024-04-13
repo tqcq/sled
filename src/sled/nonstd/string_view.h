@@ -865,11 +865,11 @@ nssv_DISABLE_MSVC_WARNINGS(4455 26481 26472)
                    pos >= size() ? npos
                                  : to_pos(
 #if nssv_CPP11_OR_GREATER && !nssv_CPP17_OR_GREATER
-                                     detail::search(substr(pos), v)
+                                       detail::search(substr(pos), v)
 #else
-                                     std::search(cbegin() + pos, cend(), v.cbegin(), v.cend(), Traits::eq)
+                                       std::search(cbegin() + pos, cend(), v.cbegin(), v.cend(), Traits::eq)
 #endif
-                                 );
+                                   );
         }
 
         nssv_constexpr size_type find(CharT c, size_type pos = 0) const nssv_noexcept// (2)
