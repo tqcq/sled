@@ -12,6 +12,7 @@ endif()
 # set(CMAKE_C_FLAGS "-gdwarf-3 -gstrict-dwarf") set(CMAKE_CXX_FLAGS "-gdwarf-3
 # -gstrict-dwarf")
 
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 option(SLED_BUILD_BENCHMARK "Build benchmark" OFF)
 option(SLED_BUILD_TESTS "Build tests" OFF)
 option(SLED_BUILD_FUZZ "Build fuzzer test" OFF)
