@@ -1,7 +1,7 @@
 #include "sled/system/pid.h"
 
 namespace sled {
-pid_t
+ProcessId
 GetCachedPID()
 {
     static pid_t cached_pid = getpid();

@@ -16,6 +16,7 @@ option(SLED_BUILD_BENCHMARK "Build benchmark" OFF)
 option(SLED_BUILD_TESTS "Build tests" OFF)
 option(SLED_BUILD_FUZZ "Build fuzzer test" OFF)
 option(SLED_LOCATION_PATH "" "sled/src/sled/system/location.cc")
+option(SLED_BUILD_PROTOC_PLUGIN "Build protoc plugin" OFF)
 
 set(BUILD_STATIC ON)
 set(BUILD_RTTR_DYNAMIC OFF)
@@ -97,6 +98,7 @@ target_sources(
 target_link_libraries(
   sled
   PUBLIC rpc_core fmt marl Async++ minilua protobuf::libprotobuf
+         # protobuf::libprotoc
   PRIVATE dl
   # protobuf::libprotobuf ${WHOLE_ARCHIVE_WRAPPER_START}
   # tcmalloc_and_profiler_static ${WHOLE_ARCHIVE_WRAPPER_END}
@@ -104,6 +106,10 @@ target_link_libraries(
 
 # set fPIC
 set_target_properties(sled PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
+if(SLED_BUILD_PROTOC_PLUGIN)
+  add_subdirectory(src/protoc_gen_sled)
+endif()
 
 if(SLED_BUILD_BENCHMARK)
   # if(NOT TARGET benchmark) find_package(mbenchmark REQUIRED) endif()

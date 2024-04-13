@@ -11,6 +11,12 @@ typedef unsigned long pid_t;
 #endif
 
 namespace sled {
-pid_t GetCachedPID();
+#ifdef _WIN32
+typedef unsigned long ProcessId;
+#else
+typedef pid_t ProcessId;
+#endif
+
+ProcessId GetCachedPID();
 }// namespace sled
 #endif// SLED_SYSTEM_PID_H
