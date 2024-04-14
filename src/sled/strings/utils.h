@@ -13,9 +13,14 @@ char ToUpper(char c);
 // std::string ToUpper(const std::string &str);
 std::string ToLower(sled::string_view str);
 std::string ToUpper(sled::string_view str);
-std::string ToHex(const std::string &str);
+std::string ToHex(sled::string_view str);
+
 std::string StrJoin(const std::vector<std::string> &strings, const std::string &delim, bool skip_empty = false);
-std::vector<std::string> StrSplit(const std::string &str, const std::string &delim, bool skip_empty = false);
+// std::vector<std::string> StrSplit(const std::string &str, const std::string &delim, bool skip_empty = false);
+
+std::vector<std::string> StrSplit(sled::string_view str, sled::string_view delim, bool skip_empty = false);
+std::vector<std::string> StrSplit(sled::string_view str, char delim, bool skip_empty = false);
+
 std::string Trim(const std::string &str, const std::string &chars = " \t\n\r");
 std::string TrimLeft(const std::string &str, const std::string &chars = " \t\n\r");
 std::string TrimRight(const std::string &str, const std::string &chars = " \t\n\r");

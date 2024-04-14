@@ -33,6 +33,19 @@ ToUpper(sled::string_view str)
 }
 
 std::string
+ToHex(sled::string_view str)
+{
+    constexpr static char hex_chars[] = "0123456789ABCDEF";
+    std::string result;
+    result.reserve(str.size() * 2);
+    for (auto &ch : str) {
+        result.push_back(hex_chars[ch >> 4]);
+        result.push_back(hex_chars[ch & 0x0F]);
+    }
+    return result;
+}
+
+std::string
 StrJoin(const std::vector<std::string> &strings, const std::string &delim, bool skip_empty)
 {
     if (strings.empty()) { return ""; }
@@ -46,6 +59,47 @@ StrJoin(const std::vector<std::string> &strings, const std::string &delim, bool 
         ss << delim << strings[i];
     }
     return ss.str();
+}
+
+std::vector<std::string>
+StrSplit(sled::string_view str, sled::string_view delim, bool skip_empty)
+{
+    if (str.empty() || delim.empty()) { return {}; }
+
+    std::vector<std::string> result;
+
+    size_t start    = 0;
+    size_t next_pos = str.find_first_of(delim, start);
+    while (next_pos != std::string::npos) {
+        if ((!skip_empty && next_pos == start) || next_pos > start) {
+            result.emplace_back(str.begin() + start, str.begin() + next_pos);
+        }
+
+        if (!skip_empty) {
+            start    = next_pos + 1;
+            next_pos = str.find_first_of(delim, start);
+        } else {
+            start = str.find_first_not_of(delim, next_pos);
+            if (start == std::string::npos) {
+                // all remaining characters are delimiters
+                break;
+            }
+            next_pos = str.find_first_of(delim, start);
+        }
+    }
+
+    if (start < str.size()) {
+        result.emplace_back(str.substr(start));
+    } else if (!skip_empty && !str.empty() && delim.find(str.back()) != std::string::npos) {
+        result.emplace_back("");
+    }
+    return result;
+}
+
+std::vector<std::string>
+StrSplit(sled::string_view str, char delim, bool skip_empty)
+{
+    return StrSplit(str, std::string(1, delim), skip_empty);
 }
 
 std::vector<std::string>
