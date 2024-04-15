@@ -61,6 +61,8 @@ target_sources(
           src/sled/debugging/demangle.cc
           src/sled/debugging/symbolize.cc
           src/sled/event_bus/event_bus.cc
+          src/sled/futures/future.cc
+          src/sled/futures/internal/failure_handling.cc
           src/sled/filesystem/path.cc
           src/sled/log/log.cc
           src/sled/network/async_resolver.cc
@@ -210,6 +212,7 @@ if(SLED_BUILD_TESTS)
   sled_add_test(NAME sled_inja_test SRCS src/sled/nonstd/inja_test.cc)
   sled_add_test(NAME sled_fsm_test SRCS src/sled/nonstd/fsm_test.cc)
   sled_add_test(NAME sled_timestamp_test SRCS src/sled/units/timestamp_test.cc)
+  sled_add_test(NAME sled_future_test SRCS src/sled/futures/future_test.cc)
   sled_add_test(
     NAME sled_cache_test SRCS src/sled/cache/lru_cache_test.cc
     src/sled/cache/fifo_cache_test.cc src/sled/cache/expire_cache_test.cc)

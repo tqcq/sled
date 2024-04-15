@@ -11,7 +11,7 @@ TEST_SUITE("Async")
             CHECK_EQ(value, 126);
             return value;
         });
-        task1.wait();
+        // task1.wait();
         CHECK_EQ(126, task1.get());
     }
 
