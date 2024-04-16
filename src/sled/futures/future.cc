@@ -2,7 +2,7 @@
 #include "sled/futures/future.h"
 
 namespace sled {
-namespace detail {
+namespace future_detail {
 void
 IncrementFuturesUsage()
 {}
@@ -11,5 +11,5 @@ void
 DecrementFuturesUsage()
 {}
 
-}// namespace detail
+}// namespace future_detail
 }// namespace sled

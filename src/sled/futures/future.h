@@ -12,11 +12,10 @@
 #include "sled/task_queue/task_queue_base.h"
 #include "sled/utility/forward_on_copy.h"
 #include <atomic>
-#include <future>
 #include <list>
 
 namespace sled {
-namespace detail {
+namespace future_detail {
 template<typename F, typename... Args>
 struct is_invocable : std::is_constructible<std::function<void(Args...)>,
                                             std::reference_wrapper<typename std::remove_reference<F>::type>> {};
@@ -55,7 +54,7 @@ struct FutureData {
     std::list<std::function<void(const FailureT &)>> failure_callbacks;
     sled::Mutex mutex_;
 };
-}// namespace detail
+}// namespace future_detail
 
 //
 
@@ -66,7 +65,7 @@ class Future {
     template<typename T2, typename FailureT2>
     friend class Future;
     friend class Promise<T, FailureT>;
-    friend struct detail::FutureData<T, FailureT>;
+    friend struct future_detail::FutureData<T, FailureT>;
 
 public:
     using Value   = T;
@@ -90,19 +89,19 @@ public:
     {
         SLED_ASSERT(data_ != nullptr, "Future is not valid");
         int value = data_->state.load(std::memory_order_acquire);
-        return value == detail::kSuccessFuture || value == detail::kFailedFuture;
+        return value == future_detail::kSuccessFuture || value == future_detail::kFailedFuture;
     }
 
     bool IsFailed() const noexcept
     {
         SLED_ASSERT(data_ != nullptr, "Future is not valid");
-        return data_->state.load(std::memory_order_acquire) == detail::kFailedFuture;
+        return data_->state.load(std::memory_order_acquire) == future_detail::kFailedFuture;
     }
 
     bool IsSucceeded() const noexcept
     {
         SLED_ASSERT(data_ != nullptr, "Future is not valid");
-        return data_->state.load(std::memory_order_acquire) == detail::kSuccessFuture;
+        return data_->state.load(std::memory_order_acquire) == future_detail::kSuccessFuture;
     }
 
     bool IsValid() const noexcept { return static_cast<bool>(data_); }
@@ -160,7 +159,7 @@ public:
         return FailureT();
     }
 
-    template<typename Func, typename = typename std::enable_if<detail::is_invocable<Func, T>::value>::type>
+    template<typename Func, typename = typename std::enable_if<future_detail::is_invocable<Func, T>::value>::type>
     Future<T, FailureT> OnSuccess(Func &&f) const noexcept
     {
         SLED_ASSERT(data_ != nullptr, "Future is not valid");
@@ -173,9 +172,9 @@ public:
                 try {
                     data_->success_callbacks.emplace_back(std::forward<Func>(f));
                 } catch (std::exception &e) {
-                    return Future<T, FailureT>::Failed(detail::ExceptionFailure<FailureT>(e));
+                    return Future<T, FailureT>::Failed(future_detail::ExceptionFailure<FailureT>(e));
                 } catch (...) {
-                    return Future<T, FailureT>::Failed(detail::ExceptionFailure<FailureT>());
+                    return Future<T, FailureT>::Failed(future_detail::ExceptionFailure<FailureT>());
                 }
             }
         }
@@ -188,7 +187,7 @@ public:
         return Future<T, FailureT>(data_);
     }
 
-    template<typename Func, typename = detail::enable_if_t<detail::is_invocable<Func, FailureT>::value>>
+    template<typename Func, typename = future_detail::enable_if_t<future_detail::is_invocable<Func, FailureT>::value>>
     Future<T, FailureT> OnFailure(Func &&f) const noexcept
     {
         SLED_ASSERT(data_ != nullptr, "Future is not valid");
@@ -201,9 +200,9 @@ public:
                 try {
                     data_->failure_callbacks.emplace_back(std::forward<Func>(f));
                 } catch (std::exception &e) {
-                    return Future<T, FailureT>::Failed(detail::ExceptionFailure<FailureT>(e));
+                    return Future<T, FailureT>::Failed(future_detail::ExceptionFailure<FailureT>(e));
                 } catch (...) {
-                    return Future<T, FailureT>::Failed(detail::ExceptionFailure<FailureT>());
+                    return Future<T, FailureT>::Failed(future_detail::ExceptionFailure<FailureT>());
                 }
             }
         }
@@ -216,7 +215,7 @@ public:
         return Future<T, FailureT>(data_);
     }
 
-    template<typename Func, typename = detail::enable_if_t<detail::is_invocable<Func>::value>>
+    template<typename Func, typename = future_detail::enable_if_t<future_detail::is_invocable<Func>::value>>
     Future<T, FailureT> OnComplete(Func &&f) const noexcept
     {
         SLED_ASSERT(data_ != nullptr, "Future is not valid");
@@ -225,7 +224,7 @@ public:
         return Future<T, FailureT>(data_);
     }
 
-    template<typename Func, typename = detail::enable_if_t<detail::is_invocable_r<bool, Func, T>::value>>
+    template<typename Func, typename = future_detail::enable_if_t<future_detail::is_invocable_r<bool, Func, T>::value>>
     Future<T, FailureT>
     Filter(Func &&f,
            const FailureT &rejected = failure::FailureFromString<FailureT>("Result wasn't good enough")) const noexcept
@@ -239,9 +238,9 @@ public:
                     result.FillFailure(rejected);
                 }
             } catch (const std::exception &e) {
-                result.FillFailure(detail::ExceptionFailure<FailureT>(e));
+                result.FillFailure(future_detail::ExceptionFailure<FailureT>(e));
             } catch (...) {
-                result.FillFailure(detail::ExceptionFailure<FailureT>());
+                result.FillFailure(future_detail::ExceptionFailure<FailureT>());
             }
         });
         OnFailure([result](const FailureT &failure) noexcept { result.FillFailure(failure); });
@@ -256,9 +255,9 @@ public:
             try {
                 result.FillSuccess(f(v));
             } catch (const std::exception &e) {
-                result.FillFailure(detail::ExceptionFailure<FailureT>(e));
+                result.FillFailure(future_detail::ExceptionFailure<FailureT>(e));
             } catch (...) {
-                result.FillFailure(detail::ExceptionFailure<FailureT>());
+                result.FillFailure(future_detail::ExceptionFailure<FailureT>());
             }
         });
         OnFailure([result](const FailureT &failure) mutable noexcept { result.FillFailure(failure); });
@@ -274,9 +273,9 @@ public:
             try {
                 result.FillFailure(f(failure));
             } catch (const std::exception &e) {
-                result.FillFailure(detail::ExceptionFailure<OtherFailureT>(e));
+                result.FillFailure(future_detail::ExceptionFailure<OtherFailureT>(e));
             } catch (...) {
-                result.FillFailure(detail::ExceptionFailure<OtherFailureT>());
+                result.FillFailure(future_detail::ExceptionFailure<OtherFailureT>());
             }
         });
         return result;
@@ -292,9 +291,9 @@ public:
                 f(v).OnSuccess([result](const U &v) mutable noexcept { result.FillSuccess(v); })
                     .OnFailure([result](const FailureT &failure) mutable noexcept { result.FillFailure(failure); });
             } catch (const std::exception &e) {
-                result.FillFailure(detail::ExceptionFailure<FailureT>(e));
+                result.FillFailure(future_detail::ExceptionFailure<FailureT>(e));
             } catch (...) {
-                result.FillFailure(detail::ExceptionFailure<FailureT>());
+                result.FillFailure(future_detail::ExceptionFailure<FailureT>());
             }
         });
         OnFailure([result](const FailureT &failure) mutable noexcept { result.FillFailure(failure); });
@@ -355,12 +354,12 @@ public:
     }
 
 private:
-    explicit Future(std::shared_ptr<detail::FutureData<T, FailureT>> other_data) { data_ = other_data; }
+    explicit Future(std::shared_ptr<future_detail::FutureData<T, FailureT>> other_data) { data_ = other_data; }
 
     inline static Future<T, FailureT> Create()
     {
         Future<T, FailureT> result;
-        result.data_ = std::make_shared<detail::FutureData<T, FailureT>>();
+        result.data_ = std::make_shared<future_detail::FutureData<T, FailureT>>();
         return result;
     }
 
@@ -373,9 +372,9 @@ private:
     void FillSuccess(T &&value)
     {
         SLED_ASSERT(data_ != nullptr, "Future is not valid");
-        if (detail::HasLastFailure()) {
-            FailureT failure = detail::LastFailure<FailureT>();
-            detail::InvalidateLastFailure();
+        if (future_detail::HasLastFailure()) {
+            FailureT failure = future_detail::LastFailure<FailureT>();
+            future_detail::InvalidateLastFailure();
             FillFailure(std::move(failure));
             return;
         }
@@ -390,7 +389,7 @@ private:
                 // data_->value.template emplace<T>(std::move(value));
                 data_->value = std::move(value);
             } catch (...) {}
-            data_->state.store(detail::kSuccessFuture, std::memory_order_release);
+            data_->state.store(future_detail::kSuccessFuture, std::memory_order_release);
             callbacks                = std::move(data_->success_callbacks);
             data_->success_callbacks = std::list<std::function<void(const T &)>>();
             data_->failure_callbacks.clear();
@@ -422,7 +421,7 @@ private:
                 // data_->value = std::move(reason);
                 data_->value = std::move(reason);
             } catch (...) {}
-            data_->state.store(detail::kFailedFuture, std::memory_order_release);
+            data_->state.store(future_detail::kFailedFuture, std::memory_order_release);
             callbacks                = std::move(data_->failure_callbacks);
             data_->failure_callbacks = std::list<std::function<void(const FailureT &)>>();
             data_->success_callbacks.clear();
@@ -436,7 +435,7 @@ private:
         }
     }
 
-    std::shared_ptr<detail::FutureData<T, FailureT>> data_;
+    std::shared_ptr<future_detail::FutureData<T, FailureT>> data_;
 };
 }// namespace sled
 

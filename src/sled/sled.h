@@ -26,7 +26,7 @@
 #include "sled/filesystem/temporary_file.h"
 
 // futures
-// #include "sled/futures/promise.h"
+#include "sled/futures/future.h"
 #include "sled/ioc/ioc.h"
 
 // lang

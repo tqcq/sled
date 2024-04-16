@@ -1,7 +1,7 @@
 #include "sled/futures/internal/failure_handling.h"
 
 namespace sled {
-namespace detail {
+namespace future_detail {
 static thread_local sled::any last_failure;
 
 bool
@@ -28,5 +28,5 @@ SetLastFailure(const sled::any &failure) noexcept
     last_failure = failure;
 }
 
-}// namespace detail
+}// namespace future_detail
 }// namespace sled

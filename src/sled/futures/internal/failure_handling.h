@@ -31,7 +31,7 @@ FailureFromString<std::string>(std::string &&str)
 
 }// namespace failure
 
-namespace detail {
+namespace future_detail {
 bool HasLastFailure() noexcept;
 void InvalidateLastFailure() noexcept;
 const sled::any &LastFailureAny() noexcept;
@@ -69,7 +69,7 @@ ExceptionFailure()
 {
     return failure::FailureFromString<FailureT>("Exception");
 }
-}// namespace detail
+}// namespace future_detail
 
 template<typename T, typename FailureT>
 class Future;
@@ -87,7 +87,7 @@ struct WithFuture {
     template<typename T>
     operator T() const noexcept
     {
-        detail::SetLastFailure(std::move(failure_));
+        future_detail::SetLastFailure(std::move(failure_));
         return T();
     }
 
