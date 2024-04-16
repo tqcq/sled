@@ -2,12 +2,14 @@
 #define SLED_FUTURES_FUTURE_H
 
 #pragma once
+#include "sled/exec/detail/invoke_result.h"
 #include "sled/futures/internal/failure_handling.h"
 #include "sled/futures/internal/promise.h"
 #include "sled/lang/attributes.h"
 #include "sled/log/log.h"
 #include "sled/synchronization/event.h"
 #include "sled/synchronization/mutex.h"
+#include "sled/task_queue/task_queue_base.h"
 #include "sled/variant.h"
 #include <atomic>
 #include <list>
@@ -21,6 +23,9 @@ struct is_invocable : std::is_constructible<std::function<void(Args...)>,
 template<typename R, typename F, typename... Args>
 struct is_invocable_r : std::is_constructible<std::function<R(Args...)>,
                                               std::reference_wrapper<typename std::remove_reference<F>::type>> {};
+
+template<bool cond, typename T = void>
+using enable_if_t = typename std::enable_if<cond, T>::type;
 
 enum FutureState {
     kNotCompletedFuture = 0,
@@ -177,7 +182,7 @@ public:
         return Future<T, FailureT>(data_);
     }
 
-    template<typename Func, typename = typename std::enable_if<detail::is_invocable<Func, FailureT>::value>::type>
+    template<typename Func, typename = detail::enable_if_t<detail::is_invocable<Func, FailureT>::value>>
     Future<T, FailureT> OnFailure(Func &&f) const noexcept
     {
         SLED_ASSERT(data_ != nullptr, "Future is not valid");
@@ -204,7 +209,7 @@ public:
         return Future<T, FailureT>(data_);
     }
 
-    template<typename Func, typename = typename std::enable_if<detail::is_invocable<Func>::value>::type>
+    template<typename Func, typename = detail::enable_if_t<detail::is_invocable<Func>::value>>
     Future<T, FailureT> OnComplete(Func &&f) const noexcept
     {
         SLED_ASSERT(data_ != nullptr, "Future is not valid");
@@ -213,12 +218,96 @@ public:
         return Future<T, FailureT>(data_);
     }
 
-    // template<typename Func, typename = typename std::enable_if<detail::is_invocable<Func>::value>::type>
-    // Future<T, FailureT> OnComplete(Func &&F) const noexcept
-    // {
-    //     SLED_ASSERT(data_ != nullptr, "Future is not valid");
-    //     OnSuccess([f](const auto &) noexcept { f(); })
-    // }
+    template<typename Func, typename = detail::enable_if_t<detail::is_invocable_r<bool, Func, T>::value>>
+    Future<T, FailureT>
+    Filter(Func &&f,
+           const FailureT &rejected = failure::FailureFromString<FailureT>("Result wasn't good enough")) const noexcept
+    {
+        Future<T, FailureT> result = Future<T, FailureT>::Create();
+        OnSuccess([result, f, rejected](const T &v) mutable noexcept {
+            try {
+                if (f(v)) {
+                    result.FillSuccess(v);
+                } else {
+                    result.FillFailure(rejected);
+                }
+            } catch (const std::exception &e) {
+                result.FillFailure(detail::ExceptionFailure<FailureT>(e));
+            } catch (...) {
+                result.FillFailure(detail::ExceptionFailure<FailureT>());
+            }
+        });
+        OnFailure([result](const FailureT &failure) noexcept { result.FillFailure(failure); });
+        return result;
+    }
+
+    template<typename Func, typename U = eggs::invoke_result_t<Func, T>>
+    Future<U, FailureT> Map(Func &&f) const noexcept
+    {
+        Future<U, FailureT> result = Future<U, FailureT>::Create();
+        OnSuccess([result, f](const T &v) mutable noexcept {
+            try {
+                result.FillSuccess(f(v));
+            } catch (const std::exception &e) {
+                result.FillFailure(detail::ExceptionFailure<FailureT>(e));
+            } catch (...) {
+                result.FillFailure(detail::ExceptionFailure<FailureT>());
+            }
+        });
+        OnFailure([result](const FailureT &failure) mutable noexcept { result.FillFailure(failure); });
+        return result;
+    }
+
+    template<typename Func, typename OtherFailureT = eggs::invoke_result_t<Func, FailureT>>
+    Future<T, OtherFailureT> MapFailure(Func &&f) const noexcept
+    {
+        Future<T, OtherFailureT> result = Future<T, OtherFailureT>::Create();
+        OnSuccess([result](const T &v) mutable noexcept { result.FillSuccess(v); });
+        OnFailure([result, f](const FailureT &failure) noexcept {
+            try {
+                result.FillFailure(f(failure));
+            } catch (const std::exception &e) {
+                result.FillFailure(detail::ExceptionFailure<OtherFailureT>(e));
+            } catch (...) {
+                result.FillFailure(detail::ExceptionFailure<OtherFailureT>());
+            }
+        });
+        return result;
+    }
+
+    template<typename Func, typename U = decltype(std::declval<eggs::invoke_result_t<Func, T>>().Result())>
+    Future<U, FailureT> FlatMap(Func &&f) const noexcept
+    {
+        Future<U, FailureT> result = Future<U, FailureT>::Create();
+
+        OnSuccess([result, f](const T &v) mutable noexcept {
+            try {
+                f(v).OnSuccess([result](const U &v) mutable noexcept { result.FillSuccess(v); })
+                    .OnFailure([result](const FailureT &failure) mutable noexcept { result.FillFailure(failure); });
+            } catch (const std::exception &e) {
+                result.FillFailure(detail::ExceptionFailure<FailureT>(e));
+            } catch (...) {
+                result.FillFailure(detail::ExceptionFailure<FailureT>());
+            }
+        });
+        OnFailure([result](const FailureT &failure) mutable noexcept { result.FillFailure(failure); });
+        return result;
+    }
+
+    Future<T, FailureT> Via(TaskQueueBase *task_queue) const noexcept
+    {
+        SLED_ASSERT(task_queue != nullptr, "TaskQueue is not valid");
+
+        Future<T, FailureT> result = Future<T, FailureT>::Create();
+        OnSuccess([result, task_queue](const T &v) mutable noexcept {
+            task_queue->PostTask([result, v]() mutable noexcept { result.FillSuccess(v); });
+        });
+        OnFailure([result, task_queue](const FailureT &failure) mutable noexcept {
+            task_queue->PostTask([result, failure]() mutable noexcept { result.FillFailure(failure); });
+        });
+
+        return result;
+    }
 
     static Future<typename std::decay<T>::type, FailureT> Successful(T &&value) noexcept
     {
@@ -276,7 +365,8 @@ private:
             if (IsCompleted()) { return; }
 
             try {
-                data_->value.template emplace<T>(std::move(value));
+                // data_->value.template emplace<T>(std::move(value));
+                data_->value = std::move(value);
             } catch (...) {}
             data_->state.store(detail::kSuccessFuture, std::memory_order_release);
             callbacks                = std::move(data_->success_callbacks);
@@ -305,7 +395,8 @@ private:
             sled::MutexLock lock(&data_->mutex_);
             if (IsCompleted()) { return; }
             try {
-                data_->value.template emplace<FailureT>(std::move(reason));
+                // data_->value.template emplace<FailureT>(std::move(reason));
+                data_->value = std::move(reason);
             } catch (...) {}
             data_->state.store(detail::kFailedFuture, std::memory_order_release);
             callbacks                = std::move(data_->failure_callbacks);
