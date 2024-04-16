@@ -1,9 +1,11 @@
 #include <sled/futures/future.h>
 #include <sled/system/thread.h>
+#include <type_traits>
 
 TEST_SUITE("future")
 {
     TEST_CASE("base success")
+
     {
         sled::Promise<int, std::string> p;
         auto f = p.GetFuture();
@@ -12,6 +14,7 @@ TEST_SUITE("future")
         CHECK(f.IsValid());
         CHECK_EQ(f.Result(), 42);
     }
+
     TEST_CASE("base failed")
     {
         sled::Promise<int, std::string> p;
@@ -23,31 +26,65 @@ TEST_SUITE("future")
         CHECK(f.IsValid());
         CHECK_EQ(f.FailureReason(), "error");
     }
+
+    TEST_CASE("throw")
+    {
+        sled::Promise<int, std::string> p;
+        auto f = p.GetFuture().Map([](int x) {
+            throw std::runtime_error("test");
+            return x;
+        });
+
+        p.Success(42);
+        REQUIRE(f.IsCompleted());
+        REQUIRE(f.IsFailed());
+        CHECK_EQ(f.FailureReason(), "test");
+    }
+
+    TEST_CASE("base failed")
+    {
+        sled::Promise<int, std::string> p;
+        auto f = p.GetFuture();
+        p.Failure("error");
+        REQUIRE(p.IsFilled());
+        REQUIRE(f.IsCompleted());
+        CHECK(f.Wait(-1));
+        CHECK(f.IsValid());
+        CHECK_EQ(f.FailureReason(), "error");
+    }
+
     TEST_CASE("thread success") {}
 
-    TEST_CASE("map")
+    TEST_CASE("Map")
     {
         sled::Promise<int, std::string> p;
         auto f  = p.GetFuture();
-        auto f2 = f.Map([](int i) { return i + 1; });
+        auto f2 = f.Map([](int i) { return i + 1; })
+                      .Map([](int i) { return std::to_string(i) + "00"; })
+                      .Map([](const std::string &str) {
+                          std::stringstream ss(str);
+                          int x;
+                          ss >> x;
+                          return x;
+                      });
         p.Success(42);
         CHECK(f2.Wait(-1));
-        CHECK_EQ(f2.Result(), 43);
+        CHECK_EQ(f2.Result(), 4300);
     }
 
     TEST_CASE("FlatMap")
     {
-        // sled::Promise<int, std::string> p;
-        // auto f = p.GetFuture().FlatMap([](int i) {
-        //     auto str = std::to_string(i);
-        //     sled::Promise<std::string, std::string> p;
-        //     p.Success(str);
-        //
-        //     return p.GetFuture();
-        // });
-        // p.Success(42);
-        // CHECK(f.Wait(-1));
-        // CHECK_EQ(f.Result(), "42");
+        sled::Promise<int, std::string> p;
+        auto f = p.GetFuture().FlatMap([](int i) {
+            auto str = std::to_string(i);
+            sled::Promise<std::string, std::string> p;
+            p.Success(str);
+
+            return p.GetFuture();
+        });
+        p.Success(42);
+        CHECK(f.IsCompleted());
+        CHECK_EQ(f.Result(), "42");
     }
 
     TEST_CASE("Via")

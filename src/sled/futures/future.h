@@ -10,8 +10,9 @@
 #include "sled/synchronization/event.h"
 #include "sled/synchronization/mutex.h"
 #include "sled/task_queue/task_queue_base.h"
-#include "sled/variant.h"
+#include "sled/utility/forward_on_copy.h"
 #include <atomic>
+#include <future>
 #include <list>
 
 namespace sled {
@@ -48,7 +49,8 @@ struct FutureData {
     ~FutureData() { DecrementFuturesUsage(); }
 
     std::atomic_int state{kNotCompletedFuture};
-    sled::variant<sled::monostate, T, FailureT> value;
+    // sled::variant<sled::monostate, T, FailureT> value;
+    sled::any value;
     std::list<std::function<void(const T &)>> success_callbacks;
     std::list<std::function<void(const FailureT &)>> failure_callbacks;
     sled::Mutex mutex_;
@@ -130,7 +132,8 @@ public:
         if (!IsCompleted()) Wait();
         if (IsSucceeded()) {
             try {
-                return sled::get<T>(data_->value);
+                // return sled::get<T>(data_->value);
+                return sled::any_cast<T>(data_->value);
             } catch (...) {}
         }
         return T();
@@ -140,7 +143,8 @@ public:
     {
         SLED_ASSERT(data_ != nullptr, "Future is not valid");
         if (!IsCompleted()) { Wait(); }
-        return sled::get<T>(data_->value);
+        // return sled::get<T>(data_->value);
+        return sled::any_cast<T>(data_->value);
     }
 
     FailureT FailureReason() const
@@ -149,7 +153,8 @@ public:
         if (!IsCompleted()) { Wait(); }
         if (IsFailed()) {
             try {
-                return sled::get<FailureT>(data_->value);
+                // return sled::get<FailureT>(data_->value);
+                return sled::any_cast<FailureT>(data_->value);
             } catch (...) {}
         }
         return FailureT();
@@ -176,7 +181,8 @@ public:
         }
         if (call_it) {
             try {
-                f(sled::get<T>(data_->value));
+                // f(sled::get<T>(data_->value));
+                f(sled::any_cast<T>(data_->value));
             } catch (...) {}
         }
         return Future<T, FailureT>(data_);
@@ -203,7 +209,8 @@ public:
         }
         if (call_it) {
             try {
-                f(sled::get<FailureT>(data_->value));
+                // f(sled::get<FailureT>(data_->value));
+                f(sled::any_cast<FailureT>(data_->value));
             } catch (...) {}
         }
         return Future<T, FailureT>(data_);
@@ -294,6 +301,20 @@ public:
         return result;
     }
 
+    template<typename Func, typename U = decltype(std::declval<eggs::invoke_result_t<Func, T>().Result()>)>
+    Future<U, FailureT> AndThen(Func &&f) const noexcept
+    {
+        return FlatMap([f](const T &) { return f(); });
+    }
+
+    template<typename T2, typename U = typename std::decay<T2>::type>
+    Future<U, FailureT> AndThenValue(T2 &&value) const noexcept
+    {
+        Future<U, FailureT> result = Future<U, FailureT>::Create();
+        auto forward_on_copy       = sled::MakeForwardOnCopy(std::forward<T2>(value));
+        return Map([forward_on_copy](const T &) noexcept { return forward_on_copy.value(); });
+    }
+
     Future<T, FailureT> Via(TaskQueueBase *task_queue) const noexcept
     {
         SLED_ASSERT(task_queue != nullptr, "TaskQueue is not valid");
@@ -366,6 +387,7 @@ private:
 
             try {
                 // data_->value.template emplace<T>(std::move(value));
+                // data_->value.template emplace<T>(std::move(value));
                 data_->value = std::move(value);
             } catch (...) {}
             data_->state.store(detail::kSuccessFuture, std::memory_order_release);
@@ -376,7 +398,8 @@ private:
 
         for (const auto &f : callbacks) {
             try {
-                f(sled::get<T>(data_->value));
+                // f(sled::get<T>(data_->value));
+                f(sled::any_cast<T>(data_->value));
             } catch (...) {}
         }
     }
@@ -396,6 +419,7 @@ private:
             if (IsCompleted()) { return; }
             try {
                 // data_->value.template emplace<FailureT>(std::move(reason));
+                // data_->value = std::move(reason);
                 data_->value = std::move(reason);
             } catch (...) {}
             data_->state.store(detail::kFailedFuture, std::memory_order_release);
@@ -406,7 +430,8 @@ private:
 
         for (const auto &f : callbacks) {
             try {
-                f(sled::get<FailureT>(data_->value));
+                // f(sled::get<FailureT>(data_->value));
+                f(sled::any_cast<FailureT>(data_->value));
             } catch (...) {}
         }
     }
