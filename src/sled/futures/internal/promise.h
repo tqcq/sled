@@ -18,7 +18,7 @@ class Promise {
 
 public:
     using Value                                  = T;
-    Promise()                                    = default;
+    Promise() noexcept                           = default;
     Promise(const Promise &) noexcept            = default;
     Promise(Promise &&) noexcept                 = default;
     Promise &operator=(const Promise &) noexcept = default;

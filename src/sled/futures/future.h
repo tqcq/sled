@@ -338,7 +338,7 @@ public:
         return result;
     }
 
-    static Future<T, FailureT> successful(const T &value) noexcept
+    static Future<T, FailureT> Successful(const T &value) noexcept
     {
         Future<T, FailureT> result = Future<T, FailureT>::Create();
         result.FillSuccess(value);

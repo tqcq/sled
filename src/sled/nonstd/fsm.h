@@ -61,7 +61,8 @@ struct is_invocable_test {
 };
 
 template<class F, class... Args>
-using is_invocable = typename std::integral_constant<bool, sizeof(is_invocable_test::test<F, Args...>(0)) == 1>::type;
+using fsm_is_invocable =
+    typename std::integral_constant<bool, sizeof(is_invocable_test::test<F, Args...>(0)) == 1>::type;
 #else
 #error "fsmlite requires C++11 support."
 #endif
@@ -101,10 +102,10 @@ invoke(M T::*f, T1 &&obj, Args &&...args)
 template<class F,
          class Arg1,
          class Arg2,
-         bool f1 = is_invocable<F>::value,
-         bool f2 = is_invocable<F, Arg1>::value,
-         bool f3 = is_invocable<F, Arg2>::value,
-         bool f4 = is_invocable<F, Arg1, Arg2>::value>
+         bool f1 = fsm_is_invocable<F>::value,
+         bool f2 = fsm_is_invocable<F, Arg1>::value,
+         bool f3 = fsm_is_invocable<F, Arg2>::value,
+         bool f4 = fsm_is_invocable<F, Arg1, Arg2>::value>
 struct binary_fn_helper;
 
 template<class F, class Arg1, class Arg2>
