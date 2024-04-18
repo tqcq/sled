@@ -56,9 +56,10 @@ struct FutureData {
 };
 }// namespace future_detail
 
-//
+void SetDefaultScheduler(TaskQueueBase *scheduler) noexcept;
+TaskQueueBase *GetDefaultScheduler() noexcept;
 
-template<typename T, typename FailureT>
+template<typename T, typename FailureT = std::exception>
 class Future {
     static_assert(!std::is_same<T, void>::value, "Future<void, _> is not allowed. Use Future<bool, _> instead");
     static_assert(!std::is_same<FailureT, void>::value, "Future<_, void> is not allowed. Use Future<_, bool> instead");
@@ -329,6 +330,27 @@ public:
         return result;
     }
 
+    template<typename Func, typename = future_detail::enable_if_t<future_detail::is_invocable<Func>::value>>
+    static Future<T, FailureT> Async(Func &&f) noexcept
+    {
+        Future<T, FailureT> result = Future<T, FailureT>::Create();
+        sled::GetDefaultScheduler()->PostTask([result, f]() mutable noexcept {
+            try {
+                result.FillSuccess(f());
+            } catch (const std::exception &e) {
+                result.FillFailure(future_detail::ExceptionFailure<FailureT>(e));
+            } catch (...) {
+                result.FillFailure(future_detail::ExceptionFailure<FailureT>());
+            }
+        });
+        return result;
+    }
+
+    static Future<T, FailureT> AsyncWithValue(const T &value) noexcept
+    {
+        return Async([value]() { return value; });
+    }
+
     static Future<typename std::decay<T>::type, FailureT> Successful(T &&value) noexcept
     {
         Future<typename std::decay<T>::type, FailureT> result
@@ -437,6 +459,7 @@ private:
 
     std::shared_ptr<future_detail::FutureData<T, FailureT>> data_;
 };
+
 }// namespace sled
 
 #endif// SLED_FUTURES_FUTURE_H

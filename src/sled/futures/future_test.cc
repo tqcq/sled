@@ -102,4 +102,18 @@ TEST_SUITE("future")
         CHECK_EQ(tid, f.Result());
         CHECK_NE(self_tid, f.Result());
     }
+
+    TEST_CASE("Async")
+    {
+        auto f = sled::Future<int>::Async([]() { return 42; });
+        CHECK_EQ(f.Result(), 42);
+
+        auto f2 = sled::Future<int>::Async([]() {
+            throw std::runtime_error("test");
+            return 1;
+        });
+        CHECK_FALSE(f2.IsFailed());
+        auto f3 = sled::Future<std::string>::AsyncWithValue("11");
+        CHECK_EQ(f3.Result(), "11");
+    }
 }
