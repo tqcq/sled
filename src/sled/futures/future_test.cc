@@ -102,4 +102,14 @@ TEST_SUITE("future")
         CHECK_EQ(tid, f.Result());
         CHECK_NE(self_tid, f.Result());
     }
+
+    TEST_CASE("Constructor")
+    {
+        sled::Future<int, std::string> f1 = 1;
+        sled::Future<int, std::string> f2 = std::string("1");
+        REQUIRE(f1.IsCompleted());
+        REQUIRE(f2.IsFailed());
+        REQUIRE_EQ(f1.Result(), 1);
+        REQUIRE_EQ(f2.FailureReason(), "1");
+    }
 }
