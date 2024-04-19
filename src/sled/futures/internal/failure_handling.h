@@ -3,10 +3,18 @@
 
 #pragma once
 #include "sled/any.h"
+#include <functional>
 #include <string>
 
 namespace sled {
 namespace failure {
+namespace {
+template<typename F, typename... Args>
+struct is_invocable : std::is_constructible<std::function<void(Args...)>,
+                                            std::reference_wrapper<typename std::remove_reference<F>::type>> {};
+
+}// namespace
+
 template<typename FailureT>
 inline FailureT
 FailureFromString(std::string &&)
@@ -27,6 +35,14 @@ inline std::string
 FailureFromString<std::string>(std::string &&str)
 {
     return std::move(str);
+}
+
+template<typename FailureT,
+         typename = typename std::enable_if<std::is_constructible<FailureT, std::string>::value>::type>
+inline FailureT
+FailureFromString(std::string &&str)
+{
+    return FailureT(std::move(str));
 }
 
 }// namespace failure
