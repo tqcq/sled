@@ -1,6 +1,7 @@
 #ifndef SLED_FUTURES_FUTURE_H
 #define SLED_FUTURES_FUTURE_H
 
+#include <exception>
 #pragma once
 #include "sled/exec/detail/invoke_result.h"
 #include "sled/futures/internal/failure_handling.h"
@@ -81,6 +82,28 @@ public:
     Future<T, FailureT> &operator=(const Future<T, FailureT> &) noexcept = default;
     Future<T, FailureT> &operator=(Future<T, FailureT> &&) noexcept      = default;
     ~Future()                                                            = default;
+
+    Future(const T &value) noexcept
+    {
+        static_assert(!std::is_same<T, FailureT>::value, "T and FailureT must be different types");
+        data_ = Future<T, FailureT>::Create().data_;
+        FillSuccess(value);
+    }
+
+    Future(T &&value) noexcept
+    {
+        static_assert(!std::is_same<T, FailureT>::value, "T and FailureT must be different types");
+        data_ = Future<T, FailureT>::Create().data_;
+        FillSuccess(std::move(value));
+    }
+
+    template<typename = typename std::enable_if<!std::is_same<T, FailureT>::value>>
+    Future(const FailureT &failure) noexcept
+    {
+        static_assert(!std::is_same<T, FailureT>::value, "T and FailureT must be different types");
+        data_ = Future<T, FailureT>::Create().data_;
+        FillFailure(failure);
+    }
 
     bool operator==(const Future<T, FailureT> &other) const noexcept { return data_ == other.data_; }
 
@@ -359,7 +382,7 @@ public:
         return result;
     }
 
-    static Future<T, FailureT> successful(const T &value) noexcept
+    static Future<T, FailureT> Successful(const T &value) noexcept
     {
         Future<T, FailureT> result = Future<T, FailureT>::Create();
         result.FillSuccess(value);

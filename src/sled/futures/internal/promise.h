@@ -11,32 +11,32 @@ template<typename T, typename FailureT>
 class Future;
 
 template<typename T, typename FailureT = std::exception>
-class Promise {
+class Promise final {
     static_assert(!std::is_same<T, void>::value, "Promise<void, _> is not allowed. Use Promise<bool, _> instead");
     static_assert(!std::is_same<FailureT, void>::value,
                   "Promise<_, void> is not allowed. Use Promise<_, bool> instead");
 
 public:
-    using Value                                  = T;
-    Promise()                                    = default;
-    Promise(const Promise &) noexcept            = default;
-    Promise(Promise &&) noexcept                 = default;
-    Promise &operator=(const Promise &) noexcept = default;
-    Promise &operator=(Promise &&) noexcept      = default;
-    ~Promise()                                   = default;
+    using Value                             = T;
+    Promise()                               = default;
+    Promise(const Promise &)                = default;
+    Promise(Promise &&) noexcept            = default;
+    Promise &operator=(const Promise &)     = default;
+    Promise &operator=(Promise &&) noexcept = default;
+    ~Promise()                              = default;
 
     Future<T, FailureT> GetFuture() const { return future_; };
 
     bool IsFilled() const noexcept { return future_.IsCompleted(); }
 
-    void Failure(const FailureT &reason) { return future_.FillFailure(reason); }
+    void Failure(const FailureT &reason) const noexcept { return future_.FillFailure(reason); }
 
-    void Success(const T &value) { return future_.FillSuccess(value); }
+    void Success(const T &value) const noexcept { return future_.FillSuccess(value); }
 
-    void Success(T &&value) { return future_.FillSuccess(std::move(value)); }
+    void Success(T &&value) const noexcept { return future_.FillSuccess(std::move(value)); }
 
 private:
-    Future<T, FailureT> future_ = Future<T, FailureT>::Create();
+    mutable Future<T, FailureT> future_ = Future<T, FailureT>::Create();
 };
 }// namespace sled
 

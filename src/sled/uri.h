@@ -70,6 +70,11 @@ private:
 
     bool has_authority_ = false;
 };
+
+#undef __SLED_URI_GETTER_AND_SETTER
+#undef __SLED_URI_GETTER
+#undef __SLED_URI_SETTER
+
 }// namespace sled
 
 #endif//  SLED_URI_H
