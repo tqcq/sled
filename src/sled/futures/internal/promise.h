@@ -17,13 +17,13 @@ class Promise final {
                   "Promise<_, void> is not allowed. Use Promise<_, bool> instead");
 
 public:
-    using Value                                  = T;
-    constexpr Promise() noexcept                 = default;
-    constexpr Promise(const Promise &) noexcept  = default;
-    constexpr Promise(Promise &&) noexcept       = default;
-    Promise &operator=(const Promise &) noexcept = default;
-    Promise &operator=(Promise &&) noexcept      = default;
-    ~Promise()                                   = default;
+    using Value                             = T;
+    Promise()                               = default;
+    Promise(const Promise &)                = default;
+    Promise(Promise &&) noexcept            = default;
+    Promise &operator=(const Promise &)     = default;
+    Promise &operator=(Promise &&) noexcept = default;
+    ~Promise()                              = default;
 
     Future<T, FailureT> GetFuture() const { return future_; };
 
