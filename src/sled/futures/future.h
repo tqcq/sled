@@ -293,7 +293,7 @@ public:
     {
         Future<T, OtherFailureT> result = Future<T, OtherFailureT>::Create();
         OnSuccess([result](const T &v) mutable noexcept { result.FillSuccess(v); });
-        OnFailure([result, f](const FailureT &failure) noexcept {
+        OnFailure([result, f](const FailureT &failure) mutable noexcept {
             try {
                 result.FillFailure(f(failure));
             } catch (const std::exception &e) {
