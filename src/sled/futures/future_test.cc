@@ -115,6 +115,8 @@ TEST_SUITE("future")
         CHECK_FALSE(f2.IsFailed());
         auto f3 = sled::Future<std::string>::AsyncValue("11");
         CHECK_EQ(f3.Result(), "11");
+    }
+
     TEST_CASE("Constructor")
     {
         sled::Future<int, std::string> f1 = 1;
