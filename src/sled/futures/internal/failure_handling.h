@@ -15,14 +15,16 @@ struct is_invocable : std::is_constructible<std::function<void(Args...)>,
 
 }// namespace
 
-template<typename FailureT>
+template<typename FailureT,
+         typename = typename std::enable_if<!std::is_constructible<FailureT, std::string>::value>::type>
 inline FailureT
 FailureFromString(std::string &&)
 {
     return FailureT();
 }
 
-template<typename FailureT>
+template<typename FailureT,
+         typename = typename std::enable_if<std::is_constructible<FailureT, std::string>::value>::type>
 inline FailureT
 FailureFromString(const std::string &str)
 {
@@ -32,18 +34,25 @@ FailureFromString(const std::string &str)
 
 template<>
 inline std::string
-FailureFromString<std::string>(std::string &&str)
+FailureFromString<std::string>(const std::string &str)
 {
-    return std::move(str);
+    return {str};
 }
 
-template<typename FailureT,
-         typename = typename std::enable_if<std::is_constructible<FailureT, std::string>::value>::type>
-inline FailureT
-FailureFromString(std::string &&str)
-{
-    return FailureT(std::move(str));
-}
+// template<>
+// inline std::string
+// FailureFromString<std::string>(std::string &&str)
+// {
+//     return std::move(str);
+// }
+
+// template<typename FailureT,
+//          typename = typename std::enable_if<std::is_constructible<FailureT, std::string>::value>::type>
+// inline FailureT
+// FailureFromString(std::string &&str)
+// {
+//     return FailureT(std::move(str));
+// }
 
 }// namespace failure
 
