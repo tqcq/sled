@@ -10,8 +10,8 @@ namespace sled {
 template<typename T, typename FailureT>
 class Future;
 
-template<typename T, typename FailureT>
-class Promise {
+template<typename T, typename FailureT = std::exception>
+class Promise final {
     static_assert(!std::is_same<T, void>::value, "Promise<void, _> is not allowed. Use Promise<bool, _> instead");
     static_assert(!std::is_same<FailureT, void>::value,
                   "Promise<_, void> is not allowed. Use Promise<_, bool> instead");

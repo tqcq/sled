@@ -1,6 +1,7 @@
 #ifndef SLED_FUTURES_FUTURE_H
 #define SLED_FUTURES_FUTURE_H
 
+#include <exception>
 #pragma once
 #include "sled/exec/detail/invoke_result.h"
 #include "sled/futures/internal/failure_handling.h"
@@ -59,7 +60,7 @@ struct FutureData {
 
 //
 
-template<typename T, typename FailureT>
+template<typename T, typename FailureT = std::exception>
 class Future {
     static_assert(!std::is_same<T, void>::value, "Future<void, _> is not allowed. Use Future<bool, _> instead");
     static_assert(!std::is_same<FailureT, void>::value, "Future<_, void> is not allowed. Use Future<_, bool> instead");
