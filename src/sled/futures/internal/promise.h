@@ -29,14 +29,14 @@ public:
 
     bool IsFilled() const noexcept { return future_.IsCompleted(); }
 
-    void Failure(const FailureT &reason) { return future_.FillFailure(reason); }
+    void Failure(const FailureT &reason) const noexcept { return future_.FillFailure(reason); }
 
-    void Success(const T &value) { return future_.FillSuccess(value); }
+    void Success(const T &value) const noexcept { return future_.FillSuccess(value); }
 
-    void Success(T &&value) { return future_.FillSuccess(std::move(value)); }
+    void Success(T &&value) const noexcept { return future_.FillSuccess(std::move(value)); }
 
 private:
-    Future<T, FailureT> future_ = Future<T, FailureT>::Create();
+    mutable Future<T, FailureT> future_ = Future<T, FailureT>::Create();
 };
 }// namespace sled
 
