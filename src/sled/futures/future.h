@@ -346,7 +346,7 @@ public:
         return result;
     }
 
-    static Future<T, FailureT> AsyncWithValue(const T &value) noexcept
+    static Future<T, FailureT> AsyncValue(const T &value) noexcept
     {
         return Async([value]() { return value; });
     }
