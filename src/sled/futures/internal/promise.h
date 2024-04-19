@@ -18,9 +18,9 @@ class Promise final {
 
 public:
     using Value                                  = T;
-    Promise() noexcept                           = default;
-    Promise(const Promise &) noexcept            = default;
-    Promise(Promise &&) noexcept                 = default;
+    constexpr Promise() noexcept                 = default;
+    constexpr Promise(const Promise &) noexcept  = default;
+    constexpr Promise(Promise &&) noexcept       = default;
     Promise &operator=(const Promise &) noexcept = default;
     Promise &operator=(Promise &&) noexcept      = default;
     ~Promise()                                   = default;
