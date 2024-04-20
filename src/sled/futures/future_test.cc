@@ -14,10 +14,24 @@ TEST_SUITE("future")
         CHECK_EQ(f.Result(), 42);
     }
 
-    TEST_CASE("base failed")
+    TEST_CASE("base success 1")
     {
         sled::Promise<int, std::string> p;
-        auto f = p.GetFuture();
+        auto f = p.GetFuture().OnSuccess([](int i) { CHECK_EQ(i, 42); }).OnFailure([](const std::string &) {
+            REQUIRE(false);
+        });
+        p.Success(42);
+        CHECK(f.Wait(-1));
+        CHECK(f.IsValid());
+        CHECK_EQ(f.Result(), 42);
+    }
+
+    TEST_CASE("base failed 1")
+    {
+        sled::Promise<int, std::string> p;
+        auto f = p.GetFuture().OnFailure([](const std::string &str) { CHECK_EQ(str, "error"); }).OnSuccess([](int) {
+            REQUIRE(false);
+        });
         p.Failure("error");
         REQUIRE(p.IsFilled());
         REQUIRE(f.IsCompleted());
@@ -39,7 +53,7 @@ TEST_SUITE("future")
         REQUIRE(f.IsFailed());
         CHECK_EQ(f.FailureReason(), "test");
     }
-
+    //
     TEST_CASE("base failed")
     {
         sled::Promise<int, std::string> p;

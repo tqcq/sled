@@ -267,7 +267,7 @@ public:
                 result.FillFailure(future_detail::ExceptionFailure<FailureT>());
             }
         });
-        OnFailure([result](const FailureT &failure) noexcept { result.FillFailure(failure); });
+        OnFailure([result](const FailureT &failure) mutable noexcept { result.FillFailure(failure); });
         return result;
     }
 

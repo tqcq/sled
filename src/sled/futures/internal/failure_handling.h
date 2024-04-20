@@ -54,6 +54,21 @@ FailureFromString<DefaultException>(const std::string &str)
     return DefaultException(str);
 }
 
+// template<>
+// inline std::string
+// FailureFromString<std::string>(std::string &&str)
+// {
+//     return std::move(str);
+// }
+
+// template<typename FailureT,
+//          typename = typename std::enable_if<std::is_constructible<FailureT, std::string>::value>::type>
+// inline FailureT
+// FailureFromString(std::string &&str)
+// {
+//     return FailureT(std::move(str));
+// }
+
 }// namespace failure
 
 namespace future_detail {
