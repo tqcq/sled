@@ -3,18 +3,38 @@
 
 #pragma once
 #include "sled/any.h"
+#include "sled/nonstd/string_view.h"
 #include <string>
 
 namespace sled {
 namespace failure {
-template<typename FailureT>
+
+class DefaultException : std::exception {
+public:
+    inline DefaultException() = default;
+
+    inline DefaultException(const std::string &message) : message_(message) {}
+
+    inline DefaultException(const char *message) : message_(message) {}
+
+    ~DefaultException() noexcept override = default;
+
+    const char *what() const noexcept override { return message_.c_str(); }
+
+private:
+    std::string message_;
+};
+
+template<typename FailureT,
+         typename = typename std::enable_if<!std::is_constructible<FailureT, std::string>::value>::type>
 inline FailureT
-FailureFromString(std::string &&)
+FailureFromString(std::string &&str)
 {
     return FailureT();
 }
 
-template<typename FailureT>
+template<typename FailureT,
+         typename = typename std::enable_if<std::is_constructible<FailureT, const std::string &>::value>::type>
 inline FailureT
 FailureFromString(const std::string &str)
 {
@@ -24,9 +44,16 @@ FailureFromString(const std::string &str)
 
 template<>
 inline std::string
-FailureFromString<std::string>(std::string &&str)
+FailureFromString<std::string>(const std::string &str)
 {
-    return std::move(str);
+    return str;
+}
+
+template<>
+inline DefaultException
+FailureFromString<DefaultException>(const std::string &str)
+{
+    return DefaultException(str);
 }
 
 }// namespace failure

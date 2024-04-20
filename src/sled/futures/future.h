@@ -60,7 +60,7 @@ struct FutureData {
 void SetDefaultScheduler(TaskQueueBase *scheduler) noexcept;
 TaskQueueBase *GetDefaultScheduler() noexcept;
 
-template<typename T, typename FailureT = std::exception>
+template<typename T, typename FailureT = failure::DefaultException>
 class Future {
     static_assert(!std::is_same<T, void>::value, "Future<void, _> is not allowed. Use Future<bool, _> instead");
     static_assert(!std::is_same<FailureT, void>::value, "Future<_, void> is not allowed. Use Future<_, bool> instead");

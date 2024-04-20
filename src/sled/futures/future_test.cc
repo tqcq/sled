@@ -113,6 +113,9 @@ TEST_SUITE("future")
             return 1;
         });
         CHECK_FALSE(f2.IsFailed());
+        CHECK_EQ(std::string("test"), f2.FailureReason().what());
+        CHECK(f2.IsFailed());
+
         auto f3 = sled::Future<std::string>::AsyncValue("11");
         CHECK_EQ(f3.Result(), "11");
     }

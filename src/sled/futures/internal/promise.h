@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "failure_handling.h"
 #include <memory>
 #include <type_traits>
 
@@ -10,7 +11,7 @@ namespace sled {
 template<typename T, typename FailureT>
 class Future;
 
-template<typename T, typename FailureT = std::exception>
+template<typename T, typename FailureT = failure::DefaultException>
 class Promise final {
     static_assert(!std::is_same<T, void>::value, "Promise<void, _> is not allowed. Use Promise<bool, _> instead");
     static_assert(!std::is_same<FailureT, void>::value,

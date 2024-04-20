@@ -108,7 +108,7 @@ public:
         } else if (IsMinusInfinity() || other.IsPlusInfinity()) {
             return TimeDelta::MinusInfinity();
         }
-        return TimeDelta::Micros(us() - other.us());
+        return TimeDelta::Nanos(ns() - other.ns());
     }
 
     Timestamp &operator-=(const TimeDelta delta)
