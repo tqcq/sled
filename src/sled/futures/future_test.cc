@@ -1,6 +1,5 @@
 #include <sled/futures/future.h>
 #include <sled/system/thread.h>
-#include <type_traits>
 
 TEST_SUITE("future")
 {
@@ -122,8 +121,8 @@ TEST_SUITE("future")
 
     TEST_CASE("Constructor")
     {
-        sled::Future<int, std::string> f1 = 1;
-        sled::Future<int, std::string> f2 = std::string("1");
+        auto f1 = sled::Future<int, std::string>::Successful(1);
+        auto f2 = sled::Future<int, std::string>::Failed(std::string("1"));
         REQUIRE(f1.IsCompleted());
         REQUIRE(f2.IsFailed());
         REQUIRE_EQ(f1.Result(), 1);
@@ -132,15 +131,15 @@ TEST_SUITE("future")
 
     TEST_CASE("MapFailure")
     {
-        sled::Future<int, bool> f = false;
-        auto f1                   = f.MapFailure([](bool) { return std::string("error"); });
+        auto f  = sled::Future<int, bool>::Failed(false);
+        auto f1 = f.MapFailure([](bool) { return std::string("error"); });
         CHECK_EQ(f1.FailureReason(), "error");
     }
 
     TEST_CASE("Chain")
     {
-        sled::Future<int, bool> f = 1;
-        auto f1                   = f.Map([](int i) { return i + 1; })
+        auto f  = sled::Future<int, bool>::Successful(1);
+        auto f1 = f.Map([](int i) { return i + 1; })
                       .FlatMap([](int i) {
                           sled::Promise<std::string, bool> p;
                           p.Success(std::to_string(i));

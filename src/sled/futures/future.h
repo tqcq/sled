@@ -8,6 +8,7 @@
 #include "sled/futures/internal/promise.h"
 #include "sled/lang/attributes.h"
 #include "sled/log/log.h"
+#include "sled/meta/type_traits.h"
 #include "sled/synchronization/event.h"
 #include "sled/synchronization/mutex.h"
 #include "sled/task_queue/task_queue_base.h"
@@ -17,16 +18,16 @@
 
 namespace sled {
 namespace future_detail {
-template<typename F, typename... Args>
-struct is_invocable : std::is_constructible<std::function<void(Args...)>,
-                                            std::reference_wrapper<typename std::remove_reference<F>::type>> {};
-
-template<typename R, typename F, typename... Args>
-struct is_invocable_r : std::is_constructible<std::function<R(Args...)>,
-                                              std::reference_wrapper<typename std::remove_reference<F>::type>> {};
-
-template<bool cond, typename T = void>
-using enable_if_t = typename std::enable_if<cond, T>::type;
+// template<typename F, typename... Args>
+// struct is_invocable : std::is_constructible<std::function<void(Args...)>,
+//                                             std::reference_wrapper<typename std::remove_reference<F>::type>> {};
+//
+// template<typename R, typename F, typename... Args>
+// struct is_invocable_r : std::is_constructible<std::function<R(Args...)>,
+//                                               std::reference_wrapper<typename std::remove_reference<F>::type>> {};
+//
+// template<bool cond, typename T = void>
+// using enable_if_t = typename std::enable_if<cond, T>::type;
 
 enum FutureState {
     kNotCompletedFuture = 0,
@@ -83,27 +84,27 @@ public:
     Future<T, FailureT> &operator=(Future<T, FailureT> &&) noexcept      = default;
     ~Future()                                                            = default;
 
-    Future(const T &value) noexcept
-    {
-        static_assert(!std::is_same<T, FailureT>::value, "T and FailureT must be different types");
-        data_ = Future<T, FailureT>::Create().data_;
-        FillSuccess(value);
-    }
-
-    Future(T &&value) noexcept
-    {
-        static_assert(!std::is_same<T, FailureT>::value, "T and FailureT must be different types");
-        data_ = Future<T, FailureT>::Create().data_;
-        FillSuccess(std::move(value));
-    }
-
-    template<typename = typename std::enable_if<!std::is_same<T, FailureT>::value>>
-    Future(const FailureT &failure) noexcept
-    {
-        static_assert(!std::is_same<T, FailureT>::value, "T and FailureT must be different types");
-        data_ = Future<T, FailureT>::Create().data_;
-        FillFailure(failure);
-    }
+    // Future(const T &value) noexcept
+    // {
+    //     static_assert(!std::is_same<T, FailureT>::value, "T and FailureT must be different types");
+    //     data_ = Future<T, FailureT>::Create().data_;
+    //     FillSuccess(value);
+    // }
+    //
+    // Future(T &&value) noexcept
+    // {
+    //     static_assert(!std::is_same<T, FailureT>::value, "T and FailureT must be different types");
+    //     data_ = Future<T, FailureT>::Create().data_;
+    //     FillSuccess(std::move(value));
+    // }
+    //
+    // template<typename = EnableIfT<!std::is_same<T, FailureT>::value>>
+    // Future(const FailureT &failure) noexcept
+    // {
+    //     static_assert(!std::is_same<T, FailureT>::value, "T and FailureT must be different types");
+    //     data_ = Future<T, FailureT>::Create().data_;
+    //     FillFailure(failure);
+    // }
 
     bool operator==(const Future<T, FailureT> &other) const noexcept { return data_ == other.data_; }
 
@@ -147,8 +148,7 @@ public:
         return IsCompleted();
     }
 
-    template<typename Dummy = void,
-             typename       = typename std::enable_if<std::is_copy_constructible<T>::value, Dummy>::type>
+    template<typename Dummy = void, typename = EnableIfT<std::is_copy_constructible<T>::value, Dummy>>
     T Result() const noexcept
     {
         SLED_ASSERT(data_ != nullptr, "Future is not valid");
@@ -183,7 +183,7 @@ public:
         return FailureT();
     }
 
-    template<typename Func, typename = typename std::enable_if<future_detail::is_invocable<Func, T>::value>::type>
+    template<typename Func, typename = EnableIfT<IsInvocable<Func, T>::value>>
     Future<T, FailureT> OnSuccess(Func &&f) const noexcept
     {
         SLED_ASSERT(data_ != nullptr, "Future is not valid");
@@ -211,7 +211,7 @@ public:
         return Future<T, FailureT>(data_);
     }
 
-    template<typename Func, typename = future_detail::enable_if_t<future_detail::is_invocable<Func, FailureT>::value>>
+    template<typename Func, typename = EnableIfT<IsInvocable<Func, FailureT>::value>>
     Future<T, FailureT> OnFailure(Func &&f) const noexcept
     {
         SLED_ASSERT(data_ != nullptr, "Future is not valid");
@@ -239,7 +239,7 @@ public:
         return Future<T, FailureT>(data_);
     }
 
-    template<typename Func, typename = future_detail::enable_if_t<future_detail::is_invocable<Func>::value>>
+    template<typename Func, typename = EnableIfT<IsInvocable<Func>::value>>
     Future<T, FailureT> OnComplete(Func &&f) const noexcept
     {
         SLED_ASSERT(data_ != nullptr, "Future is not valid");
@@ -248,7 +248,7 @@ public:
         return Future<T, FailureT>(data_);
     }
 
-    template<typename Func, typename = future_detail::enable_if_t<future_detail::is_invocable_r<bool, Func, T>::value>>
+    template<typename Func, typename = EnableIfT<IsInvocableR<bool, Func, T>::value>>
     Future<T, FailureT>
     Filter(Func &&f,
            const FailureT &rejected = failure::FailureFromString<FailureT>("Result wasn't good enough")) const noexcept
@@ -271,7 +271,7 @@ public:
         return result;
     }
 
-    template<typename Func, typename U = eggs::invoke_result_t<Func, T>>
+    template<typename Func, typename U = InvokeResultT<Func, T>>
     Future<U, FailureT> Map(Func &&f) const noexcept
     {
         Future<U, FailureT> result = Future<U, FailureT>::Create();
@@ -288,7 +288,7 @@ public:
         return result;
     }
 
-    template<typename Func, typename OtherFailureT = eggs::invoke_result_t<Func, FailureT>>
+    template<typename Func, typename OtherFailureT = InvokeResultT<Func, FailureT>>
     Future<T, OtherFailureT> MapFailure(Func &&f) const noexcept
     {
         Future<T, OtherFailureT> result = Future<T, OtherFailureT>::Create();
@@ -305,7 +305,7 @@ public:
         return result;
     }
 
-    template<typename Func, typename U = decltype(std::declval<eggs::invoke_result_t<Func, T>>().Result())>
+    template<typename Func, typename U = decltype(std::declval<InvokeResultT<Func, T>>().Result())>
     Future<U, FailureT> FlatMap(Func &&f) const noexcept
     {
         Future<U, FailureT> result = Future<U, FailureT>::Create();
@@ -324,7 +324,7 @@ public:
         return result;
     }
 
-    template<typename Func, typename U = decltype(std::declval<eggs::invoke_result_t<Func, T>().Result()>)>
+    template<typename Func, typename U = decltype(std::declval<InvokeResultT<Func, T>().Result()>)>
     Future<U, FailureT> AndThen(Func &&f) const noexcept
     {
         return FlatMap([f](const T &) { return f(); });
@@ -353,7 +353,7 @@ public:
         return result;
     }
 
-    template<typename Func, typename = future_detail::enable_if_t<future_detail::is_invocable<Func>::value>>
+    template<typename Func, typename = EnableIfT<IsInvocable<Func>::value>>
     static Future<T, FailureT> Async(Func &&f) noexcept
     {
         Future<T, FailureT> result = Future<T, FailureT>::Create();

@@ -3,7 +3,7 @@
 
 #pragma once
 #include "sled/any.h"
-#include "sled/nonstd/string_view.h"
+#include "sled/meta/type_traits.h"
 #include <string>
 
 namespace sled {
@@ -25,16 +25,14 @@ private:
     std::string message_;
 };
 
-template<typename FailureT,
-         typename = typename std::enable_if<!std::is_constructible<FailureT, std::string>::value>::type>
+template<typename FailureT, typename = EnableIfT<!std::is_constructible<FailureT, std::string>::value>>
 inline FailureT
 FailureFromString(std::string &&str)
 {
     return FailureT();
 }
 
-template<typename FailureT,
-         typename = typename std::enable_if<std::is_constructible<FailureT, const std::string &>::value>::type>
+template<typename FailureT, typename = EnableIfT<std::is_constructible<FailureT, const std::string &>::value>>
 inline FailureT
 FailureFromString(const std::string &str)
 {
