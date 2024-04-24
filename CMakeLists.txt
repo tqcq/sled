@@ -18,6 +18,7 @@ option(SLED_BUILD_TESTS "Build tests" OFF)
 option(SLED_BUILD_FUZZ "Build fuzzer test" OFF)
 option(SLED_LOCATION_PATH "" "sled/src/sled/system/location.cc")
 option(SLED_BUILD_PROTOC_PLUGIN "Build protoc plugin" OFF)
+option(SLED_WITH_PROTOBUF "With Protobuf" ON)
 
 set(BUILD_STATIC ON)
 set(BUILD_RTTR_DYNAMIC OFF)
@@ -34,7 +35,9 @@ add_subdirectory(3party/minilua EXCLUDE_FROM_ALL)
 # add_subdirectory(3party/gperftools EXCLUDE_FROM_ALL)
 add_subdirectory(3party/asyncplusplus EXCLUDE_FROM_ALL)
 # add_subdirectory(3party/cppuprofile EXCLUDE_FROM_ALL)
-add_subdirectory(3party/protobuf-3.21.12 EXCLUDE_FROM_ALL)
+if(SLED_WITH_PROTOBUF)
+  add_subdirectory(3party/protobuf-3.21.12 EXCLUDE_FROM_ALL)
+endif()
 if(NOT TARGET marl)
   add_subdirectory(3party/marl EXCLUDE_FROM_ALL)
 endif()
@@ -101,17 +104,17 @@ target_sources(
 
 target_link_libraries(
   sled
-  PUBLIC rpc_core fmt marl Async++ minilua protobuf::libprotobuf
+  PUBLIC rpc_core fmt marl Async++ minilua
          # protobuf::libprotoc
-  PRIVATE dl
-  # protobuf::libprotobuf ${WHOLE_ARCHIVE_WRAPPER_START}
-  # tcmalloc_and_profiler_static ${WHOLE_ARCHIVE_WRAPPER_END}
-)
+  PRIVATE dl)
+if(SLED_WITH_PROTOBUF)
+  target_link_libraries(sled PUBLIC protobuf::libprotobuf)
+endif()
 
 # set fPIC
 set_target_properties(sled PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
-if(SLED_BUILD_PROTOC_PLUGIN)
+if(SLED_WITH_PROTOBUF AND SLED_BUILD_PROTOC_PLUGIN)
   add_subdirectory(src/protoc_gen_sled)
 endif()
 
