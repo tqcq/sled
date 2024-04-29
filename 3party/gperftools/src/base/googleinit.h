@@ -61,13 +61,14 @@ private:
 
 #define REGISTER_MODULE_INITIALIZER(name, body)                                                                        \
     namespace {                                                                                                        \
-    __attribute__((constructor)) static void google_init_module_##name() { body; }                                     \
+    static void google_init_module_##name() { body; }                                                                  \
     GoogleInitializer google_initializer_module_##name(#name, google_init_module_##name, NULL);                        \
+    __attribute__((constructor)) static void EnsureConstructorRunsBeforeMain() { google_init_module_##name().name(); } \
     }
 
 #define REGISTER_MODULE_DESTRUCTOR(name, body)                                                                         \
     namespace {                                                                                                        \
-    __attribute__((constructor)) static void google_destruct_module_##name() { body; }                                 \
+    static void google_destruct_module_##name() { body; }                                                              \
     GoogleInitializer google_destructor_module_##name(#name, NULL, google_destruct_module_##name);                     \
     }
 
