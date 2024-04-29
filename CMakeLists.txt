@@ -106,12 +106,13 @@ target_sources(
 
 target_link_libraries(
   sled
-  PUBLIC rpc_core fmt marl Async++ minilua protobuf::libprotobuf
+  PUBLIC rpc_core fmt marl Async++ minilua
          # protobuf::libprotoc
   PRIVATE dl)
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
   target_link_libraries(sled PRIVATE tcmalloc_and_profiler_static)
 endif()
+
 if(SLED_WITH_PROTOBUF)
   target_link_libraries(sled PUBLIC protobuf::libprotobuf)
 endif()

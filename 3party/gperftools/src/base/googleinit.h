@@ -63,7 +63,10 @@ private:
     namespace {                                                                                                        \
     static void google_init_module_##name() { body; }                                                                  \
     GoogleInitializer google_initializer_module_##name(#name, google_init_module_##name, NULL);                        \
-    __attribute__((constructor)) static void EnsureConstructorRunsBeforeMain() { google_init_module_##name().name(); } \
+    __attribute__((constructor)) static void EnsureConstructorRunsBeforeMain()                                         \
+    {                                                                                                                  \
+        google_initializer_module_##name().name();                                                                     \
+    }                                                                                                                  \
     }
 
 #define REGISTER_MODULE_DESTRUCTOR(name, body)                                                                         \
