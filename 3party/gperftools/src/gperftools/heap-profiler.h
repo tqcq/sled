@@ -55,11 +55,11 @@
 
 /* Annoying stuff for windows; makes sure clients can import these functions */
 #ifndef PERFTOOLS_DLL_DECL
-# ifdef _WIN32
-#   define PERFTOOLS_DLL_DECL  __declspec(dllimport)
-# else
-#   define PERFTOOLS_DLL_DECL
-# endif
+#ifdef _WIN32
+#define PERFTOOLS_DLL_DECL __declspec(dllimport)
+#else
+#define PERFTOOLS_DLL_DECL
+#endif
 #endif
 
 /* All this code should be usable from within C apps. */
@@ -70,7 +70,7 @@ extern "C" {
 /* Start profiling and arrange to write profile data to file names
  * of the form: "prefix.0000", "prefix.0001", ...
  */
-PERFTOOLS_DLL_DECL void HeapProfilerStart(const char* prefix);
+PERFTOOLS_DLL_DECL void HeapProfilerStart(const char *prefix);
 
 /* Returns non-zero if we are currently profiling the heap.  (Returns
  * an int rather than a bool so it's usable from C.)  This is true
@@ -96,10 +96,10 @@ PERFTOOLS_DLL_DECL void HeapProfilerDump(const char *reason);
  * The returned pointer is a '\0'-terminated string allocated using malloc()
  * and should be free()-ed as soon as the caller does not need it anymore.
  */
-PERFTOOLS_DLL_DECL char* GetHeapProfile();
+PERFTOOLS_DLL_DECL char *GetHeapProfile();
 
 #ifdef __cplusplus
-}  // extern "C"
+}// extern "C"
 #endif
 
-#endif  /* BASE_HEAP_PROFILER_H_ */
+#endif /* BASE_HEAP_PROFILER_H_ */
