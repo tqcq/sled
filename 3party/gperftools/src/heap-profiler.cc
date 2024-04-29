@@ -423,7 +423,7 @@ LogMappingEvent(const tcmalloc::MappingEvent &evt)
 extern "C" void
 HeapProfilerStart(const char *prefix)
 {
-    SpinLockHolder l(&heap_lock);
+    SpinLockHolder lock(&heap_lock);
 
     if (is_on) return;
 
