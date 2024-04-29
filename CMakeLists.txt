@@ -104,7 +104,7 @@ target_sources(
 
 target_link_libraries(
   sled
-  PUBLIC rpc_core fmt marl Async++ minilua tcmalloc_and_profiler_static
+  PUBLIC rpc_core fmt marl Async++ minilua
          # protobuf::libprotoc
   PRIVATE dl)
 if(SLED_WITH_PROTOBUF)
