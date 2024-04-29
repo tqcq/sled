@@ -52,7 +52,7 @@ public:
         if (destructor_) destructor_();
     }
 
-    const char *name() const { return name_; }
+    const char *module_name() const { return name_; }
 
 private:
     const char *const name_;
@@ -65,7 +65,7 @@ private:
     GoogleInitializer google_initializer_module_##name(#name, google_init_module_##name, NULL);                        \
     __attribute__((constructor)) static void EnsureConstructorRunsBeforeMain()                                         \
     {                                                                                                                  \
-        google_initializer_module_##name.name();                                                                       \
+        google_initializer_module_##name.module_name();                                                                \
     }                                                                                                                  \
     }
 
