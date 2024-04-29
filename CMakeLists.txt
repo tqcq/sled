@@ -30,9 +30,11 @@ target_include_directories(test_main PUBLIC src/)
 target_include_directories(benchmark_main PUBLIC src/)
 
 add_library(sled STATIC "")
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  add_subdirectory(3party/gperftools EXCLUDE_FROM_ALL)
+endif()
 
 add_subdirectory(3party/minilua EXCLUDE_FROM_ALL)
-add_subdirectory(3party/gperftools EXCLUDE_FROM_ALL)
 add_subdirectory(3party/asyncplusplus EXCLUDE_FROM_ALL)
 # add_subdirectory(3party/cppuprofile EXCLUDE_FROM_ALL)
 if(SLED_WITH_PROTOBUF)
@@ -104,15 +106,12 @@ target_sources(
 
 target_link_libraries(
   sled
-  PUBLIC rpc_core
-         fmt
-         marl
-         Async++
-         minilua
-         protobuf::libprotobuf
-         tcmalloc_and_profiler_static
+  PUBLIC rpc_core fmt marl Async++ minilua protobuf::libprotobuf
          # protobuf::libprotoc
   PRIVATE dl)
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  target_link_libraries(sled PRIVATE tcmalloc_and_profiler_static)
+endif()
 if(SLED_WITH_PROTOBUF)
   target_link_libraries(sled PUBLIC protobuf::libprotobuf)
 endif()
