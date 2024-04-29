@@ -32,7 +32,7 @@ target_include_directories(benchmark_main PUBLIC src/)
 add_library(sled STATIC "")
 
 add_subdirectory(3party/minilua EXCLUDE_FROM_ALL)
-# add_subdirectory(3party/gperftools EXCLUDE_FROM_ALL)
+add_subdirectory(3party/gperftools EXCLUDE_FROM_ALL)
 add_subdirectory(3party/asyncplusplus EXCLUDE_FROM_ALL)
 # add_subdirectory(3party/cppuprofile EXCLUDE_FROM_ALL)
 if(SLED_WITH_PROTOBUF)
@@ -104,7 +104,7 @@ target_sources(
 
 target_link_libraries(
   sled
-  PUBLIC rpc_core fmt marl Async++ minilua
+  PUBLIC rpc_core fmt marl Async++ minilua tcmalloc_and_profiler_static
          # protobuf::libprotoc
   PRIVATE dl)
 if(SLED_WITH_PROTOBUF)
