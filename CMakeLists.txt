@@ -101,7 +101,13 @@ target_sources(
 
 target_link_libraries(
   sled
-  PUBLIC rpc_core fmt marl Async++ minilua protobuf::libprotobuf
+  PUBLIC rpc_core
+         fmt
+         marl
+         Async++
+         minilua
+         protobuf::libprotobuf
+         tcmalloc_and_profiler_static
          # protobuf::libprotoc
   PRIVATE dl
   # protobuf::libprotobuf ${WHOLE_ARCHIVE_WRAPPER_START}
