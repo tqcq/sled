@@ -110,7 +110,7 @@ target_link_libraries(
          # protobuf::libprotoc
   PRIVATE dl)
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-  target_link_libraries(sled PRIVATE tcmalloc_and_profiler_static)
+  target_link_libraries(sled PUBLIC tcmalloc_and_profiler_static)
 endif()
 
 if(SLED_WITH_PROTOBUF)
