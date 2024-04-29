@@ -111,7 +111,7 @@ void
 SetLogFileName(const char *file_name)
 {
     g_log_file_name = file_name;
-    g_log_stream.open(file_name);
+    g_log_stream.open(file_name, std::ios_base::app);
 }
 
 static std::atomic<uint32_t> g_current_id(0);
