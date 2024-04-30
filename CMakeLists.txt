@@ -228,7 +228,8 @@ if(SLED_BUILD_TESTS)
 
   add_library(hot_reloader_test_dynamic SHARED
               src/sled/system/hot_reloader_test_dynamic.cc)
-  target_link_libraries(hot_reloader_test_dynamic PRIVATE sled)
+  target_include_directories(hot_reloader_test_dynamic PRIVATE src/)
+  # target_link_libraries(hot_reloader_test_dynamic PRIVATE sled)
   message(
     STATUS "HOT_RELOADER_TEST_DYNAMIC_LOCATION ${hot_reloader_test_dynamic}")
   get_target_property(HOT_RELOADER_TEST_DYNAMIC_LOCATION

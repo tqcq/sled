@@ -1,4 +1,5 @@
-#include <sled/sled.h>
+#include "sled/lang/attributes.h"
+#include <stdio.h>
 
 void
 crash()
@@ -19,7 +20,8 @@ sled_hot_loader_main(void *ctx, int op)
     int *value_ptr = reinterpret_cast<int *>(userdata);
     int crash_type = *value_ptr;
     *value_ptr     = -1;
-    LOGD("plugin ", "sled_hot_loader_main: op={}, crash={}", op, crash_type);
+    fprintf(stderr, "plugin sled_hot_loader_main: op=%d, crash=%d\n", op, crash_type);
+    // LOGD("plugin ", "sled_hot_loader_main: op={}, crash={}", op, crash_type);
 
     switch (op) {
         // On Load
