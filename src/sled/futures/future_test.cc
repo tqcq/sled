@@ -126,7 +126,7 @@ TEST_SUITE("future")
             return 1;
         });
         f2.Wait();
-        CHECK_FALSE(f2.IsFailed());
+        CHECK(f2.IsFailed());
         CHECK_EQ(std::string("test"), f2.FailureReason().what());
         CHECK(f2.IsFailed());
 
